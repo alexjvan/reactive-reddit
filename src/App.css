@@ -1,38 +1,68 @@
-.App {
-  text-align: center;
+/* Defaults */
+button:hover {
+    cursor: pointer;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+* {
+    margin: 0px;
+    padding: 0px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+a {
+    display: inline-block;
+    text-decoration: none;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+body {
+    border: 0px;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Montserrat', verdana, arial, sans-serif;
+    font-size: 16px;
+    height: 100vh;
+    margin: 0px;
+    overflow: hidden;
+    padding: 0px;
 }
 
-.App-link {
-  color: #61dafb;
+div {
+    display: inline-block;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+li {
+    display: inline-block;
+    list-style-type: none;
+    margin: 0px;
+    padding: 0px;
+}
+
+p {
+    text-align: left;
+}
+
+ul {
+    display: block;
+    list-style-type: none;
+}
+
+.disabled {
+    display: none !important;
+}
+
+.clickable:hover {
+    background-color: var(--light-secondary);
+    color: black;
+    cursor: pointer;
+}
+
+:root {
+    --accent: #529EFB;
+    --dark-primary: #343434;
+    --dark-secondary: #1d1d1d;
+    --dark-tetriary: black;
+    --light-primary: #e4e4e4;
+    --light-secondary: #b4b4b4;
+    --light-tetriary: white;
+    --bad: #FF5656;
+    --good: #73ff73;
 }

@@ -1,0 +1,13 @@
+#statistics {
+    display: flex;
+}
+    .stats-section {
+        flex: 1;
+        padding: 0px 2%;
+    }
+        .stats-row {
+            width: 100%;
+        }
+            .stats-right {
+                float: right;
+            }

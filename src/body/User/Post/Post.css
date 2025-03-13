@@ -1,0 +1,139 @@
+.post {
+    background-color: var(--dark-secondary);
+    border-left: 3px solid;
+    margin-bottom: 5px;
+    padding: 1% 10px 1% 7px;
+    width: calc(100% - 20px);
+}
+    .post-banner {
+        width: 100%;
+    }
+        .post-header {
+            font-size: 16px;
+            font-weight: bold;
+            width: 100%;
+        }
+            .post-header a {
+                padding: 0px 5px;
+            }
+                .post-header a:hover {
+                    cursor: pointer;
+                }
+            .post-title {
+                color: white;
+                float: left;
+                padding: 0px!important;
+                width: calc(100% - 50px);
+            }
+            .post-actions {
+                float: right;
+                width: 50px;
+            }
+                .post-actions button {
+                    background-color: var(--dark-secondary);
+                    border: 0px;
+                    color: white;
+                    font-family: 'Montserrat', verdana, arial, sans-serif;
+                    font-size: 16px;
+                    padding: 0px 5px;
+                }
+            .post-info {
+                display: block;
+                font-size: 12px;
+                font-weight: 100;
+                width: 100%;
+            }
+                .post-info-separator {
+                    padding: 0px 5px;
+                }
+            .tags-container {
+                margin: 5px 0px;
+            }
+                .postTag {
+                    border: 1px solid white;
+                    border-radius: 10px;
+                    font-size: 12px;
+                    margin: 0px 5px;
+                    padding: 5px;
+                }
+                    .postTag.light {
+                        color: white;
+                    }
+                    .postTag.dark {
+                        color: black;
+                    }
+        .post-contents {
+            width: 100%;
+        }
+            .post-text {
+                width: 100%;
+            }
+                .post-text p {
+                    padding: 5px 0px;
+                }
+                    .post-text p.indented {
+                        padding: 15px 0px;
+                    }
+                .post-text div {
+                    padding: 5px 0px;
+                }
+                    .post-text div.indented {
+                        padding: 15px 0px;
+                    }
+                    .findableImage {
+                        color: lightskyblue;
+                        text-decoration: solid;
+                    }
+                        .findableImage:hover {
+                            color: rgb(34, 116, 141);
+                            cursor: pointer;
+                        }
+            .post-images {
+                width: 100%;
+            }
+                .post-imagescontainer {
+                    align-items: center;
+                    display: flex;
+                    position: relative;
+                    width: 100%;
+                }
+                    .post-imagescontainer button {
+                        background-color: var(--dark-secondary);
+                        border: 0px;
+                        border-radius: 25px;
+                        color: white;
+                        font-size: 24px;
+                        height: 40px;
+                        width: 40px;
+                    }
+                        .post-imagescontainer button:hover {
+                            background-color: #343434;
+                        }
+                    .post-prevImage {
+                        left: 0px;
+                        position: absolute;
+                        top: 50%;
+                        z-index: 10;
+                    }
+                    .post-nextImage {
+                        position: absolute;
+                        right: 0px;
+                        top: 50%;
+                        z-index: 10;
+                    }
+                    .post-displayimage {
+                        max-height: 75vh;
+                        object-fit: contain;
+                        width: 100%;
+                        z-index: 1;
+                    }
+                .post-imageselector {
+                    display: flex;
+                    width: 100%;
+                }
+                    .post-imageselector-chooser {
+                        background-color: white;
+                        flex: 1;
+                        height: 5px;
+                        margin: 0px 5px;
+                    }

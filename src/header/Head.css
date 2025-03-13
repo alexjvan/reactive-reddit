@@ -1,0 +1,66 @@
+#header {
+    background-color: var(--dark-primary);
+    color: var(--light-primary);
+    padding: 15px 2.5%;
+    width: 95%;
+}
+    #title {
+        display: block;
+        font-size: 24px;
+        text-align: center;
+    }
+        #title a {
+            color: lightskyblue;
+            text-decoration: underline;
+        }
+            #title a:hover {
+                color: white;
+            }
+    #quickadd {
+        display: flex;
+        justify-content: space-evenly;
+        padding: 15px 2.5%;
+        width: 95%;
+    }
+        .qa-section {
+            padding: 0px 10px;
+        }
+            .qa-title {
+                display: block;
+                text-align: center;
+            }
+                .qa-want {
+                    background-color: var(--dark-primary);
+                    border: 0px;
+                    color: var(--light-primary);
+                    font-family: 'Montserrat', verdana, arial, sans-serif;
+                    font-size: 16px;
+                }
+                        .qa-want.include::before {
+                            color: var(--good);
+                            content: "+";
+                        }
+                        .qa-want.exclude::before {
+                            color: var(--bad);
+                            content: "-";
+                        }
+                .qa-inputbox {
+                    margin: 0px 5px;
+                }
+                    .qa-input {
+                        background-color: var(--dark-primary);
+                        border: 0px;
+                        border-bottom: 1px solid var(--light-primary);
+                        color: var(--light-primary);
+                        font-family: 'Montserrat';
+                        padding: 5px;
+                        width: 150px;
+                    }
+                .qa-submit {
+                    background-color: var(--dark-primary);
+                    border: 0px;
+                    color: var(--light-primary);
+                    font-family: 'Montserrat', verdana, arial, sans-serif;
+                    font-size: 16px;
+                    padding: 5px;
+                }

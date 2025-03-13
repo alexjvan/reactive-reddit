@@ -1,0 +1,27 @@
+.user {
+    background-color: #343434;
+    display: block;
+    margin: 10px 1.5% 10px 1.5%;
+    padding: 0px 1% 5px 1%;
+    width: 95%;
+}
+    .user-header {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+    }
+            .postCount {
+                padding-left: 10px;
+            }
+            .user-actions button {
+                background-color: #343434;
+                border: 0px;
+                color: white;
+                display: inline-block;
+                font-family: 'Montserrat', verdana, arial, sans-serif;
+                font-size: 16px;
+                padding: 0px 5px;
+            }
+    .postContainer {
+        width: 100%;
+    }

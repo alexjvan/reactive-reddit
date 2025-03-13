@@ -1,0 +1,33 @@
+#extrapage {
+    background-color: rgba(0, 0, 0, 0.9);
+    color: white;
+    left: 0;
+    height: calc(100vh - 20px);
+    padding: 10px 2.5%;
+    position: fixed;
+    top: 0;
+    width: 95%;
+    z-index: 1000;
+}
+    #extraheader {
+        font-size: 24px;
+        width: 100%;
+    }
+        #extratitle {
+            padding-bottom: 25px;
+        }
+        #extraclose {
+            background-color: transparent;
+            border: 0px;
+            color: white;
+            float: right;
+            font-family: 'Montserrat', verdana, arial, sans-serif;
+            font-size: 16px;
+            padding: 15px;
+        }
+    #extracontent {
+        display: block;
+        height: calc(100% - 54px);
+        overflow-y: scroll;
+        width: 100%;
+    }
