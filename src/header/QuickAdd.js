@@ -1,11 +1,10 @@
-import clsx from "clsx";
 import { useState } from "react";
 
 export default function QuickAdd({
     section, 
     quickAdd 
 }) {
-    const [want, setWant] = useState(true);
+    const [want, setWant] = useState(section === "Subs" ? undefined : true);
     const sectionId = `qa-${section.replace("||", "or")}`;
 
     const handleToggleWant = () => setWant(prev => !prev);
@@ -21,11 +20,7 @@ export default function QuickAdd({
             <div className="qa-title">{section}</div>
             <div className="qa-options">
                 <button
-                    className={clsx("qa-want", {
-                        disabled: section === "Subs",
-                        include: want,
-                        exclude: !want,
-                    })}
+                    className={`qa-want ${want ? "include" : want === false ? "exclude" : ""}`}
                     onClick={handleToggleWant}
                 />
                 <div className="qa-inputbox">

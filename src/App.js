@@ -118,7 +118,8 @@ export default function App() {
   }
 
   function reduceFilters(filters) {
-    // TODO: Remove filters in Filters
+    // TODO: Remove duplicate filters, filters in filters
+    //    ex: Filter "Hotdog" not needed if "Dog" also exists
     // TODO: Sort by Category: Tag, Author, Title, Text, Text||Title
   }
 
@@ -176,6 +177,7 @@ export default function App() {
     }, 250);
   }
 
+  // TODO: Move each grabber to their own file
   function preRetrieveLoop(sub, post, iterations) {
     let url = 'https://api.reddit.com/r/'+sub+'/new.json' + (post !== undefined ? '?before=' + post : '');
 

@@ -12,6 +12,9 @@ export default function SettingsSection({
                 <div className="settingsection-itemname">
                     {item}
                 </div>
+                {
+                    // TODO: Move a to button
+                }
                 <a className="settingsection-itemremove clickable" onClick={() => {filterFunction(item)}}>
                     X
                 </a>

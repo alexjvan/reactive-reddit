@@ -5,7 +5,7 @@ import { filterCheck } from '../app/filters.js';
 import $ from 'jquery';
 import { memo } from 'react';
 
-const QuickAddMemo = memo(QuickAdd); // Memoize QuickAdd component
+const QuickAddMemo = memo(QuickAdd);
 
 export default function Head({
     subs,
@@ -21,6 +21,7 @@ export default function Head({
     //      One 'QuickAdd' with a dropdown?
     const sections = ["Subs", "Author", "Tag", "Text", /* "Text||Title", */ "Title"];
 
+    // TODO: Rewrite to get rid of jquery
     function quickAdd(section) {
         let parent = $('#qa-'+section.replace("||","or"));
         let input = $(parent).find('.qa-input');
