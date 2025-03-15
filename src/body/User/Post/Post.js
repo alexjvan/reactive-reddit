@@ -84,6 +84,8 @@ export default function Post({
     }
 
     function modLine(line) {
+        // TODO: Link in text, without display-name
+        //      What to do with links that aren't media?
         let split = line.split('');
 
         let modded = '';

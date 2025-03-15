@@ -80,10 +80,7 @@ export default function MediaContainer({
                 return url.split('?')[0].replace('preview.redd.it', 'i.redd.it');
             } else if(url.startsWith('https://i.redd.it')) {
                 return url.split('?')[0];
-            } else if(
-                url.endsWith('.jpg') ||
-                url.endsWith('.png')
-            ) {
+            } else if(isImageLink(url) || isVideoLink(url)) {
                 // Do nothing, don't log
             } else {
                 console.log('Non-recognized URL in media metadata:', url);
