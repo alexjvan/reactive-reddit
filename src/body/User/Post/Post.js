@@ -1,6 +1,6 @@
 import './Post.css';
 import { useMemo, useState } from 'react';
-import MediaContainer from './MediaContainer';
+import MediaContainer, { isImageLink, isVideoLink } from './MediaContainer';
 
 export default function Post({
     postObj,
@@ -138,12 +138,7 @@ export default function Post({
                     break;
                 case ')':
                     if(passedLinkText) {
-                        if(
-                            linkLink.endsWith('.png') || 
-                            linkLink.endsWith('.jpeg') || 
-                            linkLink.endsWith('.jpg') ||
-                            linkLink.endsWith('.gif')
-                        ) {
+                        if(isImageLink(linkLink) || isVideoLink(linkLink)) {
                             modded += '<a class="findableImage" data-link="'+linkLink+'">'+linkText+'</a>';
                             const tempLink = linkLink;
                             setMediaText((prev) => [...prev, tempLink]);

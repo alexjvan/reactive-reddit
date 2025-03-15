@@ -127,6 +127,12 @@
                         width: 100%;
                         z-index: 1;
                     }
+                    .post-displayvideo {
+                        max-height: 75vh;
+                        object-fit: contain;
+                        width: 100%;
+                        z-index: 1;
+                    }
                 .post-imageselector {
                     display: flex;
                     width: 100%;

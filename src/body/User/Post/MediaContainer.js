@@ -1,5 +1,23 @@
 import { useEffect, useMemo, useState } from 'react';
 
+const imgSuffixes = ['.jpeg', '.jpg', '.gif', '.png'];
+const videoSuffixes = ['.mp4', '.webm'];
+
+export function isImageLink(url) {
+    return urlSuffixIn(url, imgSuffixes);
+}
+
+export function isVideoLink(url) {
+    return urlSuffixIn(url, videoSuffixes);
+}
+
+function urlSuffixIn(url, array) {
+    for(let i = 0; i < array.length; i++) {
+        if(url.endsWith(array[i])) return true;
+    }
+    return false;
+}
+
 export default function MediaContainer({
     textMedia,
     postObj
@@ -116,6 +134,8 @@ export default function MediaContainer({
         ))
     ), [media.length, imageIndex]);
 
+    const currentMedia = media[imageIndex];
+
     return (media.length !== 0 &&
         <div className="post-images">
             <div className="post-imagescontainer">
@@ -129,13 +149,22 @@ export default function MediaContainer({
                         </button>
                     </>
                 )}
-                <img 
-                    key={imageIndex} 
-                    className="post-displayimage" 
-                    src={media[imageIndex]} 
-                    alt={`Media item ${imageIndex + 1}`}
-                    loading="lazy"
-                />
+                {isImageLink(currentMedia)
+                    ? <img 
+                        key={imageIndex} 
+                        className="post-displayimage" 
+                        src={currentMedia} 
+                        alt={`Media item ${imageIndex + 1}`}
+                        loading="lazy"
+                    />
+                    : <video 
+                        key={imageIndex} 
+                        className="post-displayvideo" 
+                        src={currentMedia}
+                        controls
+                      />
+                }
+                
             </div>
             <div className="post-imageselector">
                 {imageSelectors}
