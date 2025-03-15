@@ -1,22 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-
-const imgSuffixes = ['.jpeg', '.jpg', '.gif', '.png'];
-const videoSuffixes = ['.mp4', '.webm'];
-
-export function isImageLink(url) {
-    return urlSuffixIn(url, imgSuffixes);
-}
-
-export function isVideoLink(url) {
-    return urlSuffixIn(url, videoSuffixes);
-}
-
-function urlSuffixIn(url, array) {
-    for(let i = 0; i < array.length; i++) {
-        if(url.endsWith(array[i])) return true;
-    }
-    return false;
-}
+import { isImageLink, isVideoLink } from '../../../app/imageHelpers';
 
 export default function MediaContainer({
     textMedia,
@@ -71,22 +54,26 @@ export default function MediaContainer({
     function mergeMedia() {
         const merged = [...mediaMetadata, ...mediaPreviewImages, ...mediaCrossPost, ...secureMedia, ...textMedia];
 
-        return [...new Set(merged.map((url) => {
-            if(url.startsWith('https://external-i.redd.it')) {
-                return url.split('?')[0].replace('external-i.redd.it', 'i.redd.it');
-            } else if(url.startsWith('https://external-preview.redd.it')) {
-                return url.split('?')[0].replace('external-preview.redd.it', 'i.redd.it');
-            } else if (url.startsWith('https://preview.redd.it')) {
-                return url.split('?')[0].replace('preview.redd.it', 'i.redd.it');
-            } else if(url.startsWith('https://i.redd.it')) {
-                return url.split('?')[0];
-            } else if(isImageLink(url) || isVideoLink(url)) {
-                // Do nothing, don't log
-            } else {
-                console.log('Non-recognized URL in media metadata:', url);
-            }
-            return url;
-        }))];
+        return [...new Set(
+            merged.map((url) => {
+                if(url.startsWith('https://external-i.redd.it')) {
+                    return url.split('?')[0].replace('external-i.redd.it', 'i.redd.it');
+                } else if(url.startsWith('https://external-preview.redd.it')) {
+                    return url.split('?')[0].replace('external-preview.redd.it', 'i.redd.it');
+                } else if (url.startsWith('https://preview.redd.it')) {
+                    return url.split('?')[0].replace('preview.redd.it', 'i.redd.it');
+                } else if(url.startsWith('https://i.redd.it')) {
+                    return url.split('?')[0];
+                } else if(isImageLink(url) || isVideoLink(url)) {
+                    // Do nothing, don't log
+                } else {
+                    console.log('Non-recognized URL in media metadata:', url);
+                    return null; // The hope here is to not try and force a website link into an image or video tag
+                }
+                return url;
+            })
+            .filter((i) => i !== null)
+        )];
     }
 
     // UseEffect for click handling for <a> tags in <div> elements (I hate react)
@@ -119,7 +106,6 @@ export default function MediaContainer({
         setImageIndex((prev) => (prev === media.length - 1 ? 0 : prev + 1));
     }
 
-    // Memoize the image selector to avoid re-rendering on every state change
     const imageSelectors = useMemo(() => (
         media.map((_, index) => (
             <a 

@@ -120,7 +120,26 @@ export default function App() {
   function reduceFilters(filters) {
     // TODO: Remove duplicate filters, filters in filters
     //    ex: Filter "Hotdog" not needed if "Dog" also exists
-    // TODO: Sort by Category: Tag, Author, Title, Text, Text||Title
+    return filters.sort(function(a, b) {
+      return sortPrioirty(a.category) - sortPrioirty(b.category);
+    });
+  }
+
+  function sortPrioirty(category) {
+    switch(category) {
+      case "Tag": 
+        return 10;
+      case "Author":
+        return 20;
+      case "Title":
+        return 30;
+      case "Text":
+        return 40;
+      case "Text||Title":
+        return 50;
+      default:
+        return 1000;
+    }
   }
 
   // Run search

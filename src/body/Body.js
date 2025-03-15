@@ -14,6 +14,7 @@ export default function Body({
 
     // TODO: This does NOT work, but its better than before so I am keeping it.
     // Save scroll position before unmounting or re-rendering
+    // This useEffect, and the next, are an attempt to keep scroll-position on re-render.
     useEffect(() => {
         const handleScroll = () => {
             if (containerRef.current) {

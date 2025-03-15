@@ -1,6 +1,7 @@
 import './Post.css';
 import { useMemo, useState } from 'react';
-import MediaContainer, { isImageLink, isVideoLink } from './MediaContainer';
+import MediaContainer from './MediaContainer';
+import { isImageLink, isVideoLink } from '../../../app/imageHelpers';
 
 export default function Post({
     postObj,
@@ -84,11 +85,10 @@ export default function Post({
     }
 
     function modLine(line) {
-        // TODO: Link in text, without display-name
-        //      What to do with links that aren't media?
         let split = line.split('');
 
         let modded = '';
+        let word = '';
 
         let inItalic = false;
         let italicString = '';
@@ -142,14 +142,14 @@ export default function Post({
                     if(passedLinkText) {
                         if(isImageLink(linkLink) || isVideoLink(linkLink)) {
                             modded += '<a class="findableImage" data-link="'+linkLink+'">'+linkText+'</a>';
-                            const tempLink = linkLink;
+                            const tempLink = linkLink; // The next line is async, while nothing else is. This is to keep the value during that op (I hate react)
                             setMediaText((prev) => [...prev, tempLink]);
                             inLink = false;
                             passedLinkText = false;
                             linkText = '';
                             linkLink = '';
                         } else {
-                            modded += '['+linkText+']('+linkLink+')';
+                            modded += '<a class="otherSite" href="'+linkLink+' target=_blank">'+linkText+'</a>';
                             inLink = false;
                             passedLinkText = false;
                             linkText = '';
@@ -159,6 +159,26 @@ export default function Post({
                         modded += char;
                     }
                     break;
+                case ' ':
+                    if(word === '' && !inItalic && !passedLinkText && !inLink) {
+                        modded += ' ';
+                    } else if(word.startsWith("http")) {
+                        modded += '<a class="findableImage" data-link="'+word+'">'+word+'</a> ';
+                        const tempLink = word; // The next line is async, while nothing else is. This is to keep the value during that op (I hate react)
+                        setMediaText((prev) => [...prev, tempLink]);
+                    } else {
+                        if(inItalic) {
+                            italicString += ' ';
+                        } else if(passedLinkText) {
+                            linkLink += ' ';
+                        } else if(inLink) {
+                            linkText += ' ';
+                        } else {
+                            modded += word + ' ';
+                        }
+                    }
+                    word = '';
+                    break;
                 default:
                     if(inItalic) {
                         italicString += char;
@@ -167,7 +187,7 @@ export default function Post({
                     } else if(inLink) {
                         linkText += char;
                     } else {
-                        modded += char;
+                        word += char;
                     }
                     break;
             }
@@ -177,6 +197,14 @@ export default function Post({
             modded += '['+linkText+']('+linkLink;
         } else if(inLink) {
             modded += '['+linkText;
+        } else {
+            if(word.startsWith("http")) {
+                modded += '<a class="findableImage" data-link="'+word+'">'+word+'</a> ';
+                const tempLink = word; // The next line is async, while nothing else is. This is to keep the value during that op (I hate react)
+                setMediaText((prev) => [...prev, tempLink]);
+            } else {
+                modded += word;
+            }
         }
         if(inItalic) modded += '*' + italicString; 
 

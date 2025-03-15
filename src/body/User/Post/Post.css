@@ -75,6 +75,7 @@
                         padding: 15px 0px;
                     }
                 .post-text div {
+                    display: block;
                     padding: 5px 0px;
                 }
                     .post-text div.indented {
@@ -86,6 +87,14 @@
                     }
                         .findableImage:hover {
                             color: rgb(34, 116, 141);
+                            cursor: pointer;
+                        }
+                    .otherSite {
+                        color: lightgreen;
+                        text-decoration: solid;
+                    }
+                        .otherSite:hover {
+                            color: chartreuse;
                             cursor: pointer;
                         }
             .post-images {
