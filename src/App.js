@@ -99,6 +99,7 @@ export default function App() {
     () => putInStorage('filters', filters),
     [filters]
   );
+  // TODO: Create some way to not constantly be updating this during retrieval
   useEffect(
     () => putInStorage('minUsers', minimizedUsers),
     [minimizedUsers]

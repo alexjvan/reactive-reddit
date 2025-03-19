@@ -50,20 +50,24 @@ export default function Body({
         [posts]
     );
 
+    const usersDisplay = useMemo(() => 
+        Object.entries(users).map(([username, usersPosts]) => (
+            <User 
+                key={username}
+                username={username}
+                usersPosts={usersPosts}
+                posts={posts}
+                setPosts={setPosts}
+                setFilters={setFilters}
+                minimizedUsers={minimizedUsers}
+                setMinimizedUsers = {setMinimizedUsers}
+            />
+        ))
+    , [users]);
+
     return (
         <div id="body" ref={containerRef}>
-            {Object.entries(users).map(([username, usersPosts]) => (
-                <User 
-                    key={username}
-                    username={username}
-                    usersPosts={usersPosts}
-                    posts={posts}
-                    setPosts={setPosts}
-                    setFilters={setFilters}
-                    minimizedUsers={minimizedUsers}
-                    setMinimizedUsers = {setMinimizedUsers}
-                />
-            ))}
+            {usersDisplay}
         </div>
     );
 }

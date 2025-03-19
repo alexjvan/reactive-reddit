@@ -107,7 +107,8 @@ export default function User({
     let postsDisplay = useMemo(() => 
         usersPosts.map((post) => {
             if (!post.disabled && post.filteredFor.length === 0) {
-                return <Post key={post.name} postObj={post} disablePost={disablePost} />;
+                return <Post key={post.name} postObj={post} disablePost={disablePost} 
+                        loading="lazy" />;
             }
             return null;
         })

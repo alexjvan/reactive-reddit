@@ -144,6 +144,7 @@ export default function MediaContainer({
                         key={imageIndex} 
                         className="post-displayvideo" 
                         src={currentMedia}
+                        loading="lazy"
                         controls
                       />
                 }
