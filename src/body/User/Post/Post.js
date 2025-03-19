@@ -45,6 +45,13 @@ export default function Post({
         [text]
     );
 
+    const mediaContainer = useMemo(() =>
+        <MediaContainer 
+            textMedia={mediaText}
+            postObj={postObj}
+        />
+    , [postObj, mediaText]);
+
     const toggleMinimized = () => setMinimized((prev) => !prev);
 
     const disable = () => {
@@ -252,10 +259,7 @@ export default function Post({
                                 {displayText}
                             </div>
                         )}
-                        <MediaContainer 
-                            textMedia={mediaText}
-                            postObj={postObj}
-                        />
+                        {mediaContainer}
                     </div>
                 }
             </div>
