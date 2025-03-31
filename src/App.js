@@ -11,6 +11,7 @@ import Foot from './footer/Foot.js';
 import Head from './header/Head.js';
 
 export default function App() {
+  // TODO: Try to figure out where the duplicate t3s are coming from
 
   const dontGrabMinutes = 15;
 
@@ -96,7 +97,7 @@ export default function App() {
     [posts]
   );
   useEffect(
-    () => putInStorage('filters', filters),
+    () => putInStorage('filters', reduceFilters(filters)),
     [filters]
   );
   // TODO: Create some way to not constantly be updating this during retrieval

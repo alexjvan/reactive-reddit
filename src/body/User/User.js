@@ -19,9 +19,12 @@ export default function User({
         [usersPosts]
     );
 
-    const disabled = useMemo(() => usersPosts.length - disabledPosts <= 0, [usersPosts, disabledPosts]);
+    const disabled = useMemo(() => 
+        usersPosts.length - disabledPosts <= 0, 
+        [usersPosts, disabledPosts]
+    );
 
-    const toggleMind = () => {
+    function toggleMind() {
         setMinimized(prevState => !prevState);
         if(minimizedUsers.includes(username)) {
             setMinimizedUsers((current) => current.filter((u) => u !== username));
@@ -30,11 +33,11 @@ export default function User({
         }
     };
 
-    const disable = () => {
+    function disable() {
         setPosts((current) => current.filter((p) => p.author !== username));
     };
 
-    const block = () => {
+    function block() {
         let newFilter = {
         category: 'Author',
         filter: username,
@@ -89,13 +92,16 @@ export default function User({
                     disablePost(left.name);
                     return;
                 }
-                if (left.selftext === "" && right.selftext === "" && left.title === right.title) {
+
+                const titleSimilarity = stringSimilarity(left.title, right.title);
+                if (left.selftext === "" && right.selftext === "" && titleSimilarity >= 0.90) {
                     console.log("Found duplicate post; empty text, title-wise; " + left.name + ", " + right.name);
                     duplicatePost(left, right);
                     return;
                 }
-                const similarityPercent = stringSimilarity(left.selftext, right.selftext);
-                if (similarityPercent >= 0.85) {
+
+                const textSimilarity = stringSimilarity(left.selftext, right.selftext);
+                if (textSimilarity >= 0.85) {
                     console.log("Found duplicate post; text-wise; " + left.name + ", " + right.name);
                     duplicatePost(left, right);
                     return;
@@ -107,8 +113,12 @@ export default function User({
     let postsDisplay = useMemo(() => 
         usersPosts.map((post) => {
             if (!post.disabled && post.filteredFor.length === 0) {
-                return <Post key={post.name} postObj={post} disablePost={disablePost} 
-                        loading="lazy" />;
+                return <Post 
+                    key={post.name} 
+                    postObj={post} 
+                    disablePost={disablePost} 
+                    loading="lazy" 
+                />;
             }
             return null;
         })

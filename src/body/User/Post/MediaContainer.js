@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { isImageLink, isVideoLink } from '../../../app/imageHelpers';
+import { isImageLink, isVideoLink } from '../../../app/postHelpers/imageHelpers';
 
 export default function MediaContainer({
     textMedia,

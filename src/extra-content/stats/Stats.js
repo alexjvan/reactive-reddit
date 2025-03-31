@@ -5,8 +5,26 @@ export default function Stats({
     subs,
     posts
 }) {
-    const _postsPerSub = useMemo(() => postsPerSub(), [posts, subs]);
-    const _postsPerTag = useMemo(() => postsPerTag(), [posts]);
+    const _postsPerSub = useMemo(() => 
+        postsPerSub().map(({ sub, count }) => (
+            <div className='stats-row' key={sub}>
+                <div className='stats-left'>{sub}</div>
+                <div className='stats-right'>{count}</div>
+            </div>
+        )), 
+        [posts, subs]
+    );
+    const _postsPerTag = useMemo(() => 
+        Object.entries(postsPerTag())
+            .sort((a, b) => b[1] - a[1])
+            .map(([tag, count]) => (
+                <div className='stats-row' key={tag}>
+                    <div className='stats-left'>{tag}</div>
+                    <div className='stats-right'>{count}</div>
+                </div>
+            )), 
+        [posts]
+    );
 
     function postsPerSub() {
         let postSubs = posts.filter((p) => !p.disabled && p.filteredFor.length === 0).map((p) => p.subreddit);
@@ -44,22 +62,10 @@ export default function Stats({
     return (
         <div id="statistics">
             <div className='stats-section'>
-                {_postsPerSub.map(({ sub, count }) => (
-                    <div className='stats-row' key={sub}>
-                        <div className='stats-left'>{sub}</div>
-                        <div className='stats-right'>{count}</div>
-                    </div>
-                ))}
+                {_postsPerSub}
             </div>
             <div className='stats-section'>
-                {Object.entries(_postsPerTag)
-                    .sort((a, b) => b[1] - a[1])
-                    .map(([tag, count]) => (
-                        <div className='stats-row' key={tag}>
-                            <div className='stats-left'>{tag}</div>
-                            <div className='stats-right'>{count}</div>
-                        </div>
-                    ))}
+                {_postsPerTag}
             </div>
         </div>
     );

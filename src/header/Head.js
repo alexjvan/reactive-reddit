@@ -2,10 +2,7 @@ import './Head.css';
 import QuickAdd from './QuickAdd.js';
 import { randSixHash } from '../app/colors.js';
 import { filterCheck } from '../app/filters.js';
-import $ from 'jquery';
-import { memo } from 'react';
-
-const QuickAddMemo = memo(QuickAdd);
+import { useMemo } from 'react';
 
 export default function Head({
     subs,
@@ -21,14 +18,22 @@ export default function Head({
     //      One 'QuickAdd' with a dropdown?
     const sections = ["Subs", "Author", "Tag", "Text", /* "Text||Title", */ "Title"];
 
-    // TODO: Rewrite to get rid of jquery
-    function quickAdd(section) {
-        let parent = $('#qa-'+section.replace("||","or"));
-        let input = $(parent).find('.qa-input');
-        let inputval = $(input).val();
-        if(inputval === undefined || inputval === null || inputval === '' || inputval === ' ') return null;
+    const quickAddSection = useMemo(() => {
+        return sections.map((section) =>
+            <QuickAdd
+                key={section}
+                section={section}
+                quickAdd={quickAdd}
+            />
+        );
+    }, [sections])
+
+    function quickAdd(section, input, desired) {
+        if(input === undefined || input === null || input === '' || input === ' ') 
+            return null;
+
         if(section === "Subs") {
-            let updates = inputval.split(',');
+            let updates = input.split(',');
             updates.forEach((addition) => {
                 let contains = subs.includes(addition);
 
@@ -60,38 +65,35 @@ export default function Head({
                 }
             });
         } else {
-            let want = $(parent).find('.qa-want').hasClass('include');
             let newFilter = {
                 category: section,
-                filter: inputval,
-                desired: want,
+                filter: input,
+                desired: desired,
                 count: 0
             };
+
             setFilters([
                 ...filters,
                 newFilter
             ]);
             setPosts((prev) => prev.map((post) => {
-                if(post.filteredFor.length > 0 || post.disabled) return post;
+                if(post.filteredFor.length > 0 || post.disabled) 
+                    return post;
+
                 let applies = filterCheck(newFilter, post);
-                if(applies) post.filteredFor.push(post);
+                if(applies) 
+                    post.filteredFor.push(post);
+
                 return post;
             }));
         }
-        $(input).val("");
     }
 
     return (
         <div id="header">
             <div id="title">ReactiveReddit by <a href="alexvanmatre.com">alexvanmatre.com</a></div>
             <div id="quickadd">
-                {sections.map((section) => (
-                    <QuickAddMemo
-                        key={section}
-                        section={section}
-                        quickAdd={quickAdd}
-                    />
-                ))}
+                {quickAddSection}
             </div>
         </div>
     );

@@ -4,16 +4,25 @@ export default function QuickAdd({
     section, 
     quickAdd 
 }) {
+    const [inputValue, setInputValue] = useState('');
     const [want, setWant] = useState(section === "Subs" ? undefined : true);
     const sectionId = `qa-${section.replace("||", "or")}`;
 
-    const handleToggleWant = () => setWant(prev => !prev);
+    function handleChange(e) {
+        setInputValue(e.target.value);
+    }
 
-    const handleKeyDown = (e) => {
+    function handleKeyDown(e) {
         if (e.key === "Enter") {
-            quickAdd(section);
+            handleSubmit();
         }
     };
+
+    function handleSubmit() {
+        console.log("Section: " + section + ", inputValue: " + inputValue + ", want: " + want)
+        quickAdd(section, inputValue, want);
+        setInputValue('');
+    }
 
     return (
         <div className="qa-section" id={sectionId}>
@@ -21,14 +30,19 @@ export default function QuickAdd({
             <div className="qa-options">
                 <button
                     className={`qa-want ${want ? "include" : want === false ? "exclude" : ""}`}
-                    onClick={handleToggleWant}
+                    onClick={() => setWant(prev => !prev)}
                 />
                 <div className="qa-inputbox">
-                    <input className="qa-input" onKeyDown={handleKeyDown} />
+                    <input 
+                        className="qa-input" 
+                        value={inputValue}
+                        onChange={handleChange}
+                        onKeyDown={handleKeyDown} 
+                    />
                 </div>
                 <button
                     className="qa-submit clickable"
-                    onClick={() => quickAdd(section)}
+                    onClick={handleSubmit}
                 >
                     Go
                 </button>

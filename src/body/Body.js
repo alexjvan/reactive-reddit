@@ -9,14 +9,14 @@ export default function Body({
     minimizedUsers,
     setMinimizedUsers
 }) {
+    // TODO: This does NOT work, but its better than before so I am keeping it.
     const containerRef = useRef(null);
     const scrollPosition = useRef(0);
 
-    // TODO: This does NOT work, but its better than before so I am keeping it.
     // Save scroll position before unmounting or re-rendering
     // This useEffect, and the next, are an attempt to keep scroll-position on re-render.
     useEffect(() => {
-        const handleScroll = () => {
+        function handleScroll() {
             if (containerRef.current) {
                 scrollPosition.current = containerRef.current.scrollTop;
             }

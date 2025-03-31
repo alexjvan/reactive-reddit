@@ -2,9 +2,7 @@ import React from 'react';
 import './ExtraContent.css';
 import Settings from './settings/Settings';
 import Stats from './stats/Stats';
-
-const MemoizedSettings = React.memo(Settings);
-const MemoizedStats = React.memo(Stats);
+import { useMemo } from 'react';
 
 export default function ExtraContent({
     extraDisplay,
@@ -15,31 +13,31 @@ export default function ExtraContent({
     setFilters,
     posts
 }) {
-    function close() {
-        setExtraDisplay(null);
-    }
+    const settings = useMemo(() => {
+        return <Settings 
+            subs={subs}
+            setSubs={setSubs}
+            filters={filters}
+            setFilters={setFilters}
+        />;
+    }, [subs, setSubs, filters, setFilters]);
+
+    const stats = useMemo(() => {
+        return <Stats 
+            subs={subs}
+            posts={posts}
+        />;
+    }, [subs, posts]);
 
     return (extraDisplay &&
         <div id="extrapage">
             <div id="extraheader">
                 <div id="extratitle">{extraDisplay}</div>
-                <button id="extraclose" className="clickable" onClick={close}>X</button>
+                <button id="extraclose" className="clickable" onClick={() => setExtraDisplay(null)}>X</button>
             </div>
             <div id="extracontent">
-                {extraDisplay === 'Settings' && (
-                    <MemoizedSettings 
-                        subs={subs}
-                        setSubs={setSubs}
-                        filters={filters}
-                        setFilters={setFilters}
-                    />
-                )}
-                {extraDisplay === 'Stats' && (
-                    <MemoizedStats 
-                        subs={subs}
-                        posts={posts}
-                    />
-                )}
+                {extraDisplay === 'Settings' && settings}
+                {extraDisplay === 'Stats' && stats}
             </div>
         </div>
     );

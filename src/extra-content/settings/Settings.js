@@ -9,8 +9,14 @@ export default function Settings({
     filters,
     setFilters
 }) {
-    const sortedSubs = useMemo(() => subs.map(s => s.name).sort(), [subs]);
-    const sortedFilters = useMemo(() => filters.map(f => f.filter + " [" + f.category + "]").sort(), [filters]);
+    const sortedSubs = useMemo(() => 
+        subs.map(s => s.name).sort(), 
+        [subs]
+    );
+    const sortedFilters = useMemo(() => 
+        filters.map(f => f.filter + " [" + f.category + "]").sort(), 
+        [filters]
+    );
 
     function removeSub(sub) {
         setSubs((current) => current.filter((s) => s.name !== sub));
@@ -24,6 +30,7 @@ export default function Settings({
     // TODO: Actual settings
     //      - Auto-refresh
 
+    // TODO: Rewrite SettingsSection to handle "extra info", ex: filters' category
     return (
         <div id="settings">
             <SettingsSection
