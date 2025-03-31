@@ -199,6 +199,7 @@ export default function App() {
   }
 
   // TODO: Move each grabber to their own file
+  // TODO: Handle error codes in retrievals, ex: 404 should just remove the sub
   function preRetrieveLoop(sub, post, iterations) {
     let url = 'https://api.reddit.com/r/'+sub+'/new.json' + (post !== undefined ? '?before=' + post : '');
 
