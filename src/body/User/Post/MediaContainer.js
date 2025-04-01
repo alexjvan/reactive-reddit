@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { isImageLink, isVideoLink } from '../../../app/postHelpers/imageHelpers';
+import { useCallback } from 'react';
 
 export default function MediaContainer({
     textMedia,
@@ -7,53 +8,64 @@ export default function MediaContainer({
 }) {
     const [imageIndex, setImageIndex] = useState(0);
 
-    const mediaMetadata = 
-        postObj.media_metadata
-            ? Object.entries(postObj.media_metadata).map(([_, value]) => value.o[0].u)
-            : []
-    const mediaPreviewImages = 
-        postObj.preview 
-            ? postObj.preview.images.map((imgs) => imgs.source.url) 
-            : [];
-    const mediaCrossPost = getCrossPostMedia();
-    const secureMedia = 
-        postObj.secure_media_embed
-            ? postObj.secure_media_embed.media_domain_url 
-                ? [postObj.secure_media_embed.media_domain_url]
-                : []
-            : [];
+    const extractMedia = useCallback((post) => {
+        if(!post) return [];
+        return [
+            ...(post.media_metadata
+                ? Object.entries(post.media_metadata).map(([_, value]) => value.o[0].u)
+                : []),
+            ...(post.preview 
+                ? post.preview.images.map((imgs) => imgs.source.url) 
+                : []),
+            ...(post.secure_media_embed
+                ? post.secure_media_embed.media_domain_url 
+                    ? [post.secure_media_embed.media_domain_url]
+                    : []
+                : [])
+        ]
+    });
+
+    const embeddedMedia = useMemo(() => extractMedia(postObj), [postObj]);
+    const mediaCrossPost = useMemo(() => (postObj.crosspost_parent ? extractMedia(postObj.crosspost_parent_list[0]) : []), [postObj]);
+
     const media = useMemo(
         () => mergeMedia(), 
-        [mediaCrossPost, mediaMetadata, mediaPreviewImages, secureMedia, textMedia]
+        [mediaCrossPost, embeddedMedia, textMedia]
     );
 
-    function getCrossPostMedia() {
-        if(postObj.crosspost_parent === undefined) return [];
+    const [validatedImages, setValidatedImages] = useState([]);
+    useEffect(() => {
+        const cache = new Map();
 
-        let grabbing = postObj.crosspost_parent_list[0];
+        async function validateImages(){
+            const validImages = await Promise.all(
+                media.map(async (url) => {
+                    if (cache.has(url)) return cache.get(url);
+                    try {
+                        const response = await fetch(url, { method: 'HEAD' });
+                        if (response.ok) {
+                            cache.set(url, url);
+                            return url;
+                        }
+                    } catch (error) {
+                        console.error(`Error fetching ${url}:`, error);
+                    }
+                    cache.set(url, null);
+                    return null;
+                })
+            );
+            setValidatedImages(validImages.filter(Boolean));
+        }
 
-        if(grabbing === undefined) return [];
+        validateImages();
+    }, [media]);
 
-        const metadata = 
-            grabbing.media_metadata
-                ? Object.entries(grabbing.media_metadata).map(([_, value]) => value.o[0].u)
-                : []
-        const previewImages = 
-            grabbing.preview 
-                ? grabbing.preview.images.map((imgs) => imgs.source.url) 
-                : [];
-        const secure = 
-            grabbing.secure_media_embed
-                ? grabbing.secure_media_embed.media_domain_url 
-                    ? [grabbing.secure_media_embed.media_domain_url]
-                    : []
-                : [];
-        return [...new Set([...metadata, ...previewImages, ...secure])];
-    }
+    const displaying = validatedImages;
 
     function mergeMedia() {
-        const merged = [...mediaMetadata, ...mediaPreviewImages, ...mediaCrossPost, ...secureMedia, ...textMedia];
+        const merged = [...embeddedMedia, ...mediaCrossPost, ...textMedia];
 
+        // Array from set to remove duplicates
         return [...new Set(
             merged.map((url) => {
                 if(url.startsWith('https://external-i.redd.it')) {
@@ -64,6 +76,8 @@ export default function MediaContainer({
                     return url.split('?')[0].replace('preview.redd.it', 'i.redd.it');
                 } else if(url.startsWith('https://i.redd.it')) {
                     return url.split('?')[0];
+                } else if(url.startsWith('//static1.e621.net')) {
+                    return "https:" + url;
                 } else if(isImageLink(url) || isVideoLink(url)) {
                     // Do nothing, don't log
                 } else {
@@ -78,36 +92,28 @@ export default function MediaContainer({
 
     // UseEffect for click handling for <a> tags in <div> elements (I hate react)
     useEffect(() => {
-        const handleClick = (event) => {
-            const target = event.target;
-            if (target.classList.contains("findableImage")) {
-                const link = target.getAttribute("data-link");
-                
-                for(let i = 0; i < media.length; i++) {
-                    if(media[i] === link) {
-                        setImageIndex(i);
-                        break;
-                    }
-                }
+        function handleImageClick(event) {
+            const link = event.target.getAttribute("data-link");
+            if (link) {
+                const index = displaying.indexOf(link);
+                if (index !== -1) setImageIndex(index);
             }
         };
 
-        document.addEventListener("click", handleClick);
-        return () => {
-            document.removeEventListener("click", handleClick);
-        };
+        document.querySelector(".post-images")?.addEventListener("click", handleImageClick);
+        return () => document.querySelector(".post-images")?.removeEventListener("click", handleImageClick);
     }, []);
 
     function prevImage() {
-        setImageIndex((prev) => (prev === 0 ? media.length - 1 : prev - 1));
+        setImageIndex((prev) => (prev === 0 ? displaying.length - 1 : prev - 1));
     }
 
     function nextImage() {
-        setImageIndex((prev) => (prev === media.length - 1 ? 0 : prev + 1));
+        setImageIndex((prev) => (prev === displaying.length - 1 ? 0 : prev + 1));
     }
 
     const imageSelectors = useMemo(() => (
-        media.map((_, index) => (
+        displaying.map((_, index) => (
             <a 
                 key={index}
                 className="post-imageselector-chooser clickable" 
@@ -115,14 +121,14 @@ export default function MediaContainer({
                 onClick={() => setImageIndex(index)} 
             />
         ))
-    ), [media.length, imageIndex]);
+    ), [displaying.length, imageIndex]);
 
-    const currentMedia = media[imageIndex];
+    const currentMedia = displaying[imageIndex];
 
-    return (media.length !== 0 &&
+    return (displaying.length !== 0 &&
         <div className="post-images">
             <div className="post-imagescontainer">
-                {media.length > 1 && (
+                {displaying.length > 1 && (
                     <>
                         <button className="post-prevImage" onClick={prevImage}>
                             &lt;

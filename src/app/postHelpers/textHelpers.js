@@ -44,14 +44,14 @@ export function modLine(line, setMediaText) {
                         modded += '['+linkText+']';
                     }
                 } else {
-                    modded += char;
+                    word += char;
                 }
                 break;
             case '(':
                 if(inLink) {
                     passedLinkText = true;
                 } else {
-                    modded += char;
+                    word += char;
                 }
                 break;
             case ')':
