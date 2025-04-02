@@ -19,7 +19,6 @@ export default function QuickAdd({
     };
 
     function handleSubmit() {
-        console.log("Section: " + section + ", inputValue: " + inputValue + ", want: " + want)
         quickAdd(section, inputValue, want);
         setInputValue('');
     }
