@@ -59,7 +59,11 @@ export default class PriorityQueue {
     }
 
     peek() {
-        return this.heap.length === 0 ? null : this.heap[0][1]; // Return value only
+        return this.heap.length === 0 ? null : this.heap[0][1];
+    }
+
+    length() {
+        return this.heap.length;
     }
 
     isEmpty() {

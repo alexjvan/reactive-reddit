@@ -33,34 +33,35 @@ export default function MediaContainer({
         [mediaCrossPost, embeddedMedia, textMedia]
     );
 
-    const [validatedImages, setValidatedImages] = useState([]);
-    useEffect(() => {
-        const cache = new Map();
+    // TODO: Re-enable after create a way to save processed posts
+    // const [validatedImages, setValidatedImages] = useState([]);
+    // useEffect(() => {
+    //     const cache = new Map();
 
-        async function validateImages(){
-            const validImages = await Promise.all(
-                media.map(async (url) => {
-                    if (cache.has(url)) return cache.get(url);
-                    try {
-                        const response = await fetch(url, { method: 'HEAD' });
-                        if (response.ok) {
-                            cache.set(url, url);
-                            return url;
-                        }
-                    } catch (error) {
-                        console.error(`Error fetching ${url}:`, error);
-                    }
-                    cache.set(url, null);
-                    return null;
-                })
-            );
-            setValidatedImages(validImages.filter(Boolean));
-        }
+    //     async function validateImages(){
+    //         const validImages = await Promise.all(
+    //             media.map(async (url) => {
+    //                 if (cache.has(url)) return cache.get(url);
+    //                 try {
+    //                     const response = await fetch(url, { method: 'HEAD' });
+    //                     if (response.ok) {
+    //                         cache.set(url, url);
+    //                         return url;
+    //                     }
+    //                 } catch (error) {
+    //                     console.error(`Error fetching ${url}:`, error);
+    //                 }
+    //                 cache.set(url, null);
+    //                 return null;
+    //             })
+    //         );
+    //         setValidatedImages(validImages.filter(Boolean));
+    //     }
 
-        validateImages();
-    }, [media]);
+    //     validateImages();
+    // }, [media]);
 
-    const displaying = validatedImages;
+    const displaying = media;
 
     function mergeMedia() {
         const merged = [...embeddedMedia, ...mediaCrossPost, ...textMedia];

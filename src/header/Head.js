@@ -89,12 +89,23 @@ export default function Head({
         }
     }
 
+    const progressBar = useMemo(() => {
+        const maxProgress = subs.length * 2;
+
+        return <progress
+            value={maxProgress - postQueue.length()} 
+            max={maxProgress}
+        />;
+    }, [subs, postQueue.length()])
+
+
     return (
         <div id="header">
             <div id="title">ReactiveReddit by <a href="alexvanmatre.com">alexvanmatre.com</a></div>
             <div id="quickadd">
                 {quickAddSection}
             </div>
+            {progressBar}
         </div>
     );
 }

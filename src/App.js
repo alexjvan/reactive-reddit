@@ -11,8 +11,6 @@ import Foot from './footer/Foot.js';
 import Head from './header/Head.js';
 
 export default function App() {
-  // TODO: Try to figure out where the duplicate t3s are coming from
-
   const dontGrabMinutes = 15;
 
   const [postQueue, setPostQueue] = useState(new PriorityQueue());
@@ -254,10 +252,14 @@ export default function App() {
       return;
     }
 
-    setPosts((previous) => [
-      ...previous,
-      ...processed
-    ]);
+    setPosts((previous) => {
+      const existingPosts = new Set(previous.map((p) => p.name));
+      const deduped = processed.filter((p) => !existingPosts.has(p.name));
+      return [
+        ...previous,
+        ...deduped
+      ];
+    });
 
     setting.ba.beforeutc = processed[0].created_utc;
     setting.ba.beforet3 = processed[0].name;
@@ -316,10 +318,14 @@ export default function App() {
       return;
     }
 
-    setPosts((previous) => [
-      ...previous,
-      ...processed
-    ]);
+    setPosts((previous) => {
+      const existingPosts = new Set(previous.map((p) => p.name));
+      const deduped = processed.filter((p) => !existingPosts.has(p.name));
+      return [
+        ...previous,
+        ...deduped
+      ];
+    });
 
     // Only for the first
     //  Reset after to grab anything missed
@@ -385,10 +391,14 @@ export default function App() {
       return;
     }
 
-    setPosts((previous) => [
-      ...previous,
-      ...processed
-    ]);
+    setPosts((previous) => {
+      const existingPosts = new Set(previous.map((p) => p.name));
+      const deduped = processed.filter((p) => !existingPosts.has(p.name));
+      return [
+        ...previous,
+        ...deduped
+      ];
+    });
 
     if(setting.ba.beforeutc === undefined) {
       setting.ba.beforeutc = processed[0].created_utc;

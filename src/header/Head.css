@@ -64,3 +64,6 @@
                     font-size: 16px;
                     padding: 5px;
                 }
+    #header progress {
+        width: 100%;
+    }
