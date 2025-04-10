@@ -14,19 +14,19 @@ export default function User({
 }) {
     const [minimized, setMinimized] = useState(minimizedUsers.includes(username));
 
-    const disabledPosts = useMemo(() => 
+    const disabledPosts = useMemo(() =>
         usersPosts.filter((post) => post.filteredFor.length > 0 || post.disabled).length,
         [usersPosts]
     );
 
-    const disabled = useMemo(() => 
-        usersPosts.length - disabledPosts <= 0, 
+    const disabled = useMemo(() =>
+        usersPosts.length - disabledPosts <= 0,
         [usersPosts, disabledPosts]
     );
 
     function toggleMind() {
         setMinimized(prevState => !prevState);
-        if(minimizedUsers.includes(username)) {
+        if (minimizedUsers.includes(username)) {
             setMinimizedUsers((current) => current.filter((u) => u !== username));
         } else {
             setMinimizedUsers(current => [...current, username]);
@@ -39,25 +39,25 @@ export default function User({
 
     function block() {
         let newFilter = {
-        category: 'Author',
-        filter: username,
-        desired: false,
-        count: 0
-      };
-      setFilters((prev) => [
-        ...prev,
-        newFilter
-      ]);
-      disable();
+            category: 'Author',
+            filter: username,
+            desired: false,
+            count: 0
+        };
+        setFilters((prev) => [
+            ...prev,
+            newFilter
+        ]);
+        disable();
     };
 
     function duplicatePost(post, duplicate) {
         let setting = (post.created_utc > duplicate.created_utc) ? post : duplicate;
         let disabling = (setting.name === post.name) ? duplicate : post;
         setPosts((current) => current.map((curpost) => {
-            if(curpost.name === setting.name)
+            if (curpost.name === setting.name)
                 curpost.duplicates += disabling.duplicates + 1;
-            else if(curpost.name === disabling.name) 
+            else if (curpost.name === disabling.name)
                 curpost.disabled = true;
 
             return curpost;
@@ -68,10 +68,10 @@ export default function User({
         let count = 0;
         let duplicates = posts.filter((post) => post.name === t3).length !== 1;
         setPosts((current) => current.map((post) => {
-            if(post.name === t3) {
-                if(duplicates && count++ !== 0) {
+            if (post.name === t3) {
+                if (duplicates && count++ !== 0) {
                     post.disabled = true;
-                } else if(!duplicates) {
+                } else if (!duplicates) {
                     post.disabled = true;
                 }
             }
@@ -110,19 +110,19 @@ export default function User({
         }
     }, [usersPosts]);
 
-    let postsDisplay = useMemo(() => 
+    let postsDisplay = useMemo(() =>
         usersPosts.map((post) => {
             if (!post.disabled && post.filteredFor.length === 0) {
-                return <Post 
-                    key={post.name} 
-                    postObj={post} 
-                    disablePost={disablePost} 
-                    loading="lazy" 
+                return <Post
+                    key={post.name}
+                    postObj={post}
+                    disablePost={disablePost}
+                    loading="lazy"
                 />;
             }
             return null;
-        })
-    , [usersPosts]);
+        }),
+        [usersPosts]);
 
     return (!disabled &&
         <div className="user">

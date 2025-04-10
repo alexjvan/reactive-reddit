@@ -1,13 +1,13 @@
-export default function FooterlinkComponent({ 
-    section, 
-    setExtraDisplay 
+export default function FooterlinkComponent({
+    section,
+    setExtraDisplay
 }) {
     function handleClick() {
         setExtraDisplay(section);
-    } 
+    }
 
-    return <button 
-        className="footerlink clickable" 
+    return <button
+        className="footerlink clickable"
         onClick={handleClick}
     >
         {section}

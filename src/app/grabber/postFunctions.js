@@ -123,4 +123,4 @@ export function cleanPost(post) {
     delete post.stickied;
 
     return post;
-    }
+}

@@ -5,16 +5,16 @@ export default function Stats({
     subs,
     posts
 }) {
-    const _postsPerSub = useMemo(() => 
+    const _postsPerSub = useMemo(() =>
         postsPerSub().map(({ sub, count }) => (
             <div className='stats-row' key={sub}>
                 <div className='stats-left'>{sub}</div>
                 <div className='stats-right'>{count}</div>
             </div>
-        )), 
+        )),
         [posts, subs]
     );
-    const _postsPerTag = useMemo(() => 
+    const _postsPerTag = useMemo(() =>
         Object.entries(postsPerTag())
             .sort((a, b) => b[1] - a[1])
             .map(([tag, count]) => (
@@ -22,7 +22,7 @@ export default function Stats({
                     <div className='stats-left'>{tag}</div>
                     <div className='stats-right'>{count}</div>
                 </div>
-            )), 
+            )),
         [posts]
     );
 
@@ -52,7 +52,7 @@ export default function Stats({
                 tags.forEach((tag) => {
                     currentTags[tag] = (currentTags[tag] || 0) + 1;
                 });
-                if(tags.length === 0) {
+                if (tags.length === 0) {
                     currentTags['None'] = (currentTags['None'] || 0) + 1;
                 }
                 return currentTags;

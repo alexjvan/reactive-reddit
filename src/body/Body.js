@@ -9,7 +9,7 @@ export default function Body({
     minimizedUsers,
     setMinimizedUsers
 }) {
-    // TODO: This does NOT work, but its better than before so I am keeping it.
+    // TODO: This does NOT work, but its better than before so I am keeping it until I find something better.
     const containerRef = useRef(null);
     const scrollPosition = useRef(0);
 
@@ -37,7 +37,7 @@ export default function Body({
         }
     });
 
-    const users = useMemo(() => 
+    const users = useMemo(() =>
         posts
             .filter((p) => (!p.disabled && p.filteredFor.length === 0))
             .sort((a, b) => b.created_utc - a.created_utc)
@@ -50,9 +50,9 @@ export default function Body({
         [posts]
     );
 
-    const usersDisplay = useMemo(() => 
+    const usersDisplay = useMemo(() =>
         Object.entries(users).map(([username, usersPosts]) => (
-            <User 
+            <User
                 key={username}
                 username={username}
                 usersPosts={usersPosts}
@@ -60,10 +60,10 @@ export default function Body({
                 setPosts={setPosts}
                 setFilters={setFilters}
                 minimizedUsers={minimizedUsers}
-                setMinimizedUsers = {setMinimizedUsers}
+                setMinimizedUsers={setMinimizedUsers}
             />
-        ))
-    , [users]);
+        )),
+        [users]);
 
     return (
         <div id="body" ref={containerRef}>

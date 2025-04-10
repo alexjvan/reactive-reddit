@@ -10,8 +10,8 @@ export function isVideoLink(url) {
 }
 
 function urlSuffixIn(url, array) {
-    for(let i = 0; i < array.length; i++) {
-        if(url.endsWith(array[i])) return true;
+    for (let i = 0; i < array.length; i++) {
+        if (url.endsWith(array[i])) return true;
     }
     return false;
 }

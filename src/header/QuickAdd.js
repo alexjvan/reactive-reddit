@@ -1,8 +1,8 @@
 import { useState } from "react";
 
 export default function QuickAdd({
-    section, 
-    quickAdd 
+    section,
+    quickAdd
 }) {
     const [inputValue, setInputValue] = useState('');
     const [want, setWant] = useState(section === "Subs" ? undefined : true);
@@ -32,11 +32,11 @@ export default function QuickAdd({
                     onClick={() => setWant(prev => !prev)}
                 />
                 <div className="qa-inputbox">
-                    <input 
-                        className="qa-input" 
+                    <input
+                        className="qa-input"
                         value={inputValue}
                         onChange={handleChange}
-                        onKeyDown={handleKeyDown} 
+                        onKeyDown={handleKeyDown}
                     />
                 </div>
                 <button

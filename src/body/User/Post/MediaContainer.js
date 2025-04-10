@@ -9,16 +9,16 @@ export default function MediaContainer({
     const [imageIndex, setImageIndex] = useState(0);
 
     const extractMedia = useCallback((post) => {
-        if(!post) return [];
+        if (!post) return [];
         return [
             ...(post.media_metadata
                 ? Object.entries(post.media_metadata).map(([_, value]) => value.o[0].u)
                 : []),
-            ...(post.preview 
-                ? post.preview.images.map((imgs) => imgs.source.url) 
+            ...(post.preview
+                ? post.preview.images.map((imgs) => imgs.source.url)
                 : []),
             ...(post.secure_media_embed
-                ? post.secure_media_embed.media_domain_url 
+                ? post.secure_media_embed.media_domain_url
                     ? [post.secure_media_embed.media_domain_url]
                     : []
                 : [])
@@ -29,7 +29,7 @@ export default function MediaContainer({
     const mediaCrossPost = useMemo(() => (postObj.crosspost_parent ? extractMedia(postObj.crosspost_parent_list[0]) : []), [postObj]);
 
     const media = useMemo(
-        () => mergeMedia(), 
+        () => mergeMedia(),
         [mediaCrossPost, embeddedMedia, textMedia]
     );
 
@@ -44,7 +44,7 @@ export default function MediaContainer({
     //                 if (cache.has(url)) return cache.get(url);
     //                 try {
     //                     const response = await fetch(url, { method: 'HEAD' });
-    //                     if (response.ok) {
+    //                     if (response.ok) { // TODO: We probably only need to check its not 404? Other 400-error codes may be a side-effect (Ex: 429)
     //                         cache.set(url, url);
     //                         return url;
     //                     }
@@ -69,17 +69,17 @@ export default function MediaContainer({
         // Array from set to remove duplicates
         return [...new Set(
             merged.map((url) => {
-                if(url.startsWith('https://external-i.redd.it')) {
+                if (url.startsWith('https://external-i.redd.it')) {
                     return url.split('?')[0].replace('external-i.redd.it', 'i.redd.it');
-                } else if(url.startsWith('https://external-preview.redd.it')) {
+                } else if (url.startsWith('https://external-preview.redd.it')) {
                     return url.split('?')[0].replace('external-preview.redd.it', 'i.redd.it');
                 } else if (url.startsWith('https://preview.redd.it')) {
                     return url.split('?')[0].replace('preview.redd.it', 'i.redd.it');
-                } else if(url.startsWith('https://i.redd.it')) {
+                } else if (url.startsWith('https://i.redd.it')) {
                     return url.split('?')[0];
-                } else if(url.startsWith('//static1.e621.net')) {
+                } else if (url.startsWith('//static1.e621.net')) {
                     return "https:" + url;
-                } else if(isImageLink(url) || isVideoLink(url)) {
+                } else if (isImageLink(url) || isVideoLink(url)) {
                     // Do nothing, don't log
                 } else {
                     console.log('Non-recognized URL in media metadata:', url);
@@ -87,7 +87,7 @@ export default function MediaContainer({
                 }
                 return url;
             })
-            .filter((i) => i !== null)
+                .filter((i) => i !== null)
         )];
     }
 
@@ -115,11 +115,11 @@ export default function MediaContainer({
 
     const imageSelectors = useMemo(() => (
         displaying.map((_, index) => (
-            <a 
+            <a
                 key={index}
-                className="post-imageselector-chooser clickable" 
-                style={{backgroundColor: (index === imageIndex ? '#30e8ff' : 'white')}}
-                onClick={() => setImageIndex(index)} 
+                className="post-imageselector-chooser clickable"
+                style={{ backgroundColor: (index === imageIndex ? '#30e8ff' : 'white') }}
+                onClick={() => setImageIndex(index)}
             />
         ))
     ), [displaying.length, imageIndex]);
@@ -140,22 +140,22 @@ export default function MediaContainer({
                     </>
                 )}
                 {isImageLink(currentMedia)
-                    ? <img 
-                        key={imageIndex} 
-                        className="post-displayimage" 
-                        src={currentMedia} 
+                    ? <img
+                        key={imageIndex}
+                        className="post-displayimage"
+                        src={currentMedia}
                         alt={`Media item ${imageIndex + 1}`}
                         loading="lazy"
                     />
-                    : <video 
-                        key={imageIndex} 
-                        className="post-displayvideo" 
+                    : <video
+                        key={imageIndex}
+                        className="post-displayvideo"
                         src={currentMedia}
                         loading="lazy"
                         controls
-                      />
+                    />
                 }
-                
+
             </div>
             <div className="post-imageselector">
                 {imageSelectors}

@@ -1,8 +1,8 @@
 import './Foot.css';
 import Footerlink from './Footerlink';
 
-export default function Foot({ 
-    setExtraDisplay 
+export default function Foot({
+    setExtraDisplay
 }) {
     const sections = ["Settings", "Stats"];
 

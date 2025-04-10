@@ -14,50 +14,50 @@ export function modLine(line, setMediaText) {
     let linkText = '';
     let linkLink = '';
 
-    for(let i = 0; i < split.length; i++) {
+    for (let i = 0; i < split.length; i++) {
         let char = split[i];
-        switch(char) {
+        switch (char) {
             case '*':
-                if(inItalic) {
+                if (inItalic) {
                     modded += '<i>' + italicString + '</i>';
                     italicString = '';
                 }
                 inItalic = !inItalic;
                 break;
             case '[':
-                if(passedLinkText) {
+                if (passedLinkText) {
                     linkLink += char;
-                } else if(inLink) {
-                    modded += '['+linkText;
+                } else if (inLink) {
+                    modded += '[' + linkText;
                     linkText = '';
                 } else {
                     inLink = true;
                 }
                 break;
             case ']':
-                if(passedLinkText) {
+                if (passedLinkText) {
                     linkLink += char;
-                } else if(inLink) {
-                    if(split[i + 1] === '(') {
+                } else if (inLink) {
+                    if (split[i + 1] === '(') {
                         passedLinkText = true;
                     } else {
-                        modded += '['+linkText+']';
+                        modded += '[' + linkText + ']';
                     }
                 } else {
                     word += char;
                 }
                 break;
             case '(':
-                if(inLink) {
+                if (inLink) {
                     passedLinkText = true;
                 } else {
                     word += char;
                 }
                 break;
             case ')':
-                if(passedLinkText) {
-                    if(isImageLink(linkLink) || isVideoLink(linkLink)) {
-                        modded += '<a class="findableImage" data-link="'+linkLink+'">'+linkText+'</a>';
+                if (passedLinkText) {
+                    if (isImageLink(linkLink) || isVideoLink(linkLink)) {
+                        modded += '<a class="findableImage" data-link="' + linkLink + '">' + linkText + '</a>';
                         const tempLink = linkLink; // The next line is async, while nothing else is. This is to keep the value during that op (I hate react)
                         setMediaText((prev) => [...prev, tempLink]);
                         inLink = false;
@@ -65,7 +65,7 @@ export function modLine(line, setMediaText) {
                         linkText = '';
                         linkLink = '';
                     } else {
-                        modded += '<a class="otherSite" href="'+linkLink+' target=_blank">'+linkText+'</a>';
+                        modded += '<a class="otherSite" href="' + linkLink + ' target=_blank">' + linkText + '</a>';
                         inLink = false;
                         passedLinkText = false;
                         linkText = '';
@@ -76,18 +76,18 @@ export function modLine(line, setMediaText) {
                 }
                 break;
             case ' ':
-                if(word === '' && !inItalic && !passedLinkText && !inLink) {
+                if (word === '' && !inItalic && !passedLinkText && !inLink) {
                     modded += ' ';
-                } else if(word.startsWith("http")) {
-                    modded += '<a class="findableImage" data-link="'+word+'">'+word+'</a> ';
+                } else if (word.startsWith("http")) {
+                    modded += '<a class="findableImage" data-link="' + word + '">' + word + '</a> ';
                     const tempLink = word; // The next line is async, while nothing else is. This is to keep the value during that op (I hate react)
                     setMediaText((prev) => [...prev, tempLink]);
                 } else {
-                    if(inItalic) {
+                    if (inItalic) {
                         italicString += ' ';
-                    } else if(passedLinkText) {
+                    } else if (passedLinkText) {
                         linkLink += ' ';
-                    } else if(inLink) {
+                    } else if (inLink) {
                         linkText += ' ';
                     } else {
                         modded += word + ' ';
@@ -96,11 +96,11 @@ export function modLine(line, setMediaText) {
                 word = '';
                 break;
             default:
-                if(inItalic) {
+                if (inItalic) {
                     italicString += char;
-                } else if(passedLinkText) {
+                } else if (passedLinkText) {
                     linkLink += char;
-                } else if(inLink) {
+                } else if (inLink) {
                     linkText += char;
                 } else {
                     word += char;
@@ -109,20 +109,20 @@ export function modLine(line, setMediaText) {
         }
     }
 
-    if(passedLinkText) {
-        modded += '['+linkText+']('+linkLink;
-    } else if(inLink) {
-        modded += '['+linkText;
+    if (passedLinkText) {
+        modded += '[' + linkText + '](' + linkLink;
+    } else if (inLink) {
+        modded += '[' + linkText;
     } else {
-        if(word.startsWith("http")) {
-            modded += '<a class="findableImage" data-link="'+word+'">'+word+'</a> ';
+        if (word.startsWith("http")) {
+            modded += '<a class="findableImage" data-link="' + word + '">' + word + '</a> ';
             const tempLink = word; // The next line is async, while nothing else is. This is to keep the value during that op (I hate react)
             setMediaText((prev) => [...prev, tempLink]);
         } else {
             modded += word;
         }
     }
-    if(inItalic) modded += '*' + italicString; 
+    if (inItalic) modded += '*' + italicString;
 
     return modded;
 }

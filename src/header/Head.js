@@ -29,15 +29,15 @@ export default function Head({
     }, [sections])
 
     function quickAdd(section, input, desired) {
-        if(input === undefined || input === null || input === '' || input === ' ') 
+        if (input === undefined || input === null || input === '' || input === ' ')
             return null;
 
-        if(section === "Subs") {
+        if (section === "Subs") {
             let updates = input.split(',');
             updates.forEach((addition) => {
                 let contains = subs.includes(addition);
 
-                if(!contains) {
+                if (!contains) {
                     let newSub = {};
                     newSub.name = addition;
                     newSub.color = randSixHash();
@@ -47,7 +47,6 @@ export default function Head({
                     newSub.ba.aftert3 = undefined;
                     newSub.ba.afterutc = undefined;
                     newSub.reachedEnd = false;
-                    newSub.grabbing = false;
                     setSubs((current) => [
                         ...current,
                         newSub
@@ -60,7 +59,7 @@ export default function Head({
                     }, 1);
                 }
 
-                if(!postQueueHasData) {
+                if (!postQueueHasData) {
                     setPostQueueHasData(true);
                 }
             });
@@ -77,11 +76,11 @@ export default function Head({
                 newFilter
             ]);
             setPosts((prev) => prev.map((post) => {
-                if(post.filteredFor.length > 0 || post.disabled) 
+                if (post.filteredFor.length > 0 || post.disabled)
                     return post;
 
                 let applies = filterCheck(newFilter, post);
-                if(applies) 
+                if (applies)
                     post.filteredFor.push(post);
 
                 return post;
@@ -93,12 +92,13 @@ export default function Head({
         const maxProgress = subs.length * 2;
 
         return <progress
-            value={maxProgress - postQueue.length()} 
+            value={maxProgress - postQueue.length()}
             max={maxProgress}
         />;
     }, [subs, postQueue.length()])
 
-
+    // TODO: Display only-text or only-media posts (need proper settings)
+    // TODO: Sorting options (need proper settings)
     return (
         <div id="header">
             <div id="title">ReactiveReddit by <a href="alexvanmatre.com">alexvanmatre.com</a></div>

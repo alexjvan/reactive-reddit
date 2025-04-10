@@ -10,10 +10,12 @@ export function filterCheck(filter, post) {
         return desired ? !tags.has(filterText.toLowerCase()) : tags.has(filterText.toLowerCase());
     }
 
-    // TODO - Multi-source filters
+    // TODO: Multi-source filters
     // TODO: More Variable filters
-            //      %length%
-            //      %imageCount%
+    //      %opener% tag
+    //          ex, %opener%test = %start%test + [test + (test
+    //      %length%
+    //      %imageCount%
 
     let checkAgainst = '';
     switch (category) {

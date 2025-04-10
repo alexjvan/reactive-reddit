@@ -10,21 +10,21 @@ export default function Post({
     const [disabled, setDisabled] = useState(postObj.disabled ?? false);
     const [minimized, setMinimized] = useState(false);
 
-    let text = postObj.selftext 
-        ? postObj.selftext 
-        : postObj.crosspost_parent_list 
-            ? postObj.crosspost_parent_list[0] 
-                ? postObj.crosspost_parent_list[0].selftext 
-                : undefined 
+    let text = postObj.selftext
+        ? postObj.selftext
+        : postObj.crosspost_parent_list
+            ? postObj.crosspost_parent_list[0]
+                ? postObj.crosspost_parent_list[0].selftext
+                : undefined
             : undefined;
     const [mediaText, setMediaText] = useState([]);
 
     function createText() {
         return text
             ? text
-                  .split('\n')
-                  .filter((line) => line.trim() !== '')
-                  .map((line) => modLine(line, setMediaText))
+                .split('\n')
+                .filter((line) => line.trim() !== '')
+                .map((line) => modLine(line, setMediaText))
             : [];
     }
 
@@ -46,11 +46,11 @@ export default function Post({
     );
 
     const mediaContainer = useMemo(() =>
-        <MediaContainer 
+        <MediaContainer
             textMedia={mediaText}
             postObj={postObj}
-        />
-    , [postObj, mediaText]);
+        />,
+        [postObj, mediaText]);
 
     function toggleMinimized() {
         setMinimized((prev) => !prev);
@@ -70,7 +70,7 @@ export default function Post({
     const tags = getTags();
 
     function getTags() {
-        if(postObj.link_flair_richtext.length > 0) {
+        if (postObj.link_flair_richtext.length > 0) {
             return postObj.link_flair_richtext.map((flair) => {
                 return {
                     background: postObj.link_flair_background_color,
@@ -80,7 +80,7 @@ export default function Post({
             });
         }
 
-        if(postObj.link_flair_text) {
+        if (postObj.link_flair_text) {
             return [{
                 background: postObj.link_flair_background_color,
                 item: postObj.link_flair_text,
@@ -92,7 +92,7 @@ export default function Post({
     }
 
     return (
-        !isHidden && 
+        !isHidden &&
         <div className="post" style={{ borderColor: `#${postObj.color}` }} data-t3={postObj.name}>
             <div className="post-banner">
                 <div className="post-header">
@@ -112,10 +112,10 @@ export default function Post({
                         <div className="post-info-separator">|</div>
                         <div className="post-duplicates">{postObj.duplicates} duplicates</div>
                     </div>
-                    {tags.length !== 0 && 
+                    {tags.length !== 0 &&
                         <div className='tags-container'>
-                            {tags.map((t) => 
-                                <div 
+                            {tags.map((t) =>
+                                <div
                                     key={`tag-${t}`}
                                     className={`postTag ${t.tag}`}
                                     style={{ backgroundColor: t.background }}

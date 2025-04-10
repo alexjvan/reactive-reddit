@@ -1,6 +1,6 @@
 const lzstring = require('lz-string');
 
-export function getFromStorage(key, fallback, validation) {
+export function getFromStorage(key, fallback, validation, extraOne, extraTwo) {
     let stored = localStorage.getItem(key);
     if (!stored) return fallback; // `null` or `''` case handled here
 
@@ -9,7 +9,7 @@ export function getFromStorage(key, fallback, validation) {
 
     try {
         let data = JSON.parse(decoded);
-        return validation ? validation(data, fallback) : data;
+        return validation ? validation(data, fallback, extraOne, extraTwo) : data;
     } catch (error) {
         console.error(`Error parsing localStorage key "${key}":`, error);
         return fallback;

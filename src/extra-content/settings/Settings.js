@@ -9,12 +9,12 @@ export default function Settings({
     filters,
     setFilters
 }) {
-    const sortedSubs = useMemo(() => 
-        subs.map(s => s.name).sort(), 
+    const sortedSubs = useMemo(() =>
+        subs.map(s => s.name).sort(),
         [subs]
     );
-    const sortedFilters = useMemo(() => 
-        filters.map(f => f.filter + " [" + f.category + "]").sort(), 
+    const sortedFilters = useMemo(() =>
+        filters.map(f => f.filter + " [" + f.category + "]").sort(),
         [filters]
     );
 
