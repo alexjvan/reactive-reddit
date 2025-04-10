@@ -84,11 +84,45 @@ export function postValidation(data, fallback, subs, filters) {
 }
 
 export function reduceFilters(filters) {
-    // TODO: Remove duplicate filters, filters in filters
-    //    ex: Filter "Hotdog" not needed if "Dog" also exists
-    return filters.sort(function (a, b) {
+    return removeInternalFilters(filters).sort(function (a, b) {
         return sortPrioirty(a.category) - sortPrioirty(b.category);
     });
+}
+
+function removeInternalFilters(filters) {
+    // Group by category and desire, since we need those to match
+    const grouped = {};
+
+    for(const filter of filters) {
+        let key = filter.category + "&&" + filter.desired;
+        if(!grouped[key]) {
+            grouped[key] = [];
+        }
+        grouped[key].push(filter);
+    }
+
+    const reduced = [];
+
+    for(const groupKey in grouped) {
+        let group = grouped[groupKey];
+
+        const keeping = group
+            // Sort smallest to biggest, so we can search pre-existing filters
+            .sort((a, b) => b.filter.length - a.filter.length)
+            .reduce((keep, filter) => {
+                const exists = keep.find(f => f.filter.includes(filter.filter));
+                if(exists) {
+                    exists.count += filter.count;
+                } else {
+                    keep.push({...filter});
+                }
+                return keep;
+            }, []);
+
+        reduced.push(...keeping);
+    }
+
+    return reduced;
 }
 
 function sortPrioirty(category) {

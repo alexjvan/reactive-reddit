@@ -16,6 +16,7 @@ export function filterCheck(filter, post) {
     //          ex, %opener%test = %start%test + [test + (test
     //      %length%
     //      %imageCount%
+    //      %end%
 
     let checkAgainst = '';
     switch (category) {
@@ -37,13 +38,12 @@ export function filterCheck(filter, post) {
 
     const checkingFor = filterText.toLowerCase();
 
-    // Optimize `%start%` handling
     if (checkingFor.startsWith('%start%')) {
         const check = checkingFor.slice(7);
         return desired ? !checkAgainst.startsWith(check) : checkAgainst.startsWith(check);
     }
 
-    // Optimize `||` filtering with `.some()`
+    // TODO: && filter
     const matchFound = checkingFor.split('||').some((filterSection) => checkAgainst.includes(filterSection));
 
     return desired ? !matchFound : matchFound;
