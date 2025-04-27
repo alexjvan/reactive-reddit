@@ -72,14 +72,14 @@
                     padding: 5px 0px;
                 }
                     .post-text p.indented {
-                        padding: 15px 0px;
+                        padding: 5px 15px;
                     }
                 .post-text div {
                     display: block;
                     padding: 5px 0px;
                 }
                     .post-text div.indented {
-                        padding: 15px 0px;
+                        padding: 5px 15px;
                     }
                     .findableImage {
                         color: lightskyblue;

@@ -95,6 +95,10 @@ export function modLine(line, setMediaText) {
                 }
                 word = '';
                 break;
+            case '\\':
+                if(split[i + 1] === '-') {
+                    continue;
+                }
             default:
                 if (inItalic) {
                     italicString += char;

@@ -28,20 +28,31 @@ export default function Post({
             : [];
     }
 
+    // TODO: If line starts with * its a bulleted list
+    //      but to implement this I need to be able to look at multiple lines
     const displayText = useMemo(
-        () => createText().map((line, index) =>
-            line.includes('<a') ?
+        () => createText().map((line, index) => {
+            let indented = line.startsWith('>') || line.startsWith('&gt;');
+            let removedIndent = indented
+                ? line.startsWith('>')
+                    ? line.substring(1)
+                    : line.substring(4)
+                : line;
+
+            if(removedIndent.length === 0) return;
+
+            return line.includes('<a') ?
                 <div
                     key={postObj.name + index}
-                    dangerouslySetInnerHTML={{ __html: line }}
-                    className={line.startsWith('>') ? 'indented' : ''}
+                    dangerouslySetInnerHTML={{ __html: removedIndent }}
+                    className={indented ? 'indented' : ''}
                 />
                 : <p
                     key={postObj.name + index}
-                    dangerouslySetInnerHTML={{ __html: line }}
-                    className={line.startsWith('>') ? 'indented' : ''}
+                    dangerouslySetInnerHTML={{ __html: removedIndent }}
+                    className={indented ? 'indented' : ''}
                 />
-        ),
+        }),
         [text]
     );
 
