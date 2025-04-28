@@ -1,5 +1,6 @@
 import { isImageLink, isVideoLink } from './imageHelpers';
 
+// TODO: # <text> is a header title - how to incorporate?
 export function modLine(line, setMediaText) {
     let split = line.split('');
 
@@ -19,7 +20,11 @@ export function modLine(line, setMediaText) {
         switch (char) {
             case '*':
                 if (inItalic) {
-                    modded += '<i>' + italicString + '</i>';
+                    if (italicString !== '') {
+                        modded += '<i>' + italicString + '</i>';
+                    } else {
+                        // TODO: ** <text> ** is another type of header
+                    }
                     italicString = '';
                 }
                 inItalic = !inItalic;
@@ -79,6 +84,7 @@ export function modLine(line, setMediaText) {
                 if (word === '' && !inItalic && !passedLinkText && !inLink) {
                     modded += ' ';
                 } else if (word.startsWith("http")) {
+                    // TODO: Sometimes people put links in (), figure that out
                     modded += '<a class="findableImage" data-link="' + word + '">' + word + '</a> ';
                     const tempLink = word; // The next line is async, while nothing else is. This is to keep the value during that op (I hate react)
                     setMediaText((prev) => [...prev, tempLink]);
