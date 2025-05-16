@@ -122,7 +122,7 @@ export default class Grabber {
         });
 
         const preExistingPosts = new Set(this.posts.map(p => p.name));
-        let filtered = processed.filter(p => !preExistingPosts.has(p.name)); // Don't know why this is necessary, but it eliminates duplicate posts. Invesigate eventually, low pri
+        let filtered = processed.filter(p => !preExistingPosts.has(p.name)); // TODO: Don't know why this is necessary, but it eliminates duplicate posts. Invesigate eventually, low pri
         if (postType === 'Backfill') {
             if (setting.ba.afterutc) {
                 filtered = filtered.filter(p => p.created_utc < setting.ba.beforeutc);
@@ -175,7 +175,7 @@ export default class Grabber {
             ba: direction,
             iterations: iterations + 1,
             pre: postType === 'Continual',
-            ba: postType === 'Savior'
+            savior: postType === 'Savior'
         }, postType === 'Continual' ? 2 : 1);
     }
 

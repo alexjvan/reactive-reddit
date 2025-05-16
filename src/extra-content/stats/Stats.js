@@ -14,6 +14,7 @@ export default function Stats({
         )),
         [posts, subs]
     );
+
     const _postsPerTag = useMemo(() =>
         Object.entries(postsPerTag())
             .sort((a, b) => b[1] - a[1])
@@ -48,13 +49,23 @@ export default function Stats({
         return posts
             .filter((p) => !p.disabled && p.filteredFor.length === 0)
             .reduce((currentTags, post) => {
-                const tags = post.link_flair_richtext?.map((tag) => tag.t) || [post.link_flair_text];
-                tags.forEach((tag) => {
-                    currentTags[tag] = (currentTags[tag] || 0) + 1;
-                });
-                if (tags.length === 0) {
+                let setTags = false;
+
+                if (post.link_flair_richtext.length > 0) {
+                    post.link_flair_richtext.forEach(flair => {
+                        currentTags[flair.t] = (currentTags[flair.t] || 0) + 1;
+                    });
+                    setTags = true;
+                }
+                if (post.link_flair_text) {
+                    currentTags[post.link_flair_text] = (currentTags[post.link_flair_text] || 0) + 1;
+                    setTags = true;
+                }
+
+                if (!setTags) {
                     currentTags['None'] = (currentTags['None'] || 0) + 1;
                 }
+
                 return currentTags;
             }, {});
     }
