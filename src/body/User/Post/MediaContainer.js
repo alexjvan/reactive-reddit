@@ -12,7 +12,13 @@ export default function MediaContainer({
         if (!post) return [];
         return [
             ...(post.media_metadata
-                ? Object.entries(post.media_metadata).map(([_, value]) => value.o[0].u)
+                ? Object.entries(post.media_metadata).map(([_, value]) => 
+                    value.o 
+                        ? typeof value.o[0] === "string"
+                            ? value.o[0]
+                            : value.o[0].u 
+                        : value.s[0]
+                )
                 : []),
             ...(post.preview
                 ? post.preview.images.map((imgs) => imgs.source.url)
@@ -26,7 +32,7 @@ export default function MediaContainer({
     });
 
     const embeddedMedia = useMemo(() => extractMedia(postObj), [postObj]);
-    const mediaCrossPost = useMemo(() => (postObj.crosspost_parent ? extractMedia(postObj.crosspost_parent_list[0]) : []), [postObj]);
+    const mediaCrossPost = useMemo(() => (postObj.crosspost_parent && postObj.crosspost_parent_list ? extractMedia(postObj.crosspost_parent_list[0]) : []), [postObj]);
 
     const media = useMemo(
         () => mergeMedia(),
