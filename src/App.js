@@ -15,6 +15,7 @@ export default function App() {
   const [postQueue,] = useState(new PriorityQueue());
   const [postQueueHasData, setPostQueueHasData] = useState(false);
   
+  // TODO: Groups
   const [subs, setSubs] = useState(() => getFromStorage('subs', [], resumeRetrieval, postQueue, setPostQueueHasData));
   const [filters, setFilters] = useState(() => getFromStorage('filters', [], emptyValidation));
   const [minimizedUsers, setMinimizedUsers] = useState(() => getFromStorage('minUsers', [], emptyValidation))

@@ -13,11 +13,13 @@ export default function MediaContainer({
         return [
             ...(post.media_metadata
                 ? Object.entries(post.media_metadata).map(([_, value]) => 
-                    value.o 
+                    value.o
                         ? typeof value.o[0] === "string"
                             ? value.o[0]
-                            : value.o[0].u 
-                        : value.s[0]
+                            : value.o[0].u
+                        : value.s
+                            ? value.s[0]
+                            : value.hlsUrl
                 )
                 : []),
             ...(post.preview
@@ -74,27 +76,29 @@ export default function MediaContainer({
 
         // Array from set to remove duplicates
         return [...new Set(
-            merged.map((url) => {
-                if (url.startsWith('https://external-i.redd.it')) {
-                    return url.split('?')[0].replace('external-i.redd.it', 'i.redd.it');
-                } else if (url.startsWith('https://external-preview.redd.it')) {
-                    return url.split('?')[0].replace('external-preview.redd.it', 'i.redd.it');
-                } else if (url.startsWith('https://preview.redd.it')) {
-                    return url.split('?')[0].replace('preview.redd.it', 'i.redd.it');
-                } else if (url.startsWith('https://i.redd.it')) {
-                    return url.split('?')[0];
-                } else if (url.startsWith('//static1.e621.net')) {
-                    return "https:" + url;
-                } else if (isImageLink(url) || isVideoLink(url)) {
-                    // Do nothing, don't log
-                } else {
-                    console.log('Non-recognized URL in media metadata:', url);
-                    return null; // The hope here is to not try and force a website link into an image or video tag
-                }
-                return url;
-            })
-                .filter((i) => i !== null)
-        )];
+            merged
+                .filter(i => i !== undefined)
+                .map((url) => {
+                    if (url.startsWith('https://external-i.redd.it')) {
+                        return url.split('?')[0].replace('external-i.redd.it', 'i.redd.it');
+                    } else if (url.startsWith('https://external-preview.redd.it')) {
+                        return url.split('?')[0].replace('external-preview.redd.it', 'i.redd.it');
+                    } else if (url.startsWith('https://preview.redd.it')) {
+                        return url.split('?')[0].replace('preview.redd.it', 'i.redd.it');
+                    } else if (url.startsWith('https://i.redd.it')) {
+                        return url.split('?')[0];
+                    } else if (url.startsWith('//static1.e621.net')) {
+                        return "https:" + url;
+                    } else if (isImageLink(url) || isVideoLink(url)) {
+                        // Do nothing, don't log
+                    } else {
+                        console.log('Non-recognized URL in media metadata:', url);
+                        return null; // The hope here is to not try and force a website link into an image or video tag
+                    }
+                    return url;
+                })
+                    .filter((i) => i !== null)
+            )];
     }
 
     // UseEffect for click handling for <a> tags in <div> elements (I hate react)
