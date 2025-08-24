@@ -30,6 +30,10 @@ export default function Settings({
     // TODO: Actual settings
     //      - Auto-refresh
 
+    // TODO: Groups
+    //    - Remove groups
+    //    - Transfer subs to different groups
+
     // TODO: Rewrite SettingsSection to handle "extra info", ex: filters' category
     return (
         <div id="settings">

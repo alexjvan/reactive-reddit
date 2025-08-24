@@ -14,19 +14,48 @@ export default function App() {
 
   const [postQueue,] = useState(new PriorityQueue());
   const [postQueueHasData, setPostQueueHasData] = useState(false);
-  
-  // TODO: Groups
-  const [subs, setSubs] = useState(() => getFromStorage('subs', [], resumeRetrieval, postQueue, setPostQueueHasData));
-  const [filters, setFilters] = useState(() => getFromStorage('filters', [], emptyValidation));
-  const [minimizedUsers, setMinimizedUsers] = useState(() => getFromStorage('minUsers', [], emptyValidation))
-  const [posts, setPosts] = useState(() => getFromStorage('posts', [], postValidation, subs, filters));
+
+  const [groups, setGroups] = useState(() => getFromStorage('', 'groups', [{name: 'Default', active: true}], emptyValidation));
+  const [activeGroup, setActiveGroup] = useState(null);
+
+  const [subs, setSubs] = useState(() => getFromStorage(activeGroup, 'subs', [], resumeRetrieval, postQueue, setPostQueueHasData));
+  const [filters, setFilters] = useState(() => getFromStorage(activeGroup, 'filters', [], emptyValidation));
+  const [minimizedUsers, setMinimizedUsers] = useState(() => getFromStorage(activeGroup, 'minUsers', [], emptyValidation))
+  const [posts, setPosts] = useState(() => getFromStorage(activeGroup, 'posts', [], postValidation, subs, filters));
   const grabber = useRef();
 
   const [extraDisplay, setExtraDisplay] = useState(null);
 
+  // Load objs off group
+  useEffect(
+    () => {
+      groups.forEach((group) => {
+        if(group.active) {
+          setActiveGroup(group.name);
+        }
+      });
+    },
+    [groups]
+  );
+  // Set group-data
+  // Shouldn't need to re-save, since everything is saved automatically
+  useEffect(
+    () => {
+      setSubs(getFromStorage(activeGroup, 'subs', [], resumeRetrieval, postQueue, setPostQueueHasData));
+      setFilters(getFromStorage(activeGroup, 'filters', [], emptyValidation));
+      setMinimizedUsers(getFromStorage(activeGroup, 'minUsers', [], emptyValidation))
+      setPosts(getFromStorage(activeGroup, 'posts', [], postValidation, subs, filters));
+    },
+    [activeGroup]
+  );
+
   // Save Objs
   useEffect(
-    () => putInStorage('subs', padSubs(subs, posts)),
+    () => putInStorage('', 'groups', groups),
+    [groups]
+  )
+  useEffect(
+    () => putInStorage(activeGroup, 'subs', padSubs(subs, posts)),
     [subs]
   );
   // TODO: Create some way to not constantly be updating this during retrieval
@@ -34,27 +63,27 @@ export default function App() {
   //    or maybe check value against value 1 second ago. If different, don't set
   //      this runs into issue with multiple firing off, how do you garuntee that any of them will catch it
   useEffect(
-    () => putInStorage('posts', shrinkPosts(posts)),
+    () => putInStorage(activeGroup, 'posts', shrinkPosts(posts)),
     [posts]
   );
   useEffect(
-    () => putInStorage('filters', reduceFilters(filters)),
+    () => putInStorage(activeGroup, 'filters', reduceFilters(filters)),
     [filters]
   );
   useEffect(
-    () => putInStorage('minUsers', minimizedUsers),
+    () => putInStorage(activeGroup, 'minUsers', minimizedUsers),
     [minimizedUsers]
   );
 
   // Update grabber
   useEffect(() => {
     grabber.current = new Grabber(
-      subs, 
-      setSubs, 
-      posts, 
-      setPosts, 
-      postQueue, 
-      setPostQueueHasData, 
+      subs,
+      setSubs,
+      posts,
+      setPosts,
+      postQueue,
+      setPostQueueHasData,
       filters
     );
   }, []);
@@ -64,7 +93,37 @@ export default function App() {
       grabber.current.posts = posts;
       grabber.current.filters = filters;
     }
-  }, [subs, posts, filters]);
+  }, [activeGroup, subs, posts, filters]);
+  useEffect(() => {
+    postQueue.clear();
+    setPostQueueHasData(false); // This /should/ help with switching to/from groups
+
+    if(subs.length > 0) {
+      let early = new Date();
+      early.setMinutes(early.getMinutes() - dontGrabMinutes);
+      let earlyepoch = Math.floor(early / 1000);
+
+      subs.forEach((sub) => {
+        if (!sub.reachedEnd) {
+          postQueue.enqueue({
+            sub: sub.name,
+            ba: sub.ba.aftert3,
+            pre: false
+          }, 1);
+        }
+        if (sub.ba.beforeutc !== undefined && sub.ba.beforeutc < earlyepoch) {
+          postQueue.enqueue({
+            sub: sub.name,
+            ba: sub.ba.beforet3,
+            iterations: 0,
+            pre: true
+          }, 2);
+        }
+      });
+
+      setPostQueueHasData(true);
+    }
+  }, [activeGroup]);
 
   // Run search
   useEffect(
@@ -111,6 +170,10 @@ export default function App() {
   return (
     <>
       <Head
+        groups={groups}
+        setGroups={setGroups}
+        activeGroup={activeGroup}
+        setActiveGroup={setActiveGroup}
         subs={subs}
         setSubs={setSubs}
         filters={filters}

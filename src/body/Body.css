@@ -1,7 +1,7 @@
 #body {
     background-color: var(--dark-secondary);
     color: var(--light-primary);
-    height: calc(100vh - 210.666px);
+    height: calc(100vh - 235px);
     overflow-x: hidden;
     overflow-y: scroll;
     width: 100%;

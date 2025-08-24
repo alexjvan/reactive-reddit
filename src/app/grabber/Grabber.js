@@ -2,6 +2,8 @@ import { cleanPost } from "./postFunctions";
 import { filterCheck } from "../filters";
 import { getSub } from "../subHelpers";
 
+// TODO: It seems like there is some race condition where multiple of these grabLoops are happening at the same time
+//    Not sure if its the interval issue again, or if somehow the loop is calling itself multiple times?
 export default class Grabber {
     constructor(
         subs,
@@ -180,8 +182,6 @@ export default class Grabber {
     }
 
     // Exported since this is used in sub-validation
-    
-
     finishRetrieval(
         sub,
         reason,

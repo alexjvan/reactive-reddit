@@ -1,8 +1,8 @@
 #header {
     background-color: var(--dark-primary);
     color: var(--light-primary);
-    padding: 15px 2.5%;
-    width: 95%;
+    padding: 15px 0px 0px 0px;
+    width: 100%;
 }
     #title {
         display: block;
@@ -65,5 +65,37 @@
                     padding: 5px;
                 }
     #header progress {
+        border-radius: 0px;
         width: 100%;
     }
+    #groupsBar {
+        background-color: var(--dark-secondary);
+        display: flex;
+        width: 100%;
+    }
+      .groupButton {
+          background-color: var(--dark-primary);
+          color: var(--light-primary);
+          border: 0px;
+          font-family: 'Montserrat', verdana, arial, sans-serif;
+          font-size: 16px;
+          padding: 5px 15px;
+      }
+        .groupButton:hover {
+            background-color: var(--accent);
+        }
+        .groupButton.active {
+            background-color: var(--accent);
+        }
+      .newGroup {
+          background-color: var(--dark-primary);
+          padding: 5px 15px;
+      }
+        .newGroup-input {
+            background-color: var(--dark-primary);
+            border: 0px;
+            border-bottom: 1px solid var(--light-primary);
+            color: var(--light-primary);
+            font-family: 'Montserrat', verdana, arial, sans-serif;
+            font-size: 16px;
+        }

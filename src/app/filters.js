@@ -17,6 +17,7 @@ export function filterCheck(filter, post) {
     //      %length%
     //      %imageCount%
     //      %end%
+    //      # - number
 
     let checkAgainst = '';
     switch (category) {
