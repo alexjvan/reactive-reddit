@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './App.css';
 import PriorityQueue from './app/PriorityQueue.js';
+import usePrevious from './app/usePrevious.js';
 import Grabber from './app/grabber/Grabber.js';
 import { getFromStorage, putInStorage } from './app/storage/storage.js';
 import { emptyValidation, padSubs, postValidation, reduceFilters, resumeRetrieval, shrinkPosts } from './app/storage/validators.js';
@@ -17,6 +18,7 @@ export default function App() {
 
   const [groups, setGroups] = useState(() => getFromStorage('', 'groups', [{ name: 'Default', active: true }], emptyValidation));
   const [activeGroup, setActiveGroup] = useState(null);
+  const previousActiveGroup = usePrevious(activeGroup);
 
   const [subs, setSubs] = useState(() => getFromStorage(activeGroup, 'subs', [], resumeRetrieval, postQueue, setPostQueueHasData));
   const [filters, setFilters] = useState(() => getFromStorage(activeGroup, 'filters', [], emptyValidation));
@@ -94,7 +96,13 @@ export default function App() {
       grabber.current.filters = filters;
     }
   }, [activeGroup, subs, posts, filters]);
+  // Update postQueue on group switch
   useEffect(() => {
+    // Discard race conditions on-load
+    if(previousActiveGroup === null || previousActiveGroup === undefined) {
+      return;
+    }
+
     postQueue.clear();
     setPostQueueHasData(false); // This /should/ help with switching to/from groups
 
@@ -134,6 +142,7 @@ export default function App() {
     },
     [postQueueHasData]
   );
+  // Timer for search calls
   useEffect(() => {
     setInterval(function () {
       if (postQueue.isEmpty()) {
