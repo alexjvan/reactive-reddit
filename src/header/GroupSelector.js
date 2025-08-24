@@ -9,55 +9,55 @@ export default function GroupSelector({
   const [inputValue, setInputValue] = useState('');
 
   function handleChange(e) {
-      setInputValue(e.target.value);
+    setInputValue(e.target.value);
   }
 
   function handleKeyDown(e) {
-      if (e.key === "Enter") {
-          handleSubmit();
-      }
+    if (e.key === "Enter") {
+      handleSubmit();
+    }
   };
 
   function handleSubmit() {
-      newGroup(inputValue);
-      setInputValue('');
+    newGroup(inputValue);
+    setInputValue('');
   }
 
   function newGroup(newGroup) {
-      setGroups((old) => {
-          var newGroupObj = {name: newGroup, active:true}
-          var oldGroups = old.map((oldg) => {
-              if(oldg.active) {
-                oldg.active = false;
-              }
+    setGroups((old) => {
+      var newGroupObj = { name: newGroup, active: true }
+      var oldGroups = old.map((oldg) => {
+        if (oldg.active) {
+          oldg.active = false;
+        }
 
-              return oldg;
-          });
-
-          return [...oldGroups, newGroupObj]
+        return oldg;
       });
+
+      return [...oldGroups, newGroupObj]
+    });
   }
 
   function changeActive(oldGroup, newGroup) {
-      setGroups((old) => old.map((oldg) => {
-          if(oldg.name == oldGroup) {
-            oldg.active = false;
-          } else if(oldg.name == newGroup) {
-            oldg.active = true;
-          }
+    setGroups((old) => old.map((oldg) => {
+      if (oldg.name == oldGroup) {
+        oldg.active = false;
+      } else if (oldg.name == newGroup) {
+        oldg.active = true;
+      }
 
-          return oldg;
-      }));
+      return oldg;
+    }));
   }
 
   const groupDisplay = useMemo(
     () => groups.map((group) => {
       return <button
-          key={'group'+group.name}
-          className={`groupButton clickable ${group.active ? 'active' : ''}`}
-          onClick={() => changeActive(activeGroup, group.name)}
+        key={'group' + group.name}
+        className={`groupButton clickable ${group.active ? 'active' : ''}`}
+        onClick={() => changeActive(activeGroup, group.name)}
       >
-          {group.name}
+        {group.name}
       </button>
     }),
     [groups, activeGroup]
@@ -67,15 +67,15 @@ export default function GroupSelector({
     {groupDisplay}
     <div className='newGroup'>
       <input
-          className='newGroup-input'
-          value={inputValue}
-          onChange={handleChange}
-          onKeyDown={handleKeyDown}
+        className='newGroup-input'
+        value={inputValue}
+        onChange={handleChange}
+        onKeyDown={handleKeyDown}
       />
       <button
-          key='newGroupButton'
-          className='groupButton clickable'
-          onClick={handleSubmit}
+        key='newGroupButton'
+        className='groupButton clickable'
+        onClick={handleSubmit}
       >
         +
       </button>

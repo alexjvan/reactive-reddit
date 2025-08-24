@@ -15,7 +15,7 @@ export default function App() {
   const [postQueue,] = useState(new PriorityQueue());
   const [postQueueHasData, setPostQueueHasData] = useState(false);
 
-  const [groups, setGroups] = useState(() => getFromStorage('', 'groups', [{name: 'Default', active: true}], emptyValidation));
+  const [groups, setGroups] = useState(() => getFromStorage('', 'groups', [{ name: 'Default', active: true }], emptyValidation));
   const [activeGroup, setActiveGroup] = useState(null);
 
   const [subs, setSubs] = useState(() => getFromStorage(activeGroup, 'subs', [], resumeRetrieval, postQueue, setPostQueueHasData));
@@ -30,7 +30,7 @@ export default function App() {
   useEffect(
     () => {
       groups.forEach((group) => {
-        if(group.active) {
+        if (group.active) {
           setActiveGroup(group.name);
         }
       });
@@ -98,7 +98,7 @@ export default function App() {
     postQueue.clear();
     setPostQueueHasData(false); // This /should/ help with switching to/from groups
 
-    if(subs.length > 0) {
+    if (subs.length > 0) {
       let early = new Date();
       early.setMinutes(early.getMinutes() - dontGrabMinutes);
       let earlyepoch = Math.floor(early / 1000);
