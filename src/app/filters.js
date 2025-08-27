@@ -10,14 +10,18 @@ export function filterCheck(filter, post) {
         return desired ? !tags.has(filterText.toLowerCase()) : tags.has(filterText.toLowerCase());
     }
 
+    // TODO: The more I look at what I want to add here, I think I am going to need a more comprehensive filter checking system
+    //           Will probably end up doing something where I replace filters instead? That may not work with things like length + start though
     // TODO: Multi-source filters
     // TODO: More Variable filters
     //      %opener% tag
     //          ex, %opener%test = %start%test + [test + (test
+    //      %closer% (same as above, but for end)
     //      %length%
     //      %imageCount%
     //      %end%
     //      # - number
+    //      ~ - any word
 
     let checkAgainst = '';
     switch (category) {

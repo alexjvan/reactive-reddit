@@ -70,6 +70,17 @@ export default function Stats({
             }, {});
     }
 
+    // TODO: Common keywords in titles
+    //      Probably want to ignore words less than 3 letters (4?) to get rid of common words
+    //      will need to remove punctuation at the end as well
+    //      For example:
+    //         "Welcome to Seattle", "Best food in Seattle", "Seattle sucks!"
+    //         "Seattle" -> 3
+    //         "Best" -> 1
+    //         "food" -> 1
+    //         "Welcome" -> 1
+    //         "sucks" -> 1
+
     return (
         <div id="statistics">
             <div className='stats-section'>

@@ -74,6 +74,7 @@ export default function Head({
                 }
             });
         } else {
+            // TODO: Need to check if filter already exists
             let newFilter = {
                 category: section,
                 filter: input,
@@ -109,12 +110,16 @@ export default function Head({
 
     const progressBar = useMemo(() => {
         const maxProgress = subs.length * 2;
+        const value = maxProgress - postQueue.length();
+        const percentage = maxProgress > 0 ? (value / maxProgress) * 100 : 0;
 
-        return <progress
-            value={maxProgress - postQueue.length()}
-            max={maxProgress}
-        />;
-    }, [subs, postQueue.length()])
+        return <div id="progressbar-container">
+            <div
+                id="progressbar"
+                style={{ width: `${percentage}%` }}
+            />
+        </div>;
+    }, [subs, postQueue.length()]);
 
     // TODO: Display only-text or only-media posts (need proper settings)
     // TODO: Sorting options (need proper settings)

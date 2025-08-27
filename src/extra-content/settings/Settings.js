@@ -10,11 +10,11 @@ export default function Settings({
     setFilters
 }) {
     const sortedSubs = useMemo(() =>
-        subs.map(s => s.name).sort(),
+        subs.map(s => s.name).sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase())),
         [subs]
     );
     const sortedFilters = useMemo(() =>
-        filters.map(f => f.filter + " [" + f.category + "]").sort(),
+        filters.map(f => f.filter + " [" + f.category + "]").sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase())),
         [filters]
     );
 
@@ -25,6 +25,8 @@ export default function Settings({
     function removeFilter(filter) {
         let parsed = filter.split(' [')[0];
         setFilters((current) => current.filter((f) => f.filter !== parsed));
+        // TODO: If you remove a filter, it should re-check all posts to see if they should be un-filtered
+        //      this is /super/ helpful for when you accidentally add a filter in (whoops :D)
     }
 
     // TODO: Actual settings
@@ -35,6 +37,8 @@ export default function Settings({
     //    - Transfer subs to different groups
 
     // TODO: Rewrite SettingsSection to handle "extra info", ex: filters' category
+    // TODO: "Clear All" button
+    // TODO: Filter wants are being represented
     return (
         <div id="settings">
             <SettingsSection

@@ -68,17 +68,27 @@
             .post-text {
                 width: 100%;
             }
+                .post-text div,
                 .post-text p {
                     padding: 5px 0px;
                 }
+                    .post-text div.indented,
                     .post-text p.indented {
                         padding: 5px 15px;
                     }
-                .post-text div {
-                    display: block;
-                    padding: 5px 0px;
-                }
-                    .post-text div.indented {
+                    .post-text div.list-item,
+                    .post-text p.list-item {
+                        display: list-item;
+                        list-style-type: disc;
+                        list-style-position: inside; 
+                        padding: 5px 15px;
+                    }
+                    .post-text div.header, /* Treating Large-headers as h1s */
+                    .post-text p.header,
+                    .post-text div.header-1,
+                    .post-text p.header-1 {
+                        font-size: 24px;
+                        font-weight: bold;
                         padding: 5px 15px;
                     }
                     .findableImage {

@@ -1,6 +1,5 @@
 import { isImageLink, isVideoLink } from './imageHelpers';
 
-// TODO: # <text> is a header title - how to incorporate?
 export function modLine(line, setMediaText) {
     let split = line.split('');
 
@@ -22,8 +21,6 @@ export function modLine(line, setMediaText) {
                 if (inItalic) {
                     if (italicString !== '') {
                         modded += '<i>' + italicString + '</i>';
-                    } else {
-                        // TODO: ** <text> ** is another type of header
                     }
                     italicString = '';
                 }
@@ -84,8 +81,11 @@ export function modLine(line, setMediaText) {
                 if (word === '' && !inItalic && !passedLinkText && !inLink) {
                     modded += ' ';
                 } else if (word.startsWith("http")) {
-                    // TODO: Sometimes people put links in (), figure that out
                     modded += '<a class="findableImage" data-link="' + word + '">' + word + '</a> ';
+                    const tempLink = word; // The next line is async, while nothing else is. This is to keep the value during that op (I hate react)
+                    setMediaText((prev) => [...prev, tempLink]);
+                } else if(word.startsWith("(http") && word.endsWith(")")) { // One or the other, considering typo until further discovery
+                    modded += '(<a class="findableImage" data-link="' + word.substring(1, word.length - 1) + '">' + word + '</a>) ';
                     const tempLink = word; // The next line is async, while nothing else is. This is to keep the value during that op (I hate react)
                     setMediaText((prev) => [...prev, tempLink]);
                 } else {
@@ -102,7 +102,7 @@ export function modLine(line, setMediaText) {
                 word = '';
                 break;
             case '\\':
-                if(split[i + 1] === '-') {
+                if (split[i + 1] === '-') {
                     continue;
                 }
             default:
@@ -127,7 +127,7 @@ export function modLine(line, setMediaText) {
         if (word.startsWith("http")) {
             modded += '<a class="findableImage" data-link="' + word + '">' + word + '</a> ';
             const tempLink = word; // The next line is async, while nothing else is. This is to keep the value during that op (I hate react)
-            setMediaText((prev) => [...prev, tempLink]);
+            setMediaText((prev) => [...prev, tempLink]); // TODO: (Why is this showing up at all? Also doesn't always show up? Caching maybe?) textHelpers.js:130 Warning: Cannot update a component (`Post`) while rendering a different component (`TextDisplay`). To locate the bad setState() call inside `TextDisplay`, follow the stack trace as described in https://reactjs.org/link/setstate-in-render
         } else {
             modded += word;
         }

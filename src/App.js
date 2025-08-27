@@ -55,7 +55,7 @@ export default function App() {
   useEffect(
     () => putInStorage('', 'groups', groups),
     [groups]
-  )
+  );
   useEffect(
     () => putInStorage(activeGroup, 'subs', padSubs(subs, posts)),
     [subs]
@@ -78,6 +78,7 @@ export default function App() {
   );
 
   // Update grabber
+  // TODO: This doesn't ever start because the subs/posts/filters are empty on first render
   useEffect(() => {
     grabber.current = new Grabber(
       subs,
@@ -95,11 +96,11 @@ export default function App() {
       grabber.current.posts = posts;
       grabber.current.filters = filters;
     }
-  }, [activeGroup, subs, posts, filters]);
+  }, [subs, posts, filters]);
   // Update postQueue on group switch
   useEffect(() => {
     // Discard race conditions on-load
-    if(previousActiveGroup === null || previousActiveGroup === undefined) {
+    if (previousActiveGroup === null || previousActiveGroup === undefined) {
       return;
     }
 

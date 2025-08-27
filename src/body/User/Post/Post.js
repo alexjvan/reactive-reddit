@@ -1,7 +1,7 @@
 import './Post.css';
 import { useMemo, useState } from 'react';
 import MediaContainer from './MediaContainer';
-import { modLine } from '../../../app/postHelpers/textHelpers';
+import TextDisplay from './TextDisplay';
 
 export default function Post({
     postObj,
@@ -19,41 +19,13 @@ export default function Post({
             : undefined;
     const [mediaText, setMediaText] = useState([]);
 
-    function createText() {
-        return text
-            ? text
-                .split('\n')
-                .filter((line) => line.trim() !== '')
-                .map((line) => modLine(line, setMediaText))
-            : [];
-    }
-
-    // TODO: If line starts with * its a bulleted list
-    //      but to implement this I need to be able to look at multiple lines
-    const displayText = useMemo(
-        () => createText().map((line, index) => {
-            let indented = line.startsWith('>') || line.startsWith('&gt;');
-            let removedIndent = indented
-                ? line.startsWith('>')
-                    ? line.substring(1)
-                    : line.substring(4)
-                : line;
-
-            if(removedIndent.length === 0) return;
-
-            return line.includes('<a') ?
-                <div
-                    key={postObj.name + index}
-                    dangerouslySetInnerHTML={{ __html: removedIndent }}
-                    className={indented ? 'indented' : ''}
-                />
-                : <p
-                    key={postObj.name + index}
-                    dangerouslySetInnerHTML={{ __html: removedIndent }}
-                    className={indented ? 'indented' : ''}
-                />
-        }),
-        [text]
+    const textDisplay = useMemo(() =>
+        <TextDisplay
+            postText={text}
+            setMediaText={setMediaText}
+            t3={postObj.name}
+        />,
+        [postObj.name, text]
     );
 
     const mediaContainer = useMemo(() =>
@@ -61,7 +33,8 @@ export default function Post({
             textMedia={mediaText}
             postObj={postObj}
         />,
-        [postObj, mediaText]);
+        [postObj, mediaText]
+    );
 
     function toggleMinimized() {
         setMinimized((prev) => !prev);
@@ -108,7 +81,7 @@ export default function Post({
             <div className="post-banner">
                 <div className="post-header">
                     <a className="post-title" href={url} target="_blank" rel="noopener noreferrer">
-                        {postObj.title}
+                        {postObj.title.replaceAll('&amp;', '&')}
                     </a>
                     <div className="post-actions">
                         <button className="post-min" onClick={toggleMinimized}>
@@ -139,11 +112,7 @@ export default function Post({
                 </div>
                 {!minimized &&
                     <div className="post-contents">
-                        {text && (
-                            <div className="post-text">
-                                {displayText}
-                            </div>
-                        )}
+                        {text && textDisplay}
                         {mediaContainer}
                     </div>
                 }

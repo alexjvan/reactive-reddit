@@ -29,6 +29,8 @@ export default function ExtraContent({
         />;
     }, [subs, posts]);
 
+    // TODO: Whatever I come up with for the extra section, I will want to make it scrollable
+
     return (extraDisplay &&
         <div id="extrapage">
             <div id="extraheader">

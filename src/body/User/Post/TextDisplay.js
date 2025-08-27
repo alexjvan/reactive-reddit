@@ -1,0 +1,75 @@
+import { useMemo } from 'react';
+import { modLine } from '../../../app/postHelpers/textHelpers';
+
+export default function TextDisplay({
+    t3,
+    postText,
+    setMediaText
+}) {
+    var lines = useMemo(
+        () => postText.split('\n').filter((line) => line.trim() !== ''),
+        [postText]
+    );
+
+    var moddedLines = useMemo(
+        () => lines.map((line) => {
+            var modifiers = [];
+            var moddedLine = line;
+
+            var foundModifiers = false;
+            do {
+                moddedLine = moddedLine.trim();
+                foundModifiers = false;
+                if (moddedLine.startsWith('>')) {
+                    modifiers.push('indented');
+                    moddedLine = moddedLine.substring(1);
+                    foundModifiers = true;
+                }
+                if (moddedLine.startsWith('&gt;')) {
+                    modifiers.push('indented');
+                    moddedLine = moddedLine.substring(4);
+                    foundModifiers = true;
+                }
+                if (moddedLine.startsWith('**' && moddedLine.endsWith('**'))) {
+                    modifiers.push('header');
+                    moddedLine = moddedLine.substring(2, moddedLine.length - 2);
+                    foundModifiers = true;
+                }
+                if (moddedLine.startsWith('*')) {
+                    modifiers.push('list-item');
+                    moddedLine = moddedLine.substring(1);
+                    foundModifiers = true;
+                }
+                if (moddedLine.startsWith("#")) {
+                    let headerLevel = 0;
+                    while (moddedLine.startsWith("#")) {
+                        headerLevel++;
+                        moddedLine = moddedLine.substring(1);
+                    }
+                    modifiers.push('header-' + headerLevel);
+                    foundModifiers = true;
+                }
+            } while (foundModifiers);
+
+            var htmlified = modLine(moddedLine, setMediaText);
+            return { text: htmlified, modifiers: modifiers };
+        }),
+        [lines]
+    );
+
+    const htmlDisplay = useMemo(
+        () => moddedLines.map((line, index) => {
+            const Tag = line.text.includes('<p>') ? 'div' : 'p';
+            return <Tag
+                key={t3 + index}
+                dangerouslySetInnerHTML={{ __html: line.text }}
+                className={line.modifiers.join(' ')}
+            />;
+        }),
+        [moddedLines]
+    );
+
+    return <div className='post-text'>
+        {htmlDisplay}
+    </div>;
+}

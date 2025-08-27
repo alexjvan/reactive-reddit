@@ -64,10 +64,15 @@
                     font-size: 16px;
                     padding: 5px;
                 }
-    #header progress {
-        border-radius: 0px;
+    #progressbar-container {
+        background-color: var(--light-secondary);
+        height: 20px;
         width: 100%;
     }
+        #progressbar {
+            background-color: var(--accent);
+            height: 20px;
+        }
     #groupsBar {
         background-color: var(--dark-secondary);
         display: flex;
