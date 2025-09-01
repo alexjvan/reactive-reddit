@@ -12,7 +12,7 @@ export default function MediaContainer({
         if (!post) return [];
         return [
             ...(post.media_metadata
-                ? Object.entries(post.media_metadata).map(([_, value]) => 
+                ? Object.entries(post.media_metadata).map(([_, value]) =>
                     value.o
                         ? typeof value.o[0] === "string"
                             ? value.o[0]
@@ -52,14 +52,14 @@ export default function MediaContainer({
     //                 if (cache.has(url)) return cache.get(url);
     //                 try {
     //                     const response = await fetch(url, { method: 'HEAD' });
-    //                     if (response.ok) { // TODO: We probably only need to check its not 404? Other 400-error codes may be a side-effect (Ex: 429)
+    //                     if (response.ok) { // TODO: We probably only need to check its not 404? Other 400-error codes may be a side-effect (Ex: 429) But also in that case, the image will error out in display
     //                         cache.set(url, url);
     //                         return url;
     //                     }
     //                 } catch (error) {
     //                     console.error(`Error fetching ${url}:`, error);
     //                 }
-    //                 cache.set(url, null);
+    //                 cache.set(url, null); // TODO: Do we want to set this? It will stop items from being re-attempted, but what if the second attempt works?
     //                 return null;
     //             })
     //         );
@@ -88,7 +88,7 @@ export default function MediaContainer({
                     } else if (url.startsWith('https://i.redd.it')) {
                         return url.split('?')[0];
                     } else if (url.startsWith('//static1.e621.net')) {
-                        return "https:" + url;
+                        return `https:${url}`;
                     } else if (isImageLink(url) || isVideoLink(url)) {
                         // Do nothing, don't log
                     } else {
@@ -97,8 +97,8 @@ export default function MediaContainer({
                     }
                     return url;
                 })
-                    .filter((i) => i !== null)
-            )];
+                .filter((i) => i !== null)
+        )];
     }
 
     // UseEffect for click handling for <a> tags in <div> elements (I hate react)

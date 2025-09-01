@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { modLine } from '../../../app/postHelpers/textHelpers';
 
 export default function TextDisplay({
@@ -30,14 +30,14 @@ export default function TextDisplay({
                     moddedLine = moddedLine.substring(4);
                     foundModifiers = true;
                 }
-                if (moddedLine.startsWith('**' && moddedLine.endsWith('**'))) {
+                if (moddedLine.startsWith('*' && moddedLine.endsWith('*'))) {
                     modifiers.push('header');
-                    moddedLine = moddedLine.substring(2, moddedLine.length - 2);
+                    moddedLine = moddedLine.substring(1, moddedLine.length - 1);
                     foundModifiers = true;
                 }
-                if (moddedLine.startsWith('*')) {
+                if (moddedLine.startsWith('* ')) {
                     modifiers.push('list-item');
-                    moddedLine = moddedLine.substring(1);
+                    moddedLine = moddedLine.substring(2);
                     foundModifiers = true;
                 }
                 if (moddedLine.startsWith("#")) {
@@ -52,10 +52,17 @@ export default function TextDisplay({
             } while (foundModifiers);
 
             var htmlified = modLine(moddedLine, setMediaText);
-            return { text: htmlified, modifiers: modifiers };
+            return { text: htmlified.html, modifiers: modifiers, media: htmlified.mediaLinks };
         }),
         [lines]
     );
+
+    useEffect(() => {
+        const allLinks = moddedLines.flatMap(line => line.mediaLinks);
+        if (allLinks.length > 0) {
+            setMediaText(allLinks);
+        }
+    }, [moddedLines]);
 
     const htmlDisplay = useMemo(
         () => moddedLines.map((line, index) => {

@@ -1,8 +1,7 @@
 import { isImageLink, isVideoLink } from './imageHelpers';
 
-export function modLine(line, setMediaText) {
+export function modLine(line) {
     let split = line.split('');
-
     let modded = '';
     let word = '';
 
@@ -13,6 +12,9 @@ export function modLine(line, setMediaText) {
     let passedLinkText = false;
     let linkText = '';
     let linkLink = '';
+
+    // Gather links here instead of calling setMediaText
+    let mediaLinks = [];
 
     for (let i = 0; i < split.length; i++) {
         let char = split[i];
@@ -59,15 +61,14 @@ export function modLine(line, setMediaText) {
             case ')':
                 if (passedLinkText) {
                     if (isImageLink(linkLink) || isVideoLink(linkLink)) {
-                        modded += '<a class="findableImage" data-link="' + linkLink + '">' + linkText + '</a>';
-                        const tempLink = linkLink; // The next line is async, while nothing else is. This is to keep the value during that op (I hate react)
-                        setMediaText((prev) => [...prev, tempLink]);
+                        modded += `<a class="findableImage" data-link="${linkLink}">${linkText}</a>`;
+                        mediaLinks.push(linkLink);
                         inLink = false;
                         passedLinkText = false;
                         linkText = '';
                         linkLink = '';
                     } else {
-                        modded += '<a class="otherSite" href="' + linkLink + ' target=_blank">' + linkText + '</a>';
+                        modded += `<a class="otherSite" href="${linkLink}" target="_blank">${linkText}</a>`;
                         inLink = false;
                         passedLinkText = false;
                         linkText = '';
@@ -81,13 +82,12 @@ export function modLine(line, setMediaText) {
                 if (word === '' && !inItalic && !passedLinkText && !inLink) {
                     modded += ' ';
                 } else if (word.startsWith("http")) {
-                    modded += '<a class="findableImage" data-link="' + word + '">' + word + '</a> ';
-                    const tempLink = word; // The next line is async, while nothing else is. This is to keep the value during that op (I hate react)
-                    setMediaText((prev) => [...prev, tempLink]);
-                } else if(word.startsWith("(http") && word.endsWith(")")) { // One or the other, considering typo until further discovery
-                    modded += '(<a class="findableImage" data-link="' + word.substring(1, word.length - 1) + '">' + word + '</a>) ';
-                    const tempLink = word; // The next line is async, while nothing else is. This is to keep the value during that op (I hate react)
-                    setMediaText((prev) => [...prev, tempLink]);
+                    modded += `<a class="findableImage" data-link="${word}">${word}</a> `;
+                    mediaLinks.push(word);
+                } else if (word.startsWith("(http") && word.endsWith(")")) {
+                    let inner = word.substring(1, word.length - 1);
+                    modded += `(<a class="findableImage" data-link="${inner}">${word}</a>) `;
+                    mediaLinks.push(inner);
                 } else {
                     if (inItalic) {
                         italicString += ' ';
@@ -102,9 +102,8 @@ export function modLine(line, setMediaText) {
                 word = '';
                 break;
             case '\\':
-                if (split[i + 1] === '-') {
+                if (split[i + 1] === '-')
                     continue;
-                }
             default:
                 if (inItalic) {
                     italicString += char;
@@ -125,14 +124,13 @@ export function modLine(line, setMediaText) {
         modded += '[' + linkText;
     } else {
         if (word.startsWith("http")) {
-            modded += '<a class="findableImage" data-link="' + word + '">' + word + '</a> ';
-            const tempLink = word; // The next line is async, while nothing else is. This is to keep the value during that op (I hate react)
-            setMediaText((prev) => [...prev, tempLink]); // TODO: (Why is this showing up at all? Also doesn't always show up? Caching maybe?) textHelpers.js:130 Warning: Cannot update a component (`Post`) while rendering a different component (`TextDisplay`). To locate the bad setState() call inside `TextDisplay`, follow the stack trace as described in https://reactjs.org/link/setstate-in-render
+            modded += `<a class="findableImage" data-link="${word}">${word}</a> `;
+            mediaLinks.push(word);
         } else {
             modded += word;
         }
     }
     if (inItalic) modded += '*' + italicString;
 
-    return modded;
+    return { html: modded, mediaLinks };
 }

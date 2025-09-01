@@ -88,21 +88,21 @@ export default function User({
             for (let j = i + 1; j < validPosts.length; j++) {
                 const right = validPosts[j];
                 if (left.name === right.name) {
-                    console.log("Found duplicate post; t3-wise; " + left.name + ", " + right.name);
+                    console.log(`Found duplicate post; t3-wise; ${left.name}, ${right.name}`);
                     disablePost(left.name);
                     return;
                 }
 
                 const titleSimilarity = stringSimilarity(left.title, right.title);
                 if (left.selftext === "" && right.selftext === "" && titleSimilarity >= 0.90) {
-                    console.log("Found duplicate post; empty text, title-wise; " + left.name + ", " + right.name);
+                    console.log(`Found duplicate post; empty text, title-wise; ${left.name}, ${right.name}`);
                     duplicatePost(left, right);
                     return;
                 }
 
                 const textSimilarity = stringSimilarity(left.selftext, right.selftext);
                 if (textSimilarity >= 0.85) {
-                    console.log("Found duplicate post; text-wise; " + left.name + ", " + right.name);
+                    console.log(`Found duplicate post; text-wise; ${left.name}, ${right.name}`);
                     duplicatePost(left, right);
                     return;
                 }

@@ -17,6 +17,7 @@
                 color: white;
             }
     #quickadd {
+        align-items: center;
         display: flex;
         justify-content: space-evenly;
         padding: 15px 2.5%;
@@ -24,7 +25,24 @@
     }
         .qa-section {
             padding: 0px 10px;
+            text-align: center;
         }
+            .qa-section select {
+                background-color: var(--background-primary);
+                border: 0px;
+                color: var(--light-primary);
+                font-family: 'Montserrat', verdana, arial, sans-serif;
+                font-size: 16px;
+                padding: 5px 10px;
+            }
+                .qa-section select:hover {
+                    background-color: var(--light-secondary);
+                    color: var(--dark-secondary);
+                }
+                .qa-section option {
+                    background-color: var(--dark-primary);
+                    color: var(--light-primary);
+                }
             .qa-title {
                 display: block;
                 text-align: center;
@@ -35,7 +53,12 @@
                     color: var(--light-primary);
                     font-family: 'Montserrat', verdana, arial, sans-serif;
                     font-size: 16px;
+                    padding: 5px 10px;
                 }
+                    .qa-want:hover {
+                        background-color: var(--light-secondary);
+                        color: var(--dark-secondary);
+                    }
                         .qa-want.include::before {
                             color: var(--good);
                             content: "+";

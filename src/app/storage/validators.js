@@ -1,4 +1,4 @@
-import { filterCheck } from "../filters";
+import { addApplicableFilter } from "../filters";
 import { getSub } from "../subHelpers";
 import { cleanPost } from "../grabber/postFunctions";
 import { randSixHash } from "../colors";
@@ -76,8 +76,7 @@ export function postValidation(data, fallback, subs, filters) {
         if (post.selftext_html !== undefined) delete post.selftext_html;
         if (post.color === undefined) post.color = getSub(subs, post.subreddit).color;
         if (post.duplicates === undefined) post.duplicates = 0;
-        let filteredFor = filters.find(filter => filterCheck(filter, post));
-        post.filteredFor = [filteredFor].filter(x => x !== undefined);
+        post.filteredFor = addApplicableFilter(filters, post);
         cleanPost(post);
         return post;
     });
@@ -93,9 +92,9 @@ function removeInternalFilters(filters) {
     // Group by category and desire, since we need those to match
     const grouped = {};
 
-    for(const filter of filters) {
-        let key = filter.category + "&&" + filter.desired;
-        if(!grouped[key]) {
+    for (const filter of filters) {
+        let key = `${filter.category}&&${filter.desired}`;
+        if (!grouped[key]) {
             grouped[key] = [];
         }
         grouped[key].push(filter);
@@ -103,7 +102,7 @@ function removeInternalFilters(filters) {
 
     const reduced = [];
 
-    for(const groupKey in grouped) {
+    for (const groupKey in grouped) {
         let group = grouped[groupKey];
 
         const keeping = group
@@ -111,10 +110,10 @@ function removeInternalFilters(filters) {
             .sort((a, b) => b.filter.length - a.filter.length)
             .reduce((keep, filter) => {
                 const exists = keep.find(f => f.filter.includes(filter.filter));
-                if(exists) {
+                if (exists) {
                     exists.count += filter.count;
                 } else {
-                    keep.push({...filter});
+                    keep.push({ ...filter });
                 }
                 return keep;
             }, []);

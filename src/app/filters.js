@@ -1,4 +1,15 @@
-export function filterCheck(filter, post) {
+export function addApplicableFilter(filters, post) {
+    var foundFilter = undefined;
+    (filters ? filters : []).find((filter) => {
+        var check = shouldAddFilter(filter, post);
+        if (check) foundFilter = filter;
+
+        return check;
+    });
+    return foundFilter ? [foundFilter.filter] : [];
+}
+
+function shouldAddFilter(filter, post) {
     const { category, desired, filter: filterText } = filter;
 
     if (category === 'Tag') {
@@ -10,46 +21,53 @@ export function filterCheck(filter, post) {
         return desired ? !tags.has(filterText.toLowerCase()) : tags.has(filterText.toLowerCase());
     }
 
-    // TODO: The more I look at what I want to add here, I think I am going to need a more comprehensive filter checking system
-    //           Will probably end up doing something where I replace filters instead? That may not work with things like length + start though
-    // TODO: Multi-source filters
     // TODO: More Variable filters
-    //      %opener% tag
-    //          ex, %opener%test = %start%test + [test + (test
-    //      %closer% (same as above, but for end)
     //      %length%
     //      %imageCount%
-    //      %end%
     //      # - number
     //      ~ - any word
+    // TODO: && filter
 
-    let checkAgainst = '';
+    /*
+        Thoughts on these TODOs:
+        2. Length + image count are both going to be evaluative, so that will likely need to be custom logic.
+            The filters for these are going to be things like %length% > 15. Need a way to actually evaluate this
+        3. #, ~ are going to be weird.
+            Idea 1, I change the includes to be regex inclusive, and replace the items with their value?
+            Idea 2, add them to evaluative checks, figure that out first
+        4. How useful is &&? /Maybe/ for or filters? Don't really see a use case for it? Just add another filter?
+    */
+
+    let checkContent = '';
+    category.split('||').forEach((c) => {
+        checkContent += getTextContent(c, post);
+    });
+
+    var lowerFilter = filterText.toLowerCase();
+    var split = lowerFilter.split('||');
+    var anyMatch = split.some(f => filterMatches(f, checkContent));
+    return desired !== anyMatch;
+}
+
+function getTextContent(category, post) {
+    var content = '';
     switch (category) {
         case 'Author':
-            checkAgainst = post.author?.toLowerCase() || '';
+            content = post.author?.toLowerCase() || '';
             break;
         case 'Title':
-            checkAgainst = post.title?.toLowerCase() || '';
+            content = post.title?.toLowerCase() || '';
             break;
         case 'Text':
-            checkAgainst = post.selftext?.toLowerCase() || '';
-            break;
-        case 'Text||Title':
-            checkAgainst = `${post.title?.toLowerCase() || ''} ${post.selftext?.toLowerCase() || ''}`;
+            content = post.selftext?.toLowerCase() || '';
             break;
         default:
             return false; // Invalid category
     }
 
-    const checkingFor = filterText.toLowerCase();
+    return `%start%${content}%end%`;
+}
 
-    if (checkingFor.startsWith('%start%')) {
-        const check = checkingFor.slice(7);
-        return desired ? !checkAgainst.startsWith(check) : checkAgainst.startsWith(check);
-    }
-
-    // TODO: && filter
-    const matchFound = checkingFor.split('||').some((filterSection) => checkAgainst.includes(filterSection));
-
-    return desired ? !matchFound : matchFound;
+function filterMatches(filterText, checkAgainst) {
+    return checkAgainst.includes(filterText);
 }

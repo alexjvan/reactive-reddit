@@ -1,5 +1,5 @@
 import { cleanPost } from "./postFunctions";
-import { filterCheck } from "../filters";
+import { addApplicableFilter } from "../filters";
 import { getSub } from "../subHelpers";
 
 // TODO: It seems like there is some race condition where multiple of these grabLoops are happening at the same time
@@ -118,8 +118,7 @@ export default class Grabber {
             returning.disabled = false;
             returning.duplicates = 0;
             returning.color = setting.color;
-            let applicableFilters = this.filters.find((filter) => filterCheck(filter, returning));
-            returning.filteredFor = [applicableFilters].filter((x) => x !== undefined);
+            returning.filteredFor = addApplicableFilter(this.filters, returning);
             return returning;
         });
 
@@ -168,7 +167,7 @@ export default class Grabber {
         }
 
         if (direction === undefined || direction === null) {
-            this.finishRetrieval(sub, "No more " + (postType === 'Continual' ? 'before' : 'after') + ".", postType !== 'Continual');
+            this.finishRetrieval(sub, `No more ${(postType === 'Continual' ? 'before' : 'after')}.`, postType !== 'Continual');
             return;
         }
 
@@ -189,8 +188,8 @@ export default class Grabber {
     ) {
         console.log("-=-=-=-=-=-=-=-=-=-=-");
         console.log("Stopping Retrieval");
-        console.log("Sub: " + sub);
-        console.log("Reason: " + reason);
+        console.log(`Sub: ${sub}`);
+        console.log(`Reason: ${reason}`);
         console.log("-=-=-=-=-=-=-=-=-=-=-");
         if (setEnd) {
             this.setSubs((prev) => prev.map((csub) => {

@@ -11,7 +11,8 @@ export default function ExtraContent({
     setSubs,
     filters,
     setFilters,
-    posts
+    posts,
+    setPosts
 }) {
     const settings = useMemo(() => {
         return <Settings
@@ -19,13 +20,16 @@ export default function ExtraContent({
             setSubs={setSubs}
             filters={filters}
             setFilters={setFilters}
+            setPosts={setPosts}
         />;
     }, [subs, setSubs, filters, setFilters]);
 
     const stats = useMemo(() => {
         return <Stats
             subs={subs}
+            setFilters={setFilters}
             posts={posts}
+            setPosts={setPosts}
         />;
     }, [subs, posts]);
 

@@ -1,9 +1,12 @@
-import './Stats.css';
 import { useMemo } from 'react';
+import './Stats.css';
+import { addApplicableFilter } from '../../app/filters';
 
 export default function Stats({
     subs,
-    posts
+    setFilters,
+    posts,
+    setPosts
 }) {
     const _postsPerSub = useMemo(() =>
         postsPerSub().map(({ sub, count }) => (
@@ -21,11 +24,38 @@ export default function Stats({
             .map(([tag, count]) => (
                 <div className='stats-row' key={tag}>
                     <div className='stats-left'>{tag}</div>
-                    <div className='stats-right'>{count}</div>
+                    <div className='stats-right'>
+                        <button className='stats-addFilter' onClick={() => addTagFilter(tag)}>
+                            +Filter
+                        </button>
+                        {count}
+                    </div>
                 </div>
             )),
         [posts]
     );
+
+    function addTagFilter(tag) {
+        let newFilter = {
+            category: 'Tag',
+            filter: tag,
+            desired: false,
+            count: 0
+        };
+
+        setFilters((prev) => [
+            ...prev,
+            newFilter
+        ]);
+        setPosts((prev) => prev.map((post) => {
+            if (post.filteredFor.length > 0 || post.disabled)
+                return post;
+
+            post.filteredFor = addApplicableFilter([newFilter], post);
+
+            return post;
+        }));
+    }
 
     function postsPerSub() {
         let postSubs = posts.filter((p) => !p.disabled && p.filteredFor.length === 0).map((p) => p.subreddit);
@@ -36,7 +66,12 @@ export default function Stats({
 
         // Fill missing subs with 0 count
         subs.forEach((s) => {
-            if (!reduced[s.name]) reduced[s.name] = 0;
+            const existingKey = Object.keys(reduced).find(
+                (k) => k.toLowerCase() === s.name.toLowerCase()
+            );
+
+            const key = existingKey ?? s.name;
+            if (!reduced[key]) reduced[key] = 0;
         });
 
         // Sort entries by count in descending order
@@ -80,15 +115,12 @@ export default function Stats({
     //         "food" -> 1
     //         "Welcome" -> 1
     //         "sucks" -> 1
-
-    return (
-        <div id="statistics">
-            <div className='stats-section'>
-                {_postsPerSub}
-            </div>
-            <div className='stats-section'>
-                {_postsPerTag}
-            </div>
+    return <div id="statistics">
+        <div className='stats-section'>
+            {_postsPerSub}
         </div>
-    );
+        <div className='stats-section'>
+            {_postsPerTag}
+        </div>
+    </div>;
 }

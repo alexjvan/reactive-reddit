@@ -23,29 +23,27 @@ export default function QuickAdd({
         setInputValue('');
     }
 
-    return (
-        <div className="qa-section" id={sectionId}>
-            <div className="qa-title">{section}</div>
-            <div className="qa-options">
-                <button
-                    className={`qa-want ${want ? "include" : want === false ? "exclude" : ""}`}
-                    onClick={() => setWant(prev => !prev)}
+    return <div className="qa-section" id={sectionId}>
+        <div className="qa-title">{section}</div>
+        <div className="qa-options">
+            <button
+                className={`qa-want ${want ? "include" : want === false ? "exclude" : ""}`}
+                onClick={() => setWant(prev => !prev)}
+            />
+            <div className="qa-inputbox">
+                <input
+                    className="qa-input"
+                    value={inputValue}
+                    onChange={handleChange}
+                    onKeyDown={handleKeyDown}
                 />
-                <div className="qa-inputbox">
-                    <input
-                        className="qa-input"
-                        value={inputValue}
-                        onChange={handleChange}
-                        onKeyDown={handleKeyDown}
-                    />
-                </div>
-                <button
-                    className="qa-submit clickable"
-                    onClick={handleSubmit}
-                >
-                    Go
-                </button>
             </div>
+            <button
+                className="qa-submit clickable"
+                onClick={handleSubmit}
+            >
+                Go
+            </button>
         </div>
-    );
+    </div>;
 }
