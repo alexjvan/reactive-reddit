@@ -10,7 +10,6 @@ Large Projects:
 -- Once again, thinking ahead. Maybe just save retrieved media?
 
 One-off Items:
-- Handle Grabber error codes. Figure out why they aren't being caught (add try/catch?)
 - Figure out why duplicate posts are being grabbed. Why is the second filtering required in the grabber
 - Snapshot the data to save to disk, "saves"
 - On initial load, snapshot storage. Create way to restore initial session
@@ -24,6 +23,5 @@ Performance-Based Items:
 - Save Validations
 
 Bugs/Errors:
-- Grabber multiple events at once
 - SOMETIMES, crashing wipes all data?
 --  With groups, this only wipes the CURRENT groups data???

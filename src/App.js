@@ -15,11 +15,13 @@ import Head from './header/Head.js';
 export default function App() {
   // Static Vars
   const defaultSetting = {
+    addAllFiltersPossible: false,
     grabIntervalInMinutes: 15,
     postTypes: 'all',
+    removeSubOn404: true,
     retrieveOnSubAddition: false,
     waitBeforeReGrabbingInMinutes: 15
-  }; // TODO
+  }; // TODO, need a way to set these
 
   // Class Obj variables
   const [postQueue,] = useState(new PriorityQueue());
@@ -34,7 +36,10 @@ export default function App() {
   const previousActiveGroup = usePrevious(activeGroup);
 
   // Round 2 grabs
-  const [subs, setSubs] = useState(undefined);
+  const [subs, setSubs] = useState(() => {
+    console.log("Resetting subs");
+    return undefined;
+  });
   const [filters, setFilters] = useState(undefined);
   const [minimizedUsers, setMinimizedUsers] = useState(undefined);
   const [posts, setPosts] = useState(undefined);
@@ -78,6 +83,13 @@ export default function App() {
     },
     [subs]
   );
+  useEffect(
+    () => {
+      console.log('Current Subs');
+      console.log(subs);
+    },
+    [subs]
+  )
   // TODO: Create some way to not constantly be updating this during retrieval
   //    Either listen to setPostQueueHasData (better approach, needs error code handling to be done first)
   //    or maybe check value against value 1 second ago. If different, don't set
@@ -114,8 +126,8 @@ export default function App() {
       grabber.current.posts = posts;
       grabber.current.filters = filters;
     } else if (subs !== undefined && posts !== undefined && filters !== undefined) {
-      // TODO: This might be a good place to populate the postQueue
       grabber.current = new Grabber(
+        settings,
         subs,
         setSubs,
         posts,
@@ -128,10 +140,6 @@ export default function App() {
   }, [subs, posts, filters]);
   // Update postQueue on group switch
   useEffect(() => {
-    // TODO: I am too exhausted to think straight
-    //    This code here is causing problems. Whats happening is on first load, this is supposed to load the queue data. However, that queue data doesn't exist when activeGroup is set.
-    //    Even if, the previousActiveGroup stuff is throwing off since we discard first run. 
-    //    In reality, we need something that waits until all 3 are properly set, because its the same problem when switching groups
     // Discard race conditions on-load
     if (previousActiveGroup === null || previousActiveGroup === undefined) {
       return;
@@ -141,11 +149,44 @@ export default function App() {
     setPostQueueHasData(false); // This /should/ help with switching to/from groups
 
     if ((subs ? subs : []).length > 0) {
-      let early = new Date();
-      early.setMinutes(early.getMinutes() - settings.waitBeforeReGrabbingInMinutes);
-      let earlyepoch = Math.floor(early / 1000);
+      enqueueSubs();
+    }
+  }, [activeGroup]);
 
-      subs.forEach((sub) => {
+  // Run search
+  useEffect(
+    () => {
+      if (!postQueue.isEmpty()) {
+        grabber.current.grabLoop();
+      }
+    },
+    [postQueueHasData]
+  );
+
+  // Timer for search calls
+  const [postInterval, setPostInterval] = useState(undefined);
+  useEffect(() => {
+    if (postInterval) {
+      clearInterval(postInterval);
+    }
+
+    var newInterval = setInterval(function () {
+      if (postQueue.isEmpty()) {
+        enqueueSubs();
+      } else {
+        grabber.current.grabLoop();
+      }
+    }, settings.grabIntervalInMinutes * 60 * 1000);
+
+    setPostInterval(newInterval);
+  }, [settings.grabIntervalInMinutes, subs]);
+
+  function enqueueSubs() {
+    let early = new Date();
+    early.setMinutes(early.getMinutes() - settings.waitBeforeReGrabbingInMinutes);
+    let earlyepoch = Math.floor(early / 1000);
+
+    (subs ? subs : []).forEach((sub) => {
         if (!sub.reachedEnd) {
           postQueue.enqueue({
             sub: sub.name,
@@ -164,56 +205,7 @@ export default function App() {
       });
 
       setPostQueueHasData(true);
-    }
-  }, [activeGroup]);
-
-  // Run search
-  useEffect(
-    () => {
-      if (!postQueue.isEmpty()) {
-        grabber.current.grabLoop();
-      }
-    },
-    [postQueueHasData]
-  );
-  // Timer for search calls
-
-  const [postInterval, setPostInterval] = useState(undefined);
-  useEffect(() => {
-    if (postInterval) return;
-
-    var interval = setInterval(function () {
-      if (postQueue.isEmpty()) {
-        let early = new Date();
-        early.setMinutes(early.getMinutes() - settings.waitBeforeReGrabbingInMinutes);
-        let earlyepoch = Math.floor(early / 1000);
-
-        (subs ? subs : []).forEach((sub) => {
-          if (!sub.reachedEnd) {
-            postQueue.enqueue({
-              sub: sub.name,
-              ba: sub.ba.aftert3,
-              pre: false
-            }, 1);
-          }
-          if (sub.ba.beforeutc !== undefined && sub.ba.beforeutc < earlyepoch) {
-            postQueue.enqueue({
-              sub: sub.name,
-              ba: sub.ba.beforet3,
-              iterations: 0,
-              pre: true
-            }, 2);
-          }
-        });
-
-        setPostQueueHasData(true);
-      } else {
-        grabber.current.grabLoop();
-      }
-    }, settings.grabIntervalInMinutes * 60 * 1000);
-
-    setPostInterval(interval);
-  }, []);
+  }
 
   return <>
     <Head

@@ -2,10 +2,9 @@ import { cleanPost } from "./postFunctions";
 import { addApplicableFilter } from "../filters";
 import { getSub } from "../subHelpers";
 
-// TODO: It seems like there is some race condition where multiple of these grabLoops are happening at the same time
-//    Not sure if its the interval issue again, or if somehow the loop is calling itself multiple times?
 export default class Grabber {
     constructor(
+        settings,
         subs,
         setSubs,
         posts,
@@ -14,6 +13,7 @@ export default class Grabber {
         setPostQueueHasData,
         filters
     ) {
+        this.settings = settings;
         this.subs = subs;
         this.setSubs = setSubs;
         this.posts = posts;
@@ -64,11 +64,32 @@ export default class Grabber {
         }
 
         fetch(url)
-            .then(resp => resp.json())
             .then(resp => {
-                // TODO: Error code handling
-                //      404, remove sub
-                //      429, no need to do anything, give up
+                if(!resp.ok) {
+                    if(resp.status === 403) {
+                        // This is a really weird case - not sure why these pop up?
+                        this.finishRetrieval(sub, "403 error, assuming private.", false, false);
+                    } else if(resp.status === 404) {
+                        if(this.settings.removeSubOn404) {
+                            console.log(`Removing ${sub} due to 404 error.`);
+                            this.setSubs((prev) => prev.filter((csub) => csub.name !== sub));
+                        }
+                        this.finishRetrieval(sub, `404 error${this.settings.removeSubOn404 ? ', removing sub' : ''}.`, false);
+                    } else if(resp.status === 429) {
+                        console.log("429 error, rate limited, waiting until next interval.");
+                        this.finishRetrieval(sub, `Error code ${resp.status}.`, false, false);
+                    } else {
+                        console.log(`Uncaught error code: ${resp.status}`);
+                        console.log(resp);
+                        this.finishRetrieval(sub, `Error code ${resp.status}.`, false, true);
+                    }
+                    return;
+                }
+
+                return resp.json();
+            })
+            .then(resp => {
+                if(!resp) return;
                 this.processFetch(
                     postType,
                     sub,
@@ -76,7 +97,10 @@ export default class Grabber {
                     iterations
                 );
             })
-            .catch(error => console.log(error)) // I don't think this actually does anything, but we will keep it for now
+            .catch(error => {
+                // For some reason 403 + 429 errors are getting caught here instead of above?
+                this.finishRetrieval(sub, `Transit Error.`, false, false);
+            })
     }
 
     processFetch(
@@ -101,10 +125,10 @@ export default class Grabber {
                         savior: true
                     }, 1);
                 } else {
-                    this.finishRetrieval(sub, "No data returned.", postType !== 'Continual');
+                    this.finishRetrieval(sub, "No data returned.", postType !== 'Continual', true);
                 }
             } else {
-                this.finishRetrieval(sub, "No data returned.", postType !== 'Continual');
+                this.finishRetrieval(sub, "No data returned.", postType !== 'Continual', true);
             }
             return;
         }
@@ -133,7 +157,7 @@ export default class Grabber {
         }
 
         if (filtered.length === 0) {
-            this.finishRetrieval(sub, "0 posts, assuming loop.", postType !== 'Continual');
+            this.finishRetrieval(sub, "0 posts, assuming loop.", postType !== 'Continual', true);
             return;
         }
 
@@ -167,7 +191,7 @@ export default class Grabber {
         }
 
         if (direction === undefined || direction === null) {
-            this.finishRetrieval(sub, `No more ${(postType === 'Continual' ? 'before' : 'after')}.`, postType !== 'Continual');
+            this.finishRetrieval(sub, `No more ${(postType === 'Continual' ? 'before' : 'after')}.`, postType !== 'Continual', true);
             return;
         }
 
@@ -184,12 +208,15 @@ export default class Grabber {
     finishRetrieval(
         sub,
         reason,
-        setEnd
+        setEnd,
+        grabAnother
     ) {
+        let now = new Date();
         console.log("-=-=-=-=-=-=-=-=-=-=-");
         console.log("Stopping Retrieval");
         console.log(`Sub: ${sub}`);
         console.log(`Reason: ${reason}`);
+        console.log(`Time: ${now.toLocaleString()}`)
         console.log("-=-=-=-=-=-=-=-=-=-=-");
         if (setEnd) {
             this.setSubs((prev) => prev.map((csub) => {
@@ -199,6 +226,8 @@ export default class Grabber {
                 return csub;
             }));
         }
-        this.grabLoop();
+        if(grabAnother) {
+            this.grabLoop();
+        }
     }
 }
