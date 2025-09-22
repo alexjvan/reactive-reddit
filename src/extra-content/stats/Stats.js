@@ -1,28 +1,29 @@
 import { useMemo } from 'react';
 import './Stats.css';
-import { addApplicableFilter } from '../../app/filters';
+import { addNewFilter } from '../../app/filters';
 
 export default function Stats({
-    subs,
+    settings,
     setFilters,
     posts,
-    setPosts
+    setPosts,
+    postsPerSub
 }) {
     const _postsPerSub = useMemo(() =>
-        postsPerSub().map(({ sub, count }) => (
-            <div className='stats-row' key={sub}>
+        postsPerSub.map(({ sub, count }) => 
+            <div className='stats-row' key={"pps" + sub}>
                 <div className='stats-left'>{sub}</div>
                 <div className='stats-right'>{count}</div>
             </div>
-        )),
-        [posts, subs]
+        ),
+        [postsPerSub]
     );
 
     const _postsPerTag = useMemo(() =>
         Object.entries(postsPerTag())
             .sort((a, b) => b[1] - a[1])
-            .map(([tag, count]) => (
-                <div className='stats-row' key={tag}>
+            .map(([tag, count]) => 
+                <div className='stats-row' key={"ppt" + tag}>
                     <div className='stats-left'>{tag}</div>
                     <div className='stats-right'>
                         <button className='stats-addFilter' onClick={() => addTagFilter(tag)}>
@@ -31,53 +32,51 @@ export default function Stats({
                         {count}
                     </div>
                 </div>
-            )),
+            ),
         [posts]
     );
 
+    const _commonKeywords = useMemo(() =>
+        Object.entries(commonKeywords())
+            .sort((a, b) => b[1] - a[1])
+            .map(([word, count]) => 
+                <div className='stats-row' key={"keywords"+ word}>
+                    <div className='stats-left'>{word}</div>
+                    <div className='stats-right'>
+                        <button className='stats-addFilter' onClick={() => addTitleFilter(word)}>
+                            +Filter
+                        </button>
+                        {count}
+                    </div>
+                </div>
+            ),
+            [posts]
+    );
+
     function addTagFilter(tag) {
-        let newFilter = {
-            category: 'Tag',
-            filter: tag,
-            desired: false,
-            count: 0
-        };
-
-        setFilters((prev) => [
-            ...prev,
-            newFilter
-        ]);
-        setPosts((prev) => prev.map((post) => {
-            if (post.filteredFor.length > 0 || post.disabled)
-                return post;
-
-            post.filteredFor = addApplicableFilter([newFilter], post);
-
-            return post;
-        }));
+        addNewFilter(
+            {
+                category: 'Tag',
+                filter: tag,
+                desired: false,
+                count: 0
+            },
+            setFilters,
+            setPosts
+        );
     }
 
-    function postsPerSub() {
-        let postSubs = posts.filter((p) => !p.disabled && p.filteredFor.length === 0).map((p) => p.subreddit);
-        let reduced = postSubs.reduce((acc, curr) => {
-            acc[curr] = (acc[curr] || 0) + 1;
-            return acc;
-        }, {});
-
-        // Fill missing subs with 0 count
-        subs.forEach((s) => {
-            const existingKey = Object.keys(reduced).find(
-                (k) => k.toLowerCase() === s.name.toLowerCase()
-            );
-
-            const key = existingKey ?? s.name;
-            if (!reduced[key]) reduced[key] = 0;
-        });
-
-        // Sort entries by count in descending order
-        return Object.entries(reduced)
-            .sort((a, b) => b[1] - a[1])
-            .map(([sub, count]) => ({ sub, count }));
+    function addTitleFilter(word) {
+        addNewFilter(
+            {
+                category: 'Title',
+                filter: word,
+                desired: false,
+                count: 0
+            },
+            setFilters,
+            setPosts
+        );
     }
 
     function postsPerTag() {
@@ -105,22 +104,49 @@ export default function Stats({
             }, {});
     }
 
-    // TODO: Common keywords in titles
-    //      Probably want to ignore words less than 3 letters (4?) to get rid of common words
-    //      will need to remove punctuation at the end as well
-    //      For example:
-    //         "Welcome to Seattle", "Best food in Seattle", "Seattle sucks!"
-    //         "Seattle" -> 3
-    //         "Best" -> 1
-    //         "food" -> 1
-    //         "Welcome" -> 1
-    //         "sucks" -> 1
+    function commonKeywords() {
+        const wordCounts = {};
+
+        posts
+            .filter((p) => !p.disabled && p.filteredFor.length === 0)
+            .forEach(post => {
+            const words = post.title
+                .toLowerCase()
+                // This doesn't work. If you want to filter these items, it needs to match
+                // .replace(/[^a-z0-9\s]/g, '')   // Remove punctuation
+                .split(/\s+/);                  // Split by whitespace
+
+            words.forEach(word => {
+                if (word.length <= settings.commonKeywordsIgnoreLength) return;
+
+                // Capitalize first letter only
+                const normalizedWord = word.charAt(0).toUpperCase() + word.slice(1);
+
+                wordCounts[normalizedWord] = (wordCounts[normalizedWord] || 0) + 1;
+            });
+        });
+
+        return wordCounts;
+    }
+    
     return <div id="statistics">
         <div className='stats-section'>
-            {_postsPerSub}
+            <div className='stats-header'>Posts Per Sub</div>
+            <div className='stats-container'>
+                {_postsPerSub}
+            </div>
         </div>
         <div className='stats-section'>
-            {_postsPerTag}
+            <div className='stats-header'>Posts Per Tag</div>
+            <div className='stats-container'>
+                {_postsPerTag}
+            </div>
+        </div>
+        <div className='stats-section'>
+            <div className='stats-header'>Common Keywords</div>
+            <div className='stats-container'>
+                {_commonKeywords}
+            </div>
         </div>
     </div>;
 }

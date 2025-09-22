@@ -1,3 +1,22 @@
+export function addNewFilter(newFilter, setFilters, setPosts) {
+    let count = 0;
+    setPosts((prev) => prev.map((post) => {
+        if (post.filteredFor.length > 0 || post.disabled)
+            return post;
+
+        post.filteredFor = addApplicableFilter([newFilter], post);
+
+        count += post.filteredFor.length;
+
+        return post;
+    }));
+    newFilter.count = count;
+    setFilters((prev) => [
+        ...prev,
+        newFilter
+    ]);
+}
+
 export function addApplicableFilter(filters, post) {
     var foundFilter = undefined;
     (filters ? filters : []).find((filter) => {
@@ -36,6 +55,8 @@ function shouldAddFilter(filter, post) {
             Idea 1, I change the includes to be regex inclusive, and replace the items with their value?
             Idea 2, add them to evaluative checks, figure that out first
         4. How useful is &&? /Maybe/ for or filters? Don't really see a use case for it? Just add another filter?
+            Subthough: Maybe complex-filters? Text||Title wants Solved&&Help?
+                But why wouldn't you just do Text||Title wants Solved + Text||Title wants Help?
     */
 
     let checkContent = '';

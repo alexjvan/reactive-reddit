@@ -11,7 +11,8 @@ export default class Grabber {
         setPosts,
         postQueue,
         setPostQueueHasData,
-        filters
+        filters,
+        setFilters
     ) {
         this.settings = settings;
         this.subs = subs;
@@ -21,6 +22,7 @@ export default class Grabber {
         this.postQueue = postQueue;
         this.setPostQueueHasData = setPostQueueHasData;
         this.filters = filters;
+        this.setFilters = setFilters;
     }
 
     grabLoop(adding, priority) {
@@ -143,6 +145,14 @@ export default class Grabber {
             returning.duplicates = 0;
             returning.color = setting.color;
             returning.filteredFor = addApplicableFilter(this.filters, returning);
+
+            if(returning.filteredFor.length > 0) {
+                this.setFilters((prev) => prev.map((filter) => {
+                    filter.count = filter.count + (returning.filteredFor.includes(filter.filter) ? 1 : 0);
+                    return filter;
+                }));
+            }
+
             return returning;
         });
 

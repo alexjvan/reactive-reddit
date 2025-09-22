@@ -3,7 +3,7 @@ import GroupSelector from './GroupSelector.js';
 import QuickAdd from './QuickAdd.js';
 import QuickFilter from './QuickFilter.js';
 import { randSixHash } from '../app/colors.js';
-import { addApplicableFilter } from '../app/filters.js';
+import { addNewFilter } from '../app/filters.js';
 import { useMemo } from 'react';
 
 // TODO: Button to stop grabber
@@ -107,25 +107,16 @@ export default function Head({
             }
 
             if (!contains) {
-                let newFilter = {
-                    category: section,
-                    filter: input,
-                    desired: desired,
-                    count: 0
-                };
-
-                setFilters((prev) => [
-                    ...prev,
-                    newFilter
-                ]);
-                setPosts((prev) => prev.map((post) => {
-                    if (post.filteredFor.length > 0 || post.disabled)
-                        return post;
-
-                    post.filteredFor = addApplicableFilter([newFilter], post);
-
-                    return post;
-                }));
+                addNewFilter(
+                    {
+                        category: section,
+                        filter: input,
+                        desired: desired,
+                        count: 0
+                    },
+                    setFilters,
+                    setPosts
+                );
             }
         }
     }
@@ -152,8 +143,8 @@ export default function Head({
         </div>;
     }, [subs, postQueue.length()]);
 
-    // TODO: Display only-text or only-media posts (need proper settings)
-    // TODO: Sorting options (need proper settings)
+    // TODO: Display only-text or only-media posts
+    // TODO: Sorting options
     return <div id="header">
         <div id="title">ReactiveReddit by <a href="alexvanmatre.com">alexvanmatre.com</a></div>
         <div id="quickadd">

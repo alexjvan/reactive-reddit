@@ -4,7 +4,7 @@ import Footerlink from './Footerlink';
 export default function Foot({
     setExtraDisplay
 }) {
-    const sections = ["Settings", "Stats"];
+    const sections = ["Settings", "Stats", "Help"];
 
     return <div id="footer">
         {sections.map((section) =>

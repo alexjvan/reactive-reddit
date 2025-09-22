@@ -28,3 +28,14 @@ export function putInStorage(group, key, obj) {
         console.error(`Error storing key "${group + key}" in localStorage:`, error);
     }
 }
+
+export function removeGroupFromStorage(group) {
+    const keys = ['subs', 'filters', 'posts', 'minUsers'];
+    keys.forEach((key) => {
+        removeItemFromStorage(group + key);
+    });
+}
+
+export function removeItemFromStorage(group, key) {
+    localStorage.removeItem(group + key);
+}

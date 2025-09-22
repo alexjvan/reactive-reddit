@@ -1,67 +1,70 @@
 import { useMemo } from 'react';
 import './Settings.css';
-import './SettingsSection.js';
-import SettingsSection from './SettingsSection.js';
-import { addApplicableFilter } from '../../app/filters.js';
+import GroupsDisplay from './GroupsDisplay.js';
+import GroupInternalsDisplay from './GroupInternalsDisplay.js';
+import SettingDisplay from './SettingDisplay.js';
 
 export default function Settings({
+    settings,
+    setSettings,
+    defaultSettings,
+    groups,
+    setGroups,
+    activeGroup,
     subs,
     setSubs,
     filters,
     setFilters,
-    setPosts
+    posts,
+    setPosts,
+    postsPerSub
 }) {
-    const sortedSubs = useMemo(() =>
-        subs.map(s => s.name).sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase())),
-        [subs]
-    );
-    const sortedFilters = useMemo(() =>
-        filters.map(f => `${f.filter} [${f.category}]`).sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase())),
-        [filters]
+    const settingsDisplay = useMemo(
+        () => <SettingDisplay
+            settings={settings}
+            setSettings={setSettings}
+            defaultSettings={defaultSettings}
+        />,
+        [settings, setSettings, defaultSettings]
     );
 
-    function removeSub(sub) {
-        setSubs((current) => current.filter((s) => s.name !== sub));
-    }
+    const groupsDisplay = useMemo(() =>
+        <GroupsDisplay
+            groups={groups}
+            setGroups={setGroups}
+            activeGroup={activeGroup}
+            subs={subs}
+            filters={filters}
+            posts={posts}
+            clearFilters={clearFilters}
+        />,
+        [groups, setGroups, activeGroup, subs, filters, posts, clearFilters]
+    );
 
-    function removeFilter(filter) {
-        let parsed = filter.split(' [')[0];
-        setFilters((current) => current.filter((f) => f.filter !== parsed));
-        // TODO: All of these add-filter checks are the same. Should probably make this a separate function
+    const groupInternalsDisplay = useMemo(() =>
+        <GroupInternalsDisplay
+            subs={subs}
+            setSubs={setSubs}
+            filters={filters}
+            setFilters={setFilters}
+            setPosts={setPosts}
+            postsPerSub={postsPerSub}
+            clearFilters={clearFilters}
+        />,
+        [subs, setSubs, filters, setPosts, postsPerSub, clearFilters]
+    );
+
+    function clearFilters() {
+        setFilters([]);
         setPosts((prev) => prev.map((post) => {
-            var oldFilteredLength = post.filteredFor;
-
-            post.filteredFor = post.filteredFor.filter((f) => f !== parsed);
-
-            // Only try to add new filters if there was a filter before
-            if (post.filteredFor.length === 0 && oldFilteredLength === 1) {
-                post.filteredFor = addApplicableFilter(filters, post);
-            }
-
+            post.filteredFor = [];
             return post;
         }));
     }
 
-    // TODO: Actual settings
-    //      - Auto-refresh
-
-    // TODO: Groups
-    //    - Remove groups
-    //    - Transfer subs to different groups
-
-    // TODO: Rewrite SettingsSection to handle "extra info", ex: filters' category
-    // TODO: "Clear All" button
-    // TODO: Filter wants are not being represented
     return <div id="settings">
-        <SettingsSection
-            sectionName={"Subs"}
-            displayItem={sortedSubs}
-            filterFunction={removeSub}
-        />
-        <SettingsSection
-            sectionName={"Filters"}
-            displayItem={sortedFilters}
-            filterFunction={removeFilter}
-        />
+        {settingsDisplay}
+        {groupsDisplay}
+        {groupInternalsDisplay}
     </div>;
 }

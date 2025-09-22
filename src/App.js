@@ -12,16 +12,24 @@ import Head from './header/Head.js';
 
 // TODO: Save snapshot of storage to disk
 // TODO: Create way to load-from initial load-state
+//    Requires snapshotting storage to disk
+// TODO: Tag filters!
+//    Sometimes they aren't being caught
+//    I am pretty sure somtimes they get removed from the filters? Which would explain ^
+//    Sometimes they get duplicated into the stats?
+// TODO: Tooltips, how to use the app, help page
 export default function App() {
   // Static Vars
   const defaultSetting = {
     addAllFiltersPossible: false,
+    commonKeywordsIgnoreLength: 3,
     grabIntervalInMinutes: 15,
     postTypes: 'all',
     removeSubOn404: true,
     retrieveOnSubAddition: false,
+    sort: 'new',
     waitBeforeReGrabbingInMinutes: 15
-  }; // TODO, need a way to set these
+  };
 
   // Class Obj variables
   const [postQueue,] = useState(new PriorityQueue());
@@ -36,10 +44,7 @@ export default function App() {
   const previousActiveGroup = usePrevious(activeGroup);
 
   // Round 2 grabs
-  const [subs, setSubs] = useState(() => {
-    console.log("Resetting subs");
-    return undefined;
-  });
+  const [subs, setSubs] = useState(undefined);
   const [filters, setFilters] = useState(undefined);
   const [minimizedUsers, setMinimizedUsers] = useState(undefined);
   const [posts, setPosts] = useState(undefined);
@@ -83,13 +88,6 @@ export default function App() {
     },
     [subs]
   );
-  useEffect(
-    () => {
-      console.log('Current Subs');
-      console.log(subs);
-    },
-    [subs]
-  )
   // TODO: Create some way to not constantly be updating this during retrieval
   //    Either listen to setPostQueueHasData (better approach, needs error code handling to be done first)
   //    or maybe check value against value 1 second ago. If different, don't set
@@ -134,7 +132,8 @@ export default function App() {
         setPosts,
         postQueue,
         setPostQueueHasData,
-        filters
+        filters,
+        setFilters
       );
     }
   }, [subs, posts, filters]);
@@ -234,14 +233,21 @@ export default function App() {
       setExtraDisplay={setExtraDisplay}
     />
     <ExtraContent
+      settings={settings}
+      setSettings={setSettings}
+      defaultSettings={defaultSetting}
       extraDisplay={extraDisplay}
       setExtraDisplay={setExtraDisplay}
+      groups={groups}
+      setGroups={setGroups}
+      activeGroup={activeGroup}
       subs={subs}
       setSubs={setSubs}
       filters={filters}
       setFilters={setFilters}
       posts={posts}
       setPosts={setPosts}
+      setMinimizedUsers={setMinimizedUsers}
     />
   </>;
 }
