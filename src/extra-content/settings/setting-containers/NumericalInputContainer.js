@@ -9,7 +9,7 @@ export default function NumericalInputContainer({
     return <div className="settings-setcontainer">
         <input
             type='number'
-            value={settings[fieldName] || defaultSettings[fieldName]}
+            value={settings[fieldName] ?? defaultSettings[fieldName]}
             onChange={(e) =>
                 setSettings(current => ({
                     ...current,

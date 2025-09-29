@@ -1,7 +1,8 @@
 import { useMemo } from 'react';
-import { addApplicableFilter } from '../../app/filters.js';
+import { addFiltersAsRequested } from '../../app/filters.js';
 
 export default function GroupInternalsDisplay({
+    settings,
     subs,
     setSubs,
     filters,
@@ -11,7 +12,7 @@ export default function GroupInternalsDisplay({
     clearFilters
 }) {
     const sortedSubs = useMemo(() =>
-        (subs ? subs : [])
+        (subs ?? [])
             .map(s => s.name)
             .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
             .map((item) => {
@@ -34,7 +35,7 @@ export default function GroupInternalsDisplay({
     );
 
     const sortedFilters = useMemo(() =>
-        (filters ? filters : [])
+        (filters ?? [])
             .sort((a, b) => a.filter.toLowerCase().localeCompare(b.filter.toLowerCase()))
             .map((filter) => {
                 return <div className="settingsection-item" key={`ss-${filter.filter + filter.category}`}>
@@ -72,7 +73,7 @@ export default function GroupInternalsDisplay({
 
             // Only try to add new filters if there was a filter before
             if (post.filteredFor.length === 0 && oldFilteredLength === 1) {
-                post.filteredFor = addApplicableFilter(filters, post);
+                post.filteredFor = addFiltersAsRequested(settings, filters, post);
 
                 if (post.filteredFor.length > 0) {
                     setFilters((prev) => prev.map((filter) => {

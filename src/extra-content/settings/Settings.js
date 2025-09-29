@@ -43,6 +43,7 @@ export default function Settings({
 
     const groupInternalsDisplay = useMemo(() =>
         <GroupInternalsDisplay
+            settings={settings}
             subs={subs}
             setSubs={setSubs}
             filters={filters}

@@ -9,7 +9,7 @@ export default function CheckboxContainer({
     return <div className="settings-setcontainer">
         <input
             type="checkbox"
-            checked={settings[fieldName] || defaultSettings[fieldName]}
+            checked={settings[fieldName] ?? defaultSettings[fieldName]}
             onChange={() =>
                 setSettings(current => ({
                     ...current,

@@ -8,6 +8,7 @@ import { useMemo } from 'react';
 
 // TODO: Button to stop grabber
 export default function Head({
+    settings,
     groups,
     setGroups,
     activeGroup,
@@ -44,7 +45,7 @@ export default function Head({
         return <div className="qa-section" id="postCount">
             <div className="qa-title">Posts:</div>
             <div className="qa-options">
-                {(posts ? posts : []).filter((p) => !p.disabled && p.filteredFor.length == 0).length}
+                {(posts ?? []).filter((p) => !p.disabled && p.filteredFor.length == 0).length}
             </div>
         </div>;
     }, [posts]);
@@ -54,14 +55,9 @@ export default function Head({
             return null;
 
         if (section === "Subs") {
-            // TODO: Settings to start retrieval on adding sub
-            //    Right now how this works is that it assumes if data is already in the grabber,
-            //    we don't need to restart grabbing.
-            //
-            //    This causes issues with the groups though, especially with new groups
             let updates = input.split(',');
             updates.forEach((addition) => {
-                let contains = (subs ? subs : []).includes(addition);
+                let contains = (subs ?? []).includes(addition);
 
                 if (!contains) {
                     let newSub = {};
@@ -87,6 +83,10 @@ export default function Head({
 
                 if (!postQueueHasData) {
                     setPostQueueHasData(true);
+                } else if(settings.retrieveOnSubAddition) {
+                    // Toggle the post queue to re-trigger retrieval
+                    setPostQueueHasData(false);
+                    setPostQueueHasData(true);
                 }
             });
         } else if (input.startsWith("%opener%")) {
@@ -96,7 +96,7 @@ export default function Head({
             var text = input.substring(0, input.length - 8);
             closerTags.forEach((t) => quickAdd(section, text + t, desired));
         } else {
-            var preExistingFilters = (filters ? filters : []);
+            var preExistingFilters = (filters ?? []);
             let contains = false;
             for (var i = 0; i < preExistingFilters.length; i++) {
                 var fCheck = preExistingFilters[i];
@@ -108,6 +108,7 @@ export default function Head({
 
             if (!contains) {
                 addNewFilter(
+                    settings,
                     {
                         category: section,
                         filter: input,
@@ -131,8 +132,8 @@ export default function Head({
     }, [groups, activeGroup]);
 
     const progressBar = useMemo(() => {
-        const maxProgress = (subs ? subs : []).length * 2;
-        const value = maxProgress - (postQueue ? postQueue : []).length();
+        const maxProgress = (subs ?? []).length * 2;
+        const value = maxProgress - (postQueue ?? []).length();
         const percentage = maxProgress > 0 ? (value / maxProgress) * 100 : 0;
 
         return <div id="progressbar-container">

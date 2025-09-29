@@ -1,7 +1,24 @@
 #help {
-    align-items: center;
-    display: flex;
-    font-size: 36px;
     height: 100%;
-    justify-content: center;
+    overflow-y: scroll;
+    width: 100%;
 }
+    .help-section {
+        display: flex;
+        flex-direction: column;
+        padding: 15px 2%;
+        width: 96%;
+    }
+        .help-section-title {
+            font-size: 24px;
+        }
+        .help-section-content {
+            padding: 0px 3%;
+            width: 94%;
+        }
+            .help-section-content .help-section-title {
+                font-size: 20px;
+            }
+            .help-section-content p {
+                padding-top: 10px;
+            }

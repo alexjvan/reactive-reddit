@@ -31,14 +31,14 @@ export default function ExtraContent({
     );
 
     function grabPostsPerSub() {
-        let postSubs = (posts ? posts : []).filter((p) => !p.disabled && p.filteredFor.length === 0).map((p) => p.subreddit);
+        let postSubs = (posts ?? []).filter((p) => !p.disabled && p.filteredFor.length === 0).map((p) => p.subreddit);
         let reduced = postSubs.reduce((acc, curr) => {
             acc[curr] = (acc[curr] || 0) + 1;
             return acc;
         }, {});
 
         // Fill missing subs with 0 count
-        (subs ? subs : []).forEach((s) => {
+        (subs ?? []).forEach((s) => {
             const existingKey = Object.keys(reduced).find(
                 (k) => k.toLowerCase() === s.name.toLowerCase()
             );

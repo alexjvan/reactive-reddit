@@ -1,10 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import './App.css';
 import PriorityQueue from './app/PriorityQueue.js';
 import usePrevious from './app/usePrevious.js';
 import Grabber from './app/grabber/Grabber.js';
 import { getFromStorage, putInStorage } from './app/storage/storage.js';
-import { emptyValidation, padSubs, postValidation, reduceFilters, resumeRetrieval, shrinkPosts } from './app/storage/validators.js';
+import { emptyValidation, padSubs, postValidation, reduceFilters, resumeRetrieval, settingsValidation, shrinkPosts } from './app/storage/validators.js';
 import Body from './body/Body.js';
 import ExtraContent from './extra-content/ExtraContent.js';
 import Foot from './footer/Foot.js';
@@ -13,10 +13,6 @@ import Head from './header/Head.js';
 // TODO: Save snapshot of storage to disk
 // TODO: Create way to load-from initial load-state
 //    Requires snapshotting storage to disk
-// TODO: Tag filters!
-//    Sometimes they aren't being caught
-//    I am pretty sure somtimes they get removed from the filters? Which would explain ^
-//    Sometimes they get duplicated into the stats?
 // TODO: Tooltips, how to use the app, help page
 export default function App() {
   // Static Vars
@@ -37,8 +33,7 @@ export default function App() {
   const [extraDisplay, setExtraDisplay] = useState(null);
 
   // Load from Storage on init
-  // TODO: Lots of empty validations here. I should add some
-  const [settings, setSettings] = useState(() => getFromStorage('', 'settings', defaultSetting, emptyValidation))
+  const [settings, setSettings] = useState(() => getFromStorage('', 'settings', defaultSetting, settingsValidation))
   const [groups, setGroups] = useState(() => getFromStorage('', 'groups', [{ name: 'Default', active: true }], emptyValidation));
   const [activeGroup, setActiveGroup] = useState(null);
   const previousActiveGroup = usePrevious(activeGroup);
@@ -76,6 +71,10 @@ export default function App() {
   );
 
   // Save Objs
+  useEffect(
+    () => putInStorage('', 'settings', settings),
+    [settings]
+  );
   useEffect(
     () => putInStorage('', 'groups', groups),
     [groups]
@@ -147,7 +146,7 @@ export default function App() {
     postQueue.clear();
     setPostQueueHasData(false); // This /should/ help with switching to/from groups
 
-    if ((subs ? subs : []).length > 0) {
+    if ((subs ?? []).length > 0) {
       enqueueSubs();
     }
   }, [activeGroup]);
@@ -155,7 +154,7 @@ export default function App() {
   // Run search
   useEffect(
     () => {
-      if (!postQueue.isEmpty()) {
+      if (postQueueHasData && !postQueue.isEmpty()) {
         grabber.current.grabLoop();
       }
     },
@@ -185,7 +184,7 @@ export default function App() {
     early.setMinutes(early.getMinutes() - settings.waitBeforeReGrabbingInMinutes);
     let earlyepoch = Math.floor(early / 1000);
 
-    (subs ? subs : []).forEach((sub) => {
+    (subs ?? []).forEach((sub) => {
         if (!sub.reachedEnd) {
           postQueue.enqueue({
             sub: sub.name,
@@ -203,11 +202,14 @@ export default function App() {
         }
       });
 
-      setPostQueueHasData(true);
+      if((subs ?? []).length > 0) {
+        setPostQueueHasData(true);
+      }
   }
 
   return <>
     <Head
+      settings={settings}
       groups={groups}
       setGroups={setGroups}
       activeGroup={activeGroup}

@@ -1,4 +1,4 @@
-import { addApplicableFilter } from "../filters";
+import { addFiltersAsRequested } from "../filters";
 import { getSub } from "../subHelpers";
 import { cleanPost } from "../grabber/postFunctions";
 import { randSixHash } from "../colors";
@@ -13,7 +13,13 @@ export function postValidation(data, fallback, subs, filters) {
         if (post.selftext_html !== undefined) delete post.selftext_html;
         if (post.color === undefined) post.color = getSub(subs, post.subreddit).color;
         if (post.duplicates === undefined) post.duplicates = 0;
-        post.filteredFor = addApplicableFilter(filters, post);
+        post.filteredFor = addFiltersAsRequested(
+            // Instead of force-piping settings here, creating default object
+            //      setting to false since most should already be filtered
+            { addAllFiltersPossible: false }, 
+            filters,
+            post
+        );
         cleanPost(post);
         return post;
     });
@@ -44,13 +50,23 @@ function removeInternalFilters(filters) {
 
         const keeping = group
             // Sort smallest to biggest, so we can search pre-existing filters
-            .sort((a, b) => b.filter.length - a.filter.length)
+            .sort((a, b) => a.filter.length - b.filter.length)
             .reduce((keep, filter) => {
-                const exists = keep.find(f => f.filter.includes(filter.filter));
-                if (exists) {
-                    exists.count += filter.count;
+                // Tags are exact matches, only check for exact matches
+                if(filter.category === 'Tag') {
+                    const exists = keep.find(f => f.filter === filter.filter);
+                    if (exists) {
+                        exists.count += filter.count;
+                    } else {
+                        keep.push({ ...filter });
+                    }
                 } else {
-                    keep.push({ ...filter });
+                    const exists = keep.find(f => f.filter.includes(filter.filter));
+                    if (exists) {
+                        exists.count += filter.count;
+                    } else {
+                        keep.push({ ...filter });
+                    }
                 }
                 return keep;
             }, []);

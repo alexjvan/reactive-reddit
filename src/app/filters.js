@@ -1,12 +1,15 @@
-export function addNewFilter(newFilter, setFilters, setPosts) {
+export function addNewFilter(settings, newFilter, setFilters, setPosts) {
     let count = 0;
     setPosts((prev) => prev.map((post) => {
-        if (post.filteredFor.length > 0 || post.disabled)
+        if (!settings.addAllFiltersPossible && post.filteredFor.length > 0 || post.disabled)
             return post;
 
-        post.filteredFor = addApplicableFilter([newFilter], post);
+        let applicable = addApplicableFilter([newFilter], post);
 
-        count += post.filteredFor.length;
+        if(applicable.length > 0) {
+            post.filteredFor = [...post.filteredFor, applicable];
+            count++;
+        }
 
         return post;
     }));
@@ -17,9 +20,21 @@ export function addNewFilter(newFilter, setFilters, setPosts) {
     ]);
 }
 
-export function addApplicableFilter(filters, post) {
+export function addFiltersAsRequested(settings, filters, post) {
+    return settings.addAllFiltersPossible 
+        ? addAllApplicableFilters(filters, post)
+        : addApplicableFilter(filters, post);
+}
+
+function addAllApplicableFilters(filters, post) {
+    return (filters ?? [])
+        .filter(filter => shouldAddFilter(filter, post))
+        .map(filter => filter.filter);
+}
+
+function addApplicableFilter(filters, post) {
     var foundFilter = undefined;
-    (filters ? filters : []).find((filter) => {
+    (filters ?? []).find((filter) => {
         var check = shouldAddFilter(filter, post);
         if (check) foundFilter = filter;
 
@@ -38,6 +53,9 @@ function shouldAddFilter(filter, post) {
         ]);
 
         return desired ? !tags.has(filterText.toLowerCase()) : tags.has(filterText.toLowerCase());
+    } else if(category === 'Author') {
+        let authorMatch = post.author === filterText;
+        return desired !== authorMatch;
     }
 
     // TODO: More Variable filters
@@ -73,11 +91,8 @@ function shouldAddFilter(filter, post) {
 function getTextContent(category, post) {
     var content = '';
     switch (category) {
-        case 'Author':
-            content = post.author?.toLowerCase() || '';
-            break;
         case 'Title':
-            content = post.title?.toLowerCase() || '';
+            content = post.title?.toLowerCase().replaceAll('&amp;', '&').replaceAll('’', '\'') || '';
             break;
         case 'Text':
             content = post.selftext?.toLowerCase() || '';

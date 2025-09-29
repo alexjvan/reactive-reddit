@@ -38,7 +38,7 @@ export default function Body({
     });
 
     const users = useMemo(() =>
-        (posts ? posts : [])
+        (posts ?? [])
             .filter((p) => (!p.disabled && p.filteredFor.length === 0))
             .sort((a, b) => b.created_utc - a.created_utc)
             .reduce((currentUsers, post) => {

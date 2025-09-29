@@ -55,6 +55,7 @@ export default function Stats({
 
     function addTagFilter(tag) {
         addNewFilter(
+            settings,
             {
                 category: 'Tag',
                 filter: tag,
@@ -68,6 +69,7 @@ export default function Stats({
 
     function addTitleFilter(word) {
         addNewFilter(
+            settings,
             {
                 category: 'Title',
                 filter: word,

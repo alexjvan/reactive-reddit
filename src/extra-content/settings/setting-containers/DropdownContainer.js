@@ -9,7 +9,7 @@ export default function DropdownContainer({
 }) {
     return <div className="settings-setcontainer">
         <select
-            value={settings[fieldName] || defaultSettings[fieldName]}
+            value={settings[fieldName] ?? defaultSettings[fieldName]}
             onChange={(e) =>
                 setSettings((current) => ({
                     ...current,

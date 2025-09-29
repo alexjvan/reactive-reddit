@@ -1,5 +1,5 @@
 import { cleanPost } from "./postFunctions";
-import { addApplicableFilter } from "../filters";
+import { addFiltersAsRequested } from "../filters";
 import { getSub } from "../subHelpers";
 
 export default class Grabber {
@@ -144,7 +144,7 @@ export default class Grabber {
             returning.disabled = false;
             returning.duplicates = 0;
             returning.color = setting.color;
-            returning.filteredFor = addApplicableFilter(this.filters, returning);
+            returning.filteredFor = addFiltersAsRequested(this.settings, this.filters, returning);
 
             if(returning.filteredFor.length > 0) {
                 this.setFilters((prev) => prev.map((filter) => {
