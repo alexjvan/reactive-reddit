@@ -1,7 +1,14 @@
+import { randSixHash } from "../colors";
+import { 
+    FilterCategoryAuthor, 
+    FilterCategoryTag, 
+    FilterCategoryText, 
+    FilterCategoryTextOrTitle,
+    FilterCategoryTitle,
+} from "../constants";
 import { addFiltersAsRequested } from "../filters";
 import { getSub } from "../subHelpers";
-import { cleanPost } from "../grabber/postFunctions";
-import { randSixHash } from "../colors";
+import { cleanPost } from "../postHelpers/postFunctions";
 
 export function emptyValidation(data, fallback) {
     return data;
@@ -79,15 +86,15 @@ function removeInternalFilters(filters) {
 
 function sortPrioirty(category) {
     switch (category) {
-        case "Tag":
+        case FilterCategoryTag:
             return 10;
-        case "Author":
+        case FilterCategoryAuthor:
             return 20;
-        case "Title":
+        case FilterCategoryTitle:
             return 30;
-        case "Text":
+        case FilterCategoryText:
             return 40;
-        case "Text||Title":
+        case FilterCategoryTextOrTitle:
             return 50;
         default:
             return 1000;

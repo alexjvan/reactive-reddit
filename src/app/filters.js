@@ -1,3 +1,12 @@
+import { 
+    FilterCategoryAuthor, 
+    FilterCategoryTag, 
+    FilterCategoryText, 
+    FilterCategoryTitle,
+    FilterTagStart,
+    FilterTagEnd
+} from "./constants";
+
 export function addNewFilter(settings, newFilter, setFilters, setPosts) {
     let count = 0;
     setPosts((prev) => prev.map((post) => {
@@ -46,14 +55,14 @@ function addApplicableFilter(filters, post) {
 function shouldAddFilter(filter, post) {
     const { category, desired, filter: filterText } = filter;
 
-    if (category === 'Tag') {
+    if (category === FilterCategoryTag) {
         const tags = new Set([
             ...(post.link_flair_richtext?.map((t) => t.t.toLowerCase()) || []),
             ...(post.link_flair_text ? [post.link_flair_text.toLowerCase()] : [])
         ]);
 
         return desired ? !tags.has(filterText.toLowerCase()) : tags.has(filterText.toLowerCase());
-    } else if(category === 'Author') {
+    } else if(category === FilterCategoryAuthor) {
         let authorMatch = post.author === filterText;
         return desired !== authorMatch;
     }
@@ -91,17 +100,18 @@ function shouldAddFilter(filter, post) {
 function getTextContent(category, post) {
     var content = '';
     switch (category) {
-        case 'Title':
+        case FilterCategoryTitle:
             content = post.title?.toLowerCase().replaceAll('&amp;', '&').replaceAll('’', '\'') || '';
             break;
-        case 'Text':
+        case FilterCategoryText:
             content = post.selftext?.toLowerCase() || '';
             break;
         default:
+            console.log(`Unknown filter category, defaulting to false. Category: ${category}`);
             return false; // Invalid category
     }
 
-    return `%start%${content}%end%`;
+    return FilterTagStart + content + FilterTagEnd;
 }
 
 function filterMatches(filterText, checkAgainst) {

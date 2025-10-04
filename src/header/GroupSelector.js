@@ -1,10 +1,9 @@
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 export default function GroupSelector({
   groups,
   setGroups,
-  activeGroup,
-  setActiveGroup
+  activeGroup
 }) {
   const [inputValue, setInputValue] = useState('');
 

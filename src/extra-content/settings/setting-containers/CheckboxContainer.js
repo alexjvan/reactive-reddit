@@ -1,34 +1,33 @@
+import { DefaultSettings } from "../../../app/constants";
+
 export default function CheckboxContainer({
     settings,
     setSettings,
-    defaultSettings,
-    fieldName,
-    title,
-    description
+    settingInfo
 }) {
     return <div className="settings-setcontainer">
         <input
             type="checkbox"
-            checked={settings[fieldName] ?? defaultSettings[fieldName]}
+            checked={settings[settingInfo.fieldName] ?? DefaultSettings[settingInfo.fieldName]}
             onChange={() =>
                 setSettings(current => ({
                     ...current,
-                    [fieldName]: !current[fieldName],
+                    [settingInfo.fieldName]: !current[settingInfo.fieldName],
                 }))
             }
-            name={fieldName}
+            name={settingInfo.fieldName}
             className="settings-checkbox"
         />
 
         <div className='settings-label'>
             <div className='settingslabel-title'>
-                {title}
+                {settingInfo.title}
             </div>
             <div className='settingslabel-description'>
-                {description}
+                {settingInfo.description}
             </div>
             <div className='setingslabel-default'>
-                Default: {defaultSettings[fieldName] ? 'On' : 'Off'}
+                Default: {DefaultSettings[settingInfo.fieldName] ? 'On' : 'Off'}
             </div>
         </div>
     </div>;

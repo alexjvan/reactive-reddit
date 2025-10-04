@@ -1,10 +1,28 @@
 import { useEffect, useRef, useState } from 'react';
 import './App.css';
-import PriorityQueue from './app/PriorityQueue.js';
+import { 
+  DefaultGroups, 
+  DefaultSettings,
+  GrabberCategoryGroups,
+  GrabberCategoryFilters,
+  GrabberCategoryMinUsers,
+  GrabberCategoryPosts,
+  GrabberCategorySettings,
+  GrabberCategorySubs
+} from './app/constants.js';
+import PriorityQueue from './app/grabber/PriorityQueue.js';
 import usePrevious from './app/usePrevious.js';
 import Grabber from './app/grabber/Grabber.js';
 import { getFromStorage, putInStorage } from './app/storage/storage.js';
-import { emptyValidation, padSubs, postValidation, reduceFilters, resumeRetrieval, settingsValidation, shrinkPosts } from './app/storage/validators.js';
+import {
+  emptyValidation,
+  padSubs,
+  postValidation,
+  reduceFilters,
+  resumeRetrieval,
+  settingsValidation,
+  shrinkPosts
+} from './app/storage/validators.js';
 import Body from './body/Body.js';
 import ExtraContent from './extra-content/ExtraContent.js';
 import Foot from './footer/Foot.js';
@@ -15,26 +33,14 @@ import Head from './header/Head.js';
 //    Requires snapshotting storage to disk
 // TODO: Tooltips, how to use the app, help page
 export default function App() {
-  // Static Vars
-  const defaultSetting = {
-    addAllFiltersPossible: false,
-    commonKeywordsIgnoreLength: 3,
-    grabIntervalInMinutes: 15,
-    postTypes: 'all',
-    removeSubOn404: true,
-    retrieveOnSubAddition: false,
-    sort: 'new',
-    waitBeforeReGrabbingInMinutes: 15
-  };
-
   // Class Obj variables
   const [postQueue,] = useState(new PriorityQueue());
   const [postQueueHasData, setPostQueueHasData] = useState(false);
   const [extraDisplay, setExtraDisplay] = useState(null);
 
   // Load from Storage on init
-  const [settings, setSettings] = useState(() => getFromStorage('', 'settings', defaultSetting, settingsValidation))
-  const [groups, setGroups] = useState(() => getFromStorage('', 'groups', [{ name: 'Default', active: true }], emptyValidation));
+  const [settings, setSettings] = useState(() => getFromStorage('', GrabberCategorySettings, DefaultSettings, settingsValidation))
+  const [groups, setGroups] = useState(() => getFromStorage('', GrabberCategoryGroups, DefaultGroups, emptyValidation));
   const [activeGroup, setActiveGroup] = useState(null);
   const previousActiveGroup = usePrevious(activeGroup);
 
@@ -62,27 +68,27 @@ export default function App() {
     () => {
       if (!activeGroup) return;
 
-      setSubs(getFromStorage(activeGroup, 'subs', [], resumeRetrieval, postQueue, setPostQueueHasData));
-      setFilters(getFromStorage(activeGroup, 'filters', [], emptyValidation));
-      setMinimizedUsers(getFromStorage(activeGroup, 'minUsers', [], emptyValidation))
-      setPosts(getFromStorage(activeGroup, 'posts', [], postValidation, subs, filters));
+      setSubs(getFromStorage(activeGroup, GrabberCategorySubs, [], resumeRetrieval, postQueue, setPostQueueHasData));
+      setFilters(getFromStorage(activeGroup, GrabberCategoryFilters, [], emptyValidation));
+      setMinimizedUsers(getFromStorage(activeGroup, GrabberCategoryMinUsers, [], emptyValidation))
+      setPosts(getFromStorage(activeGroup, GrabberCategoryPosts, [], postValidation, subs, filters));
     },
     [activeGroup]
   );
 
   // Save Objs
   useEffect(
-    () => putInStorage('', 'settings', settings),
+    () => putInStorage('', GrabberCategorySettings, settings),
     [settings]
   );
   useEffect(
-    () => putInStorage('', 'groups', groups),
+    () => putInStorage('', GrabberCategoryGroups, groups),
     [groups]
   );
   useEffect(
     () => {
       if (subs) {
-        putInStorage(activeGroup, 'subs', padSubs(subs, posts));
+        putInStorage(activeGroup, GrabberCategorySubs, padSubs(subs, posts));
       }
     },
     [subs]
@@ -94,7 +100,7 @@ export default function App() {
   useEffect(
     () => {
       if (posts && posts.length > 0) {
-        putInStorage(activeGroup, 'posts', shrinkPosts(posts))
+        putInStorage(activeGroup, GrabberCategoryPosts, shrinkPosts(posts))
       }
     },
     [posts]
@@ -102,7 +108,7 @@ export default function App() {
   useEffect(
     () => {
       if (filters && filters.length > 0) {
-        putInStorage(activeGroup, 'filters', reduceFilters(filters))
+        putInStorage(activeGroup, GrabberCategoryFilters, reduceFilters(filters))
       }
     },
     [filters]
@@ -110,7 +116,7 @@ export default function App() {
   useEffect(
     () => {
       if (minimizedUsers && minimizedUsers.length > 0) {
-        putInStorage(activeGroup, 'minUsers', minimizedUsers)
+        putInStorage(activeGroup, GrabberCategoryMinUsers, minimizedUsers)
       }
     },
     [minimizedUsers]
@@ -185,26 +191,26 @@ export default function App() {
     let earlyepoch = Math.floor(early / 1000);
 
     (subs ?? []).forEach((sub) => {
-        if (!sub.reachedEnd) {
-          postQueue.enqueue({
-            sub: sub.name,
-            ba: sub.ba.aftert3,
-            pre: false
-          }, 1);
-        }
-        if (sub.ba.beforeutc !== undefined && sub.ba.beforeutc < earlyepoch) {
-          postQueue.enqueue({
-            sub: sub.name,
-            ba: sub.ba.beforet3,
-            iterations: 0,
-            pre: true
-          }, 2);
-        }
-      });
-
-      if((subs ?? []).length > 0) {
-        setPostQueueHasData(true);
+      if (!sub.reachedEnd) {
+        postQueue.enqueue({
+          sub: sub.name,
+          ba: sub.ba.aftert3,
+          pre: false
+        }, 1);
       }
+      if (sub.ba.beforeutc !== undefined && sub.ba.beforeutc < earlyepoch) {
+        postQueue.enqueue({
+          sub: sub.name,
+          ba: sub.ba.beforet3,
+          iterations: 0,
+          pre: true
+        }, 2);
+      }
+    });
+
+    if ((subs ?? []).length > 0) {
+      setPostQueueHasData(true);
+    }
   }
 
   return <>
@@ -213,7 +219,6 @@ export default function App() {
       groups={groups}
       setGroups={setGroups}
       activeGroup={activeGroup}
-      setActiveGroup={setActiveGroup}
       subs={subs}
       setSubs={setSubs}
       filters={filters}
@@ -225,6 +230,7 @@ export default function App() {
       setPosts={setPosts}
     />
     <Body
+      settings={settings}
       posts={posts}
       setPosts={setPosts}
       setFilters={setFilters}
@@ -237,7 +243,6 @@ export default function App() {
     <ExtraContent
       settings={settings}
       setSettings={setSettings}
-      defaultSettings={defaultSetting}
       extraDisplay={extraDisplay}
       setExtraDisplay={setExtraDisplay}
       groups={groups}

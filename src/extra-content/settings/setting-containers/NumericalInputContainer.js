@@ -1,34 +1,33 @@
+import { DefaultSettings } from "../../../app/constants";
+
 export default function NumericalInputContainer({
     settings,
     setSettings,
-    defaultSettings,
-    fieldName,
-    title,
-    description
+    settingInfo
 }) {
     return <div className="settings-setcontainer">
         <input
             type='number'
-            value={settings[fieldName] ?? defaultSettings[fieldName]}
+            value={settings[settingInfo.fieldName] ?? DefaultSettings[settingInfo.fieldName]}
             onChange={(e) =>
                 setSettings(current => ({
                     ...current,
-                    [fieldName]: (e.target.value === "" || e.target.value < 0) ? defaultSettings[fieldName] : e.target.value,
+                    [settingInfo.fieldName]: (e.target.value === "" || e.target.value < 0) ? DefaultSettings[settingInfo.fieldName] : e.target.value,
                 }))
             }
-            name={fieldName}
+            name={settingInfo.fieldName}
             className="settings-numberinput"
         />
 
         <div className='settings-label'>
             <div className='settingslabel-title'>
-                {title}
+                {settingInfo.title}
             </div>
             <div className='settingslabel-description'>
-                {description}
+                {settingInfo.description}
             </div>
             <div className='setingslabel-default'>
-                Default: {defaultSettings[fieldName]}
+                Default: {DefaultSettings[settingInfo.fieldName]}
             </div>
         </div>
     </div>;

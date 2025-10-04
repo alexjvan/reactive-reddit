@@ -60,6 +60,10 @@
                         font-size: 16px;
                         margin-right: 10px;
                     }
+                        .settings-dropdown option {
+                            background-color: var(--dark-primary);
+                            color: var(--light-primary);
+                        }
                     .settings-numberinput {
                         background: transparent;
                         border-bottom: 2px solid var(--light-primary);

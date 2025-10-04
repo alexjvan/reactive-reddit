@@ -46,6 +46,8 @@ export function modLine(line) {
                         passedLinkText = true;
                     } else {
                         modded += '[' + linkText + ']';
+                        linkText = '';
+                        inLink = false;
                     }
                 } else {
                     word += char;

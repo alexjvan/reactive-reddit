@@ -1,7 +1,8 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { stringSimilarity } from "string-similarity-js";
 import './User.css';
 import Post from './Post/Post.js';
+import { FilterCategoryAuthor } from '../../app/constants.js';
 
 export default function User({
     username,
@@ -39,7 +40,7 @@ export default function User({
 
     function block() {
         let newFilter = {
-            category: 'Author',
+            category: FilterCategoryAuthor,
             filter: username,
             desired: false,
             count: 0
@@ -66,6 +67,9 @@ export default function User({
 
     function disablePost(t3) {
         let count = 0;
+        // This duplicate check was added when I was seeing multiple of the same post
+        //    This allowed me to remove one of the duplicates without removing every post
+        //    Not 100% sure if this is still necessary, but I don't think it hurts
         let duplicates = posts.filter((post) => post.name === t3).length !== 1;
         setPosts((current) => current.map((post) => {
             if (post.name === t3) {
@@ -116,6 +120,7 @@ export default function User({
                 return <Post
                     key={post.name}
                     postObj={post}
+                    setPosts={setPosts}
                     disablePost={disablePost}
                     loading="lazy"
                 />;

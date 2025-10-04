@@ -29,11 +29,17 @@ export function cleanPost(post) {
 
     // Comments
     delete post.allow_live_comments;
+    delete post.discussion_type;
     delete post.num_comments;
 
     // Crosspost
     delete post.is_crosspostable;
     delete post.num_crossposts;
+
+    // Flair
+    delete post.link_flair_css_class;
+    delete post.link_flair_template_id;
+    delete post.link_flair_type;
 
     // Gilds
     delete post.gilded;
@@ -45,16 +51,24 @@ export function cleanPost(post) {
     delete post.is_original_content;
     delete post.is_reddit_media_domain;
     delete post.media_only;
+    delete post.spoiler;
     delete post.thumbnail;
+
+    // Mod
+    delete post.can_mod_post;
+    delete post.mod_note;
 
     // Post Data -- Categorize?
     delete post.created;
     delete post.id;
     delete post.post_hint;
     delete post.selftext_html;
+    delete post.view_count;
 
     // Post Type
     delete post.archived;
+    delete post.category;
+    delete post.content_categories;
     delete post.clicked;
     delete post.edited;
     delete post.hidden;
@@ -79,6 +93,10 @@ export function cleanPost(post) {
     delete post.report_reasons;
     delete post.mod_reports;
 
+    // Robots
+    delete post.is_robot_indexable;
+    delete post.no_follow;
+
     // Score
     delete post.score;
     delete post.ups;
@@ -97,27 +115,17 @@ export function cleanPost(post) {
     delete post.thumbnail_height;
     delete post.thumbnail_width;
 
-    delete post.view_count;
-    delete post.can_mod_post;
+    // Other [Not really sure what these are]
+    // TODO - Categorize these
     delete post.pwls;
-    delete post.link_flair_css_class;
     delete post.is_meta;
-    delete post.category;
-    delete post.content_categories;
     delete post.is_self;
-    delete post.mod_note;
-    delete post.link_flair_type;
     delete post.wls;
     delete post.domain;
     delete post.suggested_sort;
-    delete post.no_follow;
-    delete post.link_flair_template_id;
     delete post.can_gild;
-    delete post.spoiler;
     delete post.treatment_tags;
     delete post.distinguished;
-    delete post.is_robot_indexable;
-    delete post.discussion_type;
     delete post.send_replies;
     delete post.contest_mode;
     delete post.stickied;

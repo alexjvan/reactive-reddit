@@ -1,3 +1,5 @@
+import { GrabberCategoryFilters, GrabberCategoryMinUsers, GrabberCategoryPosts, GrabberCategorySubs } from '../constants';
+
 const lzstring = require('lz-string');
 
 export function getFromStorage(group, key, fallback, validation, extraOne, extraTwo) {
@@ -30,7 +32,7 @@ export function putInStorage(group, key, obj) {
 }
 
 export function removeGroupFromStorage(group) {
-    const keys = ['subs', 'filters', 'posts', 'minUsers'];
+    const keys = [GrabberCategorySubs, GrabberCategoryFilters, GrabberCategoryPosts, GrabberCategoryMinUsers];
     keys.forEach((key) => {
         removeItemFromStorage(group + key);
     });

@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from 'react';
+import { TextModifierHeader, TextModifierHeaderPrefix, TextModifierIndented, TextModifierListItem } from '../../../app/constants';
 import { modLine } from '../../../app/postHelpers/textHelpers';
 
 export default function TextDisplay({
@@ -21,22 +22,22 @@ export default function TextDisplay({
                 moddedLine = moddedLine.trim();
                 foundModifiers = false;
                 if (moddedLine.startsWith('>')) {
-                    modifiers.push('indented');
+                    modifiers.push(TextModifierIndented);
                     moddedLine = moddedLine.substring(1);
                     foundModifiers = true;
                 }
                 if (moddedLine.startsWith('&gt;')) {
-                    modifiers.push('indented');
+                    modifiers.push(TextModifierIndented);
                     moddedLine = moddedLine.substring(4);
                     foundModifiers = true;
                 }
                 if (moddedLine.startsWith('*' && moddedLine.endsWith('*'))) {
-                    modifiers.push('header');
+                    modifiers.push(TextModifierHeader);
                     moddedLine = moddedLine.substring(1, moddedLine.length - 1);
                     foundModifiers = true;
                 }
                 if (moddedLine.startsWith('* ')) {
-                    modifiers.push('list-item');
+                    modifiers.push(TextModifierListItem);
                     moddedLine = moddedLine.substring(2);
                     foundModifiers = true;
                 }
@@ -46,10 +47,10 @@ export default function TextDisplay({
                         headerLevel++;
                         moddedLine = moddedLine.substring(1);
                     }
-                    modifiers.push('header-' + headerLevel);
+                    modifiers.push(TextModifierHeaderPrefix + headerLevel);
                     foundModifiers = true;
                 }
-            } while (foundModifiers);
+            } while (foundModifiers); // Loop through to catch multiple modifiers if present
 
             var htmlified = modLine(moddedLine, setMediaText);
             return { text: htmlified.html, modifiers: modifiers, media: htmlified.mediaLinks };

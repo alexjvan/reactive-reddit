@@ -20,9 +20,12 @@ Looking at the TODOs in this repo, summarizing to narrow down items to work on:
 - On initial load, snapshot storage. Create way to restore initial session
 - Stop grabber button
 - Setting Items
-    * Sorting Options
     * Display Options
     * I had one for auto-refresh? What does that mean?
+- Only keep posts before a certain time (setting?)
+    * Might be worth having a sub-setting to keep old posts from users who have recent posts as well
+        * This way you can view older posts from people still active, but remove inactive users
+- Categorize Left Over Post Cleaner Items
 
 ## Performance-Based Items:
 - Not constantly be saving data into storage during retrieval

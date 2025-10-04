@@ -1,10 +1,17 @@
+import { useMemo } from 'react';
 import './Head.css';
 import GroupSelector from './GroupSelector.js';
 import QuickAdd from './QuickAdd.js';
 import QuickFilter from './QuickFilter.js';
 import { randSixHash } from '../app/colors.js';
+import {
+    FilterCategorySub,
+    FilterTagCloser,
+    FilterTagOpener,
+    FilterTagsCloser,
+    FilterTagsOpener
+} from '../app/constants.js';
 import { addNewFilter } from '../app/filters.js';
-import { useMemo } from 'react';
 
 // TODO: Button to stop grabber
 export default function Head({
@@ -12,7 +19,6 @@ export default function Head({
     groups,
     setGroups,
     activeGroup,
-    setActiveGroup,
     subs,
     setSubs,
     filters,
@@ -23,9 +29,6 @@ export default function Head({
     posts,
     setPosts
 }) {
-    const openerTags = ['%start%', '[', '(', '{'];
-    const closerTags = ['%end%', ']', ')', '}'];
-
     const quickFilter = useMemo(() => {
         return <QuickFilter
             quickAdd={quickAdd}
@@ -34,8 +37,7 @@ export default function Head({
 
     const quickAddSection = useMemo(() => {
         return <QuickAdd
-            key={"Subs"}
-            section={"Subs"}
+            key={FilterCategorySub}
             quickAdd={quickAdd}
         />;
     }, []);
@@ -54,7 +56,7 @@ export default function Head({
         if (input === undefined || input === null || input === '' || input === ' ')
             return null;
 
-        if (section === "Subs") {
+        if (section === FilterCategorySub) {
             let updates = input.split(',');
             updates.forEach((addition) => {
                 let contains = (subs ?? []).includes(addition);
@@ -83,18 +85,18 @@ export default function Head({
 
                 if (!postQueueHasData) {
                     setPostQueueHasData(true);
-                } else if(settings.retrieveOnSubAddition) {
+                } else if (settings.retrieveOnSubAddition) {
                     // Toggle the post queue to re-trigger retrieval
                     setPostQueueHasData(false);
                     setPostQueueHasData(true);
                 }
             });
-        } else if (input.startsWith("%opener%")) {
+        } else if (input.startsWith(FilterTagOpener)) {
             var text = input.substring(8);
-            openerTags.forEach((t) => quickAdd(section, t + text, desired));
-        } else if (input.endsWith("%closer%")) {
+            FilterTagsOpener.forEach((t) => quickAdd(section, t + text, desired));
+        } else if (input.endsWith(FilterTagCloser)) {
             var text = input.substring(0, input.length - 8);
-            closerTags.forEach((t) => quickAdd(section, text + t, desired));
+            FilterTagsCloser.forEach((t) => quickAdd(section, text + t, desired));
         } else {
             var preExistingFilters = (filters ?? []);
             let contains = false;
@@ -127,7 +129,6 @@ export default function Head({
             groups={groups}
             setGroups={setGroups}
             activeGroup={activeGroup}
-            setActiveGroup={setActiveGroup}
         />
     }, [groups, activeGroup]);
 
@@ -144,8 +145,6 @@ export default function Head({
         </div>;
     }, [subs, postQueue.length()]);
 
-    // TODO: Display only-text or only-media posts
-    // TODO: Sorting options
     return <div id="header">
         <div id="title">ReactiveReddit by <a href="alexvanmatre.com">alexvanmatre.com</a></div>
         <div id="quickadd">

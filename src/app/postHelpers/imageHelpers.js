@@ -1,12 +1,11 @@
-const imgSuffixes = ['.jpeg', '.jpg', '.gif', '.png'];
-const videoSuffixes = ['.mp4', '.webm'];
+import { ImageSuffixes, VideoSuffixes } from "../../app/constants";
 
 export function isImageLink(url) {
-    return urlSuffixIn(url, imgSuffixes);
+    return urlSuffixIn(url, ImageSuffixes);
 }
 
 export function isVideoLink(url) {
-    return urlSuffixIn(url, videoSuffixes);
+    return urlSuffixIn(url, VideoSuffixes);
 }
 
 function urlSuffixIn(url, array) {

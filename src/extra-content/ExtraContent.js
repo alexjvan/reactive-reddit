@@ -1,13 +1,13 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import './ExtraContent.css';
 import Help from './help/Help';
 import Settings from './settings/Settings';
 import Stats from './stats/Stats';
+import { DefaultGroups, ExtraContentHelp, ExtraContentSettings, ExtraContentStats } from '../app/constants';
 
 export default function ExtraContent({
     settings,
     setSettings,
-    defaultSettings,
     extraDisplay,
     setExtraDisplay,
     groups,
@@ -58,7 +58,7 @@ export default function ExtraContent({
         setFilters([]);
         setMinimizedUsers([]);
         setSubs([]);
-        setGroups([{ name: 'Default', active: true }]);
+        setGroups(DefaultGroups);
     }
 
     const clearAll = useMemo(() =>
@@ -72,7 +72,6 @@ export default function ExtraContent({
         return <Settings
             settings={settings}
             setSettings={setSettings}
-            defaultSettings={defaultSettings}
             groups={groups}
             setGroups={setGroups}
             activeGroup={activeGroup}
@@ -108,15 +107,15 @@ export default function ExtraContent({
                 <div id="extratitle">{extraDisplay}</div>
                 <div id="extra-right">
                     <div id="extrainteraction">
-                        {extraDisplay === 'Settings' && clearAll}
+                        {extraDisplay === ExtraContentSettings && clearAll}
                     </div>
                     <button id="extraclose" className="clickable" onClick={() => setExtraDisplay(null)}>X</button>
                 </div>
             </div>
             <div id="extracontent">
-                {extraDisplay === 'Help' && help}
-                {extraDisplay === 'Settings' && settingsDisplay}
-                {extraDisplay === 'Stats' && stats}
+                {extraDisplay === ExtraContentHelp && help}
+                {extraDisplay === ExtraContentSettings && settingsDisplay}
+                {extraDisplay === ExtraContentStats && stats}
             </div>
         </div>
     );

@@ -1,14 +1,24 @@
 import CheckboxContainer from "./setting-containers/CheckboxContainer";
 import DropdownContainer from "./setting-containers/DropdownContainer";
 import NumericalInputContainer from "./setting-containers/NumericalInputContainer";
+import {
+    DefaultSettings,
+    SettingAddAllFiltersPossible,
+    SettingCommonKeywordsIgnoreLength,
+    SettingGrabIntervalInMinutes,
+    SettingPostTypes,
+    SettingRemoveSubOn404,
+    SettingRetrieveOnSubAddition,
+    SettingSort,
+    SettingWaitBeforeReGrabbingInMinutes
+} from "../../app/constants";
 
 export default function SettingDisplay({
     settings,
-    setSettings,
-    defaultSettings
+    setSettings
 }) {
     function resetSettings() {
-        setSettings(defaultSettings);
+        setSettings(DefaultSettings);
     }
 
     return <div className='settings-panel' id='settingspanel'>
@@ -25,97 +35,49 @@ export default function SettingDisplay({
                 </button>
             </div>
             <div className='settings-flexcontainer'>
+                {
+                    // Could generalize this more, but I want to control order settings appear in
+                    //     This should be fine for now
+                }
                 <CheckboxContainer
                     settings={settings}
                     setSettings={setSettings}
-                    defaultSettings={defaultSettings}
-                    fieldName={'addAllFiltersPossible'}
-                    title={'Add All Filters Possible'}
-                    description={'Adding all filters possible will add some time upon retrieval, but can eliminate some when removing filters in-use.'}
-                />
-                <CheckboxContainer
-                    settings={settings}
-                    setSettings={setSettings}
-                    defaultSettings={defaultSettings}
-                    fieldName={'removeSubOn404'}
-                    title={'Remove Sub on 404 (Not Found)'}
-                    description={'Remove a sub from the grabber when its not found. This can help performance, but means you will no longer try to get data from this subreddit.'}
+                    settingInfo={SettingAddAllFiltersPossible}
                 />
                 <CheckboxContainer
                     settings={settings}
                     setSettings={setSettings}
-                    defaultSettings={defaultSettings}
-                    fieldName={'retrieveOnSubAddition'}
-                    title={'Restart Retrieval on Addition of Sub'}
-                    description={'Try and restart the grab-loop when a new sub is added. May fix lag, but may cause rate-limiting from Reddit.'}
+                    settingInfo={SettingRemoveSubOn404}
+                />
+                <CheckboxContainer
+                    settings={settings}
+                    setSettings={setSettings}
+                    settingInfo={SettingRetrieveOnSubAddition}
                 />
                 <NumericalInputContainer
                     settings={settings}
                     setSettings={setSettings}
-                    defaultSettings={defaultSettings}
-                    fieldName={'commonKeywordsIgnoreLength'}
-                    title={'Common Keywords Ignore Length'}
-                    description={'When finding common keywords in titles (see Stats), max size of word to ignore. This helps ignore common words like \'the\'.'}
+                    settingInfo={SettingCommonKeywordsIgnoreLength}
                 />
                 <NumericalInputContainer
                     settings={settings}
                     setSettings={setSettings}
-                    defaultSettings={defaultSettings}
-                    fieldName={'grabIntervalInMinutes'}
-                    title={'Grab Interval In Minutes'}
-                    description={'How many minutes between each attempt at retrieving new information. Reddit seems to rate-limit users for extended periods if interval is less than 15 minutes.'}
+                    settingInfo={SettingGrabIntervalInMinutes}
                 />
                 <NumericalInputContainer
                     settings={settings}
                     setSettings={setSettings}
-                    defaultSettings={defaultSettings}
-                    fieldName={'waitBeforeReGrabbingInMinutes'}
-                    title={'Grab Delay In Minutes'}
-                    description={'If a post exists within the last x minutes, don\'t try and grab more information from the subreddit. This helps cut down on request-counts.'}
+                    settingInfo={SettingWaitBeforeReGrabbingInMinutes}
                 />
                 <DropdownContainer
                     settings={settings}
                     setSettings={setSettings}
-                    defaultSettings={defaultSettings}
-                    fieldName={'postTypes'}
-                    options={[
-                        {
-                            settingValue: 'all',
-                            displayValue: 'All'
-                        }//, TODO: Re-enable when I have created a way to do this
-                        // {
-                        //     settingValue: 'media',
-                        //     displayValue: 'With Media'
-                        // },
-                        // {
-                        //     settingValue: 'mediaOnly',
-                        //     displayValue: 'Media Only'
-                        // },
-                        // {
-                        //     settingValue: 'textOnly',
-                        //     displayValue: 'TextOnly'
-                        // }
-                    ]}
-                    title={'Post Types'}
-                    description={'What types of posts to display.'}
+                    settingInfo={SettingPostTypes}
                 />
                 <DropdownContainer
                     settings={settings}
                     setSettings={setSettings}
-                    defaultSettings={defaultSettings}
-                    fieldName={'sort'}
-                    options={[
-                        {
-                            settingValue: 'new',
-                            displayValue: 'New'
-                        }//, TODO: Re-enable when I have created a way to do this
-                        // {
-                        //     settingValue: 'postcount',
-                        //     displayValue: 'Post Count'
-                        // }
-                    ]}
-                    title={'Sort'}
-                    description={'How to sort the users in the post-display.'}
+                    settingInfo={SettingSort}
                 />
             </div>
         </div>

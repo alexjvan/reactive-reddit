@@ -1,12 +1,10 @@
 import { useState } from "react";
+import { FilterCategorySub } from "../app/constants";
 
 export default function QuickAdd({
-    section,
     quickAdd
 }) {
     const [inputValue, setInputValue] = useState('');
-    const [want, setWant] = useState(section === "Subs" ? undefined : true);
-    const sectionId = `qa-${section.replace("||", "or")}`;
 
     function handleChange(e) {
         setInputValue(e.target.value);
@@ -19,17 +17,13 @@ export default function QuickAdd({
     };
 
     function handleSubmit() {
-        quickAdd(section, inputValue, want);
+        quickAdd(FilterCategorySub, inputValue, undefined);
         setInputValue('');
     }
 
-    return <div className="qa-section" id={sectionId}>
-        <div className="qa-title">{section}</div>
+    return <div className="qa-section" id={FilterCategorySub}>
+        <div className="qa-title">{FilterCategorySub}</div>
         <div className="qa-options">
-            <button
-                className={`qa-want ${want ? "include" : want === false ? "exclude" : ""}`}
-                onClick={() => setWant(prev => !prev)}
-            />
             <div className="qa-inputbox">
                 <input
                     className="qa-input"

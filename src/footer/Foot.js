@@ -1,13 +1,12 @@
 import './Foot.css';
 import Footerlink from './Footerlink';
+import { AllExtraContent } from '../app/constants.js';
 
 export default function Foot({
     setExtraDisplay
 }) {
-    const sections = ["Settings", "Stats", "Help"];
-
     return <div id="footer">
-        {sections.map((section) =>
+        {AllExtraContent.map((section) =>
             <Footerlink
                 key={section}
                 section={section}

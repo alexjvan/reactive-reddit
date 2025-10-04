@@ -88,8 +88,8 @@
                     .post-text div.header-1,
                     .post-text p.header-1 {
                         font-size: 24px;
-                        font-weight: bold;
-                        padding: 5px 15px;
+                        font-weight: 500;
+                        padding: 20px 0px 0px 0px;
                     }
                     .findableImage {
                         color: lightskyblue;

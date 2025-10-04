@@ -128,7 +128,7 @@ export default function MediaContainer({
             <a
                 key={index}
                 className="post-imageselector-chooser clickable"
-                style={{ backgroundColor: (index === imageIndex ? '#30e8ff' : 'white') }}
+                style={{ backgroundColor: (index === imageIndex ? 'var(--accent)' : 'white') }}
                 onClick={() => setImageIndex(index)}
             />
         ))

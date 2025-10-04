@@ -7,7 +7,6 @@ import SettingDisplay from './SettingDisplay.js';
 export default function Settings({
     settings,
     setSettings,
-    defaultSettings,
     groups,
     setGroups,
     activeGroup,
@@ -23,9 +22,8 @@ export default function Settings({
         () => <SettingDisplay
             settings={settings}
             setSettings={setSettings}
-            defaultSettings={defaultSettings}
         />,
-        [settings, setSettings, defaultSettings]
+        [settings, setSettings]
     );
 
     const groupsDisplay = useMemo(() =>

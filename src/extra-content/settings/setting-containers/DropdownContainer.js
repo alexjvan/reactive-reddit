@@ -1,38 +1,36 @@
+import { DefaultSettings } from "../../../app/constants";
+
 export default function DropdownContainer({
     settings,
     setSettings,
-    defaultSettings,
-    fieldName,
-    options,
-    title,
-    description
+    settingInfo
 }) {
     return <div className="settings-setcontainer">
         <select
-            value={settings[fieldName] ?? defaultSettings[fieldName]}
+            value={settings[settingInfo.fieldName] ?? DefaultSettings[settingInfo.fieldName]}
             onChange={(e) =>
                 setSettings((current) => ({
                     ...current,
-                    [fieldName]: e.target.value,
+                    [settingInfo.fieldName]: e.target.value,
                 }))
             }
-            name={fieldName}
+            name={settingInfo.fieldName}
             className="settings-dropdown"
         >
-            {options.map((o) =>
+            {settingInfo.options.map((o) =>
                 <option key={o.settingValue} value={o.settingValue}>{o.displayValue}</option>
             )}
         </select>
 
         <div className='settings-label'>
             <div className='settingslabel-title'>
-                {title}
+                {settingInfo.title}
             </div>
             <div className='settingslabel-description'>
-                {description}
+                {settingInfo.description}
             </div>
             <div className='setingslabel-default'>
-                Default: {defaultSettings[fieldName]}
+                Default: {DefaultSettings[settingInfo.fieldName]}
             </div>
         </div>
     </div>;

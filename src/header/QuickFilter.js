@@ -1,13 +1,12 @@
 import { useState } from "react";
+import { AllFilterCategories } from "../app/constants.js";
 
 export default function QuickFilter({
     quickAdd
 }) {
-    const categoryOptions = ["Author", "Tag", "Text", "Text||Title", "Title"];
-
     const [inputValue, setInputValue] = useState('');
     const [want, setWant] = useState(true);
-    const [filterCategory, setFilterCategory] = useState(categoryOptions[0]);
+    const [filterCategory, setFilterCategory] = useState(AllFilterCategories[0]);
 
     function handleChange(e) {
         setInputValue(e.target.value);
@@ -26,7 +25,7 @@ export default function QuickFilter({
 
     return <div className="qa-section">
         <select className="qa-cat" value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)}>
-            {categoryOptions.map((c) => <option value={c} key={c}>
+            {AllFilterCategories.map((c) => <option value={c} key={c}>
                 {c}
             </option>)}
         </select>

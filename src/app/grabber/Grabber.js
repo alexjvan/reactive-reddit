@@ -1,5 +1,6 @@
-import { cleanPost } from "./postFunctions";
+import { GrabberTypeBackfill, GrabberTypeContinual, GrabberTypeSavior } from "../constants";
 import { addFiltersAsRequested } from "../filters";
+import { cleanPost } from "../postHelpers/postFunctions";
 import { getSub } from "../subHelpers";
 
 export default class Grabber {
@@ -39,7 +40,7 @@ export default class Grabber {
             }
 
             this.fetchSub(
-                next.pre ? 'Continual' : next.savior ? 'Savior' : 'Backfill',
+                next.pre ? GrabberTypeContinual : next.savior ? GrabberTypeSavior : GrabberTypeBackfill,
                 next.sub,
                 next.ba,
                 next.iterations
@@ -56,7 +57,7 @@ export default class Grabber {
         let baseUrl = 'https://api.reddit.com/r/' + sub + '/new.json';
         let url;
         if (postInfo !== undefined) {
-            if (postType === 'Continual') {
+            if (postType === GrabberTypeContinual) {
                 url = baseUrl + '?before=' + postInfo;
             } else {
                 url = baseUrl + '?after=' + postInfo;
@@ -67,17 +68,17 @@ export default class Grabber {
 
         fetch(url)
             .then(resp => {
-                if(!resp.ok) {
-                    if(resp.status === 403) {
+                if (!resp.ok) {
+                    if (resp.status === 403) {
                         // This is a really weird case - not sure why these pop up?
                         this.finishRetrieval(sub, "403 error, assuming private.", false, false);
-                    } else if(resp.status === 404) {
-                        if(this.settings.removeSubOn404) {
+                    } else if (resp.status === 404) {
+                        if (this.settings.removeSubOn404) {
                             console.log(`Removing ${sub} due to 404 error.`);
                             this.setSubs((prev) => prev.filter((csub) => csub.name !== sub));
                         }
                         this.finishRetrieval(sub, `404 error${this.settings.removeSubOn404 ? ', removing sub' : ''}.`, false);
-                    } else if(resp.status === 429) {
+                    } else if (resp.status === 429) {
                         console.log("429 error, rate limited, waiting until next interval.");
                         this.finishRetrieval(sub, `Error code ${resp.status}.`, false, false);
                     } else {
@@ -91,7 +92,7 @@ export default class Grabber {
                 return resp.json();
             })
             .then(resp => {
-                if(!resp) return;
+                if (!resp) return;
                 this.processFetch(
                     postType,
                     sub,
@@ -116,7 +117,7 @@ export default class Grabber {
         if (data.data === undefined ||
             data.data.children === undefined ||
             data.data.children.length === 0) {
-            if (postType === 'Continual' && iterations === 0) {
+            if (postType === GrabberTypeContinual && iterations === 0) {
                 const prev = new Date(setting.ba.beforeutc * 1000);
                 const now = new Date();
                 const dayDifference = Math.round((now - prev) / 86400000);
@@ -127,16 +128,16 @@ export default class Grabber {
                         savior: true
                     }, 1);
                 } else {
-                    this.finishRetrieval(sub, "No data returned.", postType !== 'Continual', true);
+                    this.finishRetrieval(sub, "No data returned.", postType !== GrabberTypeContinual, true);
                 }
             } else {
-                this.finishRetrieval(sub, "No data returned.", postType !== 'Continual', true);
+                this.finishRetrieval(sub, "No data returned.", postType !== GrabberTypeContinual, true);
             }
             return;
         }
 
         let retrievedPosts = data.data.children;
-        let direction = (postType === 'Continual') ? data.data.before : data.data.after;
+        let direction = (postType === GrabberTypeContinual) ? data.data.before : data.data.after;
 
         let processed = retrievedPosts.map((post) => {
             let returning = post.data;
@@ -146,7 +147,7 @@ export default class Grabber {
             returning.color = setting.color;
             returning.filteredFor = addFiltersAsRequested(this.settings, this.filters, returning);
 
-            if(returning.filteredFor.length > 0) {
+            if (returning.filteredFor.length > 0) {
                 this.setFilters((prev) => prev.map((filter) => {
                     filter.count = filter.count + (returning.filteredFor.includes(filter.filter) ? 1 : 0);
                     return filter;
@@ -158,7 +159,7 @@ export default class Grabber {
 
         const preExistingPosts = new Set(this.posts.map(p => p.name));
         let filtered = processed.filter(p => !preExistingPosts.has(p.name)); // TODO: Don't know why this is necessary, but it eliminates duplicate posts. Invesigate eventually, low pri
-        if (postType === 'Backfill') {
+        if (postType === GrabberTypeBackfill) {
             if (setting.ba.afterutc) {
                 filtered = filtered.filter(p => p.created_utc < setting.ba.beforeutc);
             }
@@ -167,7 +168,7 @@ export default class Grabber {
         }
 
         if (filtered.length === 0) {
-            this.finishRetrieval(sub, "0 posts, assuming loop.", postType !== 'Continual', true);
+            this.finishRetrieval(sub, "0 posts, assuming loop.", postType !== GrabberTypeContinual, true);
             return;
         }
 
@@ -175,11 +176,11 @@ export default class Grabber {
 
         // Set before-after appropriately
         switch (postType) {
-            case 'Continual':
+            case GrabberTypeContinual:
                 setting.ba.beforeutc = processed[0].created_utc;
                 setting.ba.beforet3 = processed[0].name;
                 break;
-            case 'Savior':
+            case GrabberTypeSavior:
                 // Only for the first
                 //  Reset after to grab anything missed
                 if (processed[0].created_utc > setting.ba.beforeutc) {
@@ -190,7 +191,7 @@ export default class Grabber {
                     setting.reachedEnd = false;
                 }
                 break;
-            case 'Backfill':
+            case GrabberTypeBackfill:
                 if (setting.ba.beforeutc === undefined) {
                     setting.ba.beforeutc = processed[0].created_utc;
                     setting.ba.beforet3 = processed[0].name;
@@ -201,7 +202,7 @@ export default class Grabber {
         }
 
         if (direction === undefined || direction === null) {
-            this.finishRetrieval(sub, `No more ${(postType === 'Continual' ? 'before' : 'after')}.`, postType !== 'Continual', true);
+            this.finishRetrieval(sub, `No more ${(postType === GrabberTypeContinual ? 'before' : 'after')}.`, postType !== GrabberTypeContinual, true);
             return;
         }
 
@@ -209,9 +210,9 @@ export default class Grabber {
             sub: sub,
             ba: direction,
             iterations: iterations + 1,
-            pre: postType === 'Continual',
-            savior: postType === 'Savior'
-        }, postType === 'Continual' ? 2 : 1);
+            pre: postType === GrabberTypeContinual,
+            savior: postType === GrabberTypeSavior
+        }, postType === GrabberTypeContinual ? 2 : 1);
     }
 
     // Exported since this is used in sub-validation
@@ -236,7 +237,7 @@ export default class Grabber {
                 return csub;
             }));
         }
-        if(grabAnother) {
+        if (grabAnother) {
             this.grabLoop();
         }
     }

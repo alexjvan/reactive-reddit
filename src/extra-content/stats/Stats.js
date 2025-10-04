@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import './Stats.css';
+import { FilterCategoryTag, FilterCategoryTitle } from '../../app/constants.js';
 import { addNewFilter } from '../../app/filters';
 
 export default function Stats({
@@ -57,7 +58,7 @@ export default function Stats({
         addNewFilter(
             settings,
             {
-                category: 'Tag',
+                category: FilterCategoryTag,
                 filter: tag,
                 desired: false,
                 count: 0
@@ -71,7 +72,7 @@ export default function Stats({
         addNewFilter(
             settings,
             {
-                category: 'Title',
+                category: FilterCategoryTitle,
                 filter: word,
                 desired: false,
                 count: 0

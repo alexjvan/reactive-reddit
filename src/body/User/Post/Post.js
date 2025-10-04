@@ -1,10 +1,11 @@
-import './Post.css';
 import { useMemo, useState } from 'react';
+import './Post.css';
 import MediaContainer from './MediaContainer';
 import TextDisplay from './TextDisplay';
 
 export default function Post({
     postObj,
+    setPosts,
     disablePost
 }) {
     const [disabled, setDisabled] = useState(postObj.disabled ?? false);

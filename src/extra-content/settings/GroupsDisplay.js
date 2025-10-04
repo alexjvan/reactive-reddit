@@ -1,3 +1,4 @@
+import { GrabberCategoryFilters, GrabberCategoryPosts, GrabberCategorySubs } from '../../app/constants.js';
 import { getFromStorage, removeGroupFromStorage } from '../../app/storage/storage.js';
 import { emptyValidation } from '../../app/storage/validators.js';
 
@@ -20,9 +21,9 @@ export default function GroupsDisplay({
                 posts: posts.length
             };
         } else {
-            let curSubs = getFromStorage(group.name, 'subs', [], emptyValidation);
-            let curFilters = getFromStorage(group.name, 'filters', [], emptyValidation);
-            let curPosts = getFromStorage(group.name, 'posts', [], emptyValidation);
+            let curSubs = getFromStorage(group.name, GrabberCategorySubs, [], emptyValidation);
+            let curFilters = getFromStorage(group.name, GrabberCategoryFilters, [], emptyValidation);
+            let curPosts = getFromStorage(group.name, GrabberCategoryPosts, [], emptyValidation);
 
             return {
                 name: group.name,
