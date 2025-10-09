@@ -112,10 +112,13 @@ export const AllSortOptions = _allSortOptions.map(so => so.settingValue);
 export const DisplayableSortOptions = _allSortOptions;
 
 // ---------- Text Modifiers ----------
+export const TextModifierBold = 'bold';
 export const TextModifierHeader = 'header';
 export const TextModifierHeaderPrefix = 'header-';
 export const TextModifierIndented = 'indented';
+export const TextModifierItalic = 'italic';
 export const TextModifierListItem = 'list-item';
+export const TextModifierNoTopPadding = 'no-top-padding';
 
 // ====================
 // Dependent On Others

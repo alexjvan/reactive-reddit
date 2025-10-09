@@ -22,16 +22,20 @@ Looking at the TODOs in this repo, summarizing to narrow down items to work on:
 - Setting Items
     * Display Options
     * I had one for auto-refresh? What does that mean?
-- Only keep posts before a certain time (setting?)
-    * Might be worth having a sub-setting to keep old posts from users who have recent posts as well
-        * This way you can view older posts from people still active, but remove inactive users
+- New Settings
+    * Only keep posts before a certain time (setting?)
+        - Might be worth having a sub-setting to keep old posts from users who have recent posts as well
+            * This way you can view older posts from people still active, but remove inactive users
+    * Fixed Picture Size
 - Categorize Left Over Post Cleaner Items
+- Find better spot for image movers (prev/next) so they don't shift with each image-change
 
 ## Performance-Based Items:
 - Not constantly be saving data into storage during retrieval
 - Save scroll position (I believe the main issue with current implementation is post-shifting. But not 100% sure how to fix yet)
 - HTML Error Code for cached Media
 - Figure out why duplicate posts are being grabbed. Why is the second filtering required in the grabber
+- Seperate CSS files out of one-parent (for example, bring TextDisplay css into its own file)
 
 ## Bugs/Errors:
 - SOMETIMES, crashing wipes all data?

@@ -1,5 +1,13 @@
 import { useEffect, useMemo } from 'react';
-import { TextModifierHeader, TextModifierHeaderPrefix, TextModifierIndented, TextModifierListItem } from '../../../app/constants';
+import { 
+    TextModifierBold,
+    TextModifierHeader, 
+    TextModifierHeaderPrefix, 
+    TextModifierItalic,
+    TextModifierIndented, 
+    TextModifierListItem,
+    TextModifierNoTopPadding
+} from '../../../app/constants';
 import { modLine } from '../../../app/postHelpers/textHelpers';
 
 export default function TextDisplay({
@@ -13,8 +21,8 @@ export default function TextDisplay({
     );
 
     var moddedLines = useMemo(
-        () => lines.map((line) => {
-            var modifiers = [];
+        () => lines.map((line, index) => {
+            var modifiers = (index === 0) ? [TextModifierNoTopPadding] : [];
             var moddedLine = line;
 
             var foundModifiers = false;
@@ -31,8 +39,13 @@ export default function TextDisplay({
                     moddedLine = moddedLine.substring(4);
                     foundModifiers = true;
                 }
-                if (moddedLine.startsWith('*' && moddedLine.endsWith('*'))) {
-                    modifiers.push(TextModifierHeader);
+                if (moddedLine.length > 3 && moddedLine.startsWith('**') && moddedLine.endsWith('**')) {
+                    modifiers.push(TextModifierBold);
+                    moddedLine = moddedLine.substring(2, moddedLine.length - 2);
+                    foundModifiers = true;
+                }
+                if (moddedLine.length > 1 && moddedLine.startsWith('*') && moddedLine.endsWith('*')) {
+                    modifiers.push(TextModifierItalic);
                     moddedLine = moddedLine.substring(1, moddedLine.length - 1);
                     foundModifiers = true;
                 }

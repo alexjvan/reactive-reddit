@@ -83,6 +83,14 @@
                         list-style-position: inside; 
                         padding: 5px 15px;
                     }
+                    .post-text div.bold,
+                    .post-text p.bold {
+                        font-weight: bold;
+                    }
+                    .post-text div.italic,
+                    .post-text p.italic {
+                        font-style: italic;
+                    }
                     .post-text div.header, /* Treating Large-headers as h1s */
                     .post-text p.header,
                     .post-text div.header-1,
@@ -91,6 +99,12 @@
                         font-weight: 500;
                         padding: 20px 0px 0px 0px;
                     }
+                        .post-text div.header.no-top-padding, /* Treating Large-headers as h1s */
+                        .post-text p.header.no-top-padding,
+                        .post-text div.header-1.no-top-padding,
+                        .post-text p.header-1.no-top-padding {
+                            padding: 0px;
+                        }
                     .findableImage {
                         color: lightskyblue;
                         text-decoration: solid;
