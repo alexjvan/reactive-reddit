@@ -216,6 +216,7 @@ export default function App() {
   return <>
     <Head
       settings={settings}
+      setSettings={setSettings}
       groups={groups}
       setGroups={setGroups}
       activeGroup={activeGroup}

@@ -18,6 +18,7 @@ export function modLine(line) {
 
     for (let i = 0; i < split.length; i++) {
         let char = split[i];
+
         switch (char) {
             case '*':
                 if (inItalic) {
@@ -81,6 +82,7 @@ export function modLine(line) {
                 }
                 break;
             case ' ':
+            case ' ':
                 if (word === '' && !inItalic && !passedLinkText && !inLink) {
                     modded += ' ';
                 } else if (word.startsWith("http")) {

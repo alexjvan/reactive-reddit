@@ -5,17 +5,21 @@ import QuickAdd from './QuickAdd.js';
 import QuickFilter from './QuickFilter.js';
 import { randSixHash } from '../app/colors.js';
 import {
+    DefaultSettings,
     FilterCategorySub,
     FilterTagCloser,
     FilterTagOpener,
     FilterTagsCloser,
-    FilterTagsOpener
+    FilterTagsOpener,
+    SettingPostTypes
 } from '../app/constants.js';
 import { addNewFilter } from '../app/filters.js';
+import { postDisplayFilter } from '../app/postHelpers/postFunctions.js';
 
 // TODO: Button to stop grabber
 export default function Head({
     settings,
+    setSettings,
     groups,
     setGroups,
     activeGroup,
@@ -45,10 +49,25 @@ export default function Head({
     // Utilizing quick-add classes for ease
     const postCount = useMemo(() => {
         return <div className="qa-section" id="postCount">
-            <div className="qa-title">Posts:</div>
+            <div className="qa-title">Posts</div>
             <div className="qa-options">
-                {(posts ?? []).filter((p) => !p.disabled && p.filteredFor.length == 0).length}
+                {(posts ?? []).filter(post => postDisplayFilter(settings, post)).length}
             </div>
+            <select
+                value={settings[SettingPostTypes.fieldName] ?? DefaultSettings[SettingPostTypes.fieldName]}
+                onChange={(e) =>
+                    setSettings((current) => ({
+                        ...current,
+                        [SettingPostTypes.fieldName]: e.target.value,
+                    }))
+                }
+                name={SettingPostTypes.fieldName}
+                className="qa-dropdown"
+            >
+                {SettingPostTypes.options.map((o) =>
+                    <option key={o.settingValue} value={o.settingValue}>{o.displayValue}</option>
+                )}
+            </select>
         </div>;
     }, [posts]);
 

@@ -58,11 +58,7 @@ export const PostTypeTextOnly = {
     settingValue: 'textOnly',
     displayValue: 'Text Only'
 };
-// TODO: Add after creating implementation
-//    - PostTypeWithMedia
-//    - PostTypeMediaOnly
-//    - PostTypeTextOnly
-const _allPostTypes = [PostTypeAll];
+const _allPostTypes = [PostTypeAll, PostTypeWithMedia, PostTypeMediaOnly, PostTypeTextOnly];
 export const AllPostTypes = _allPostTypes.map(pt => pt.settingValue);
 export const DisplayablePostTypes = _allPostTypes;
 

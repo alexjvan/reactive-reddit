@@ -1,7 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import { 
     TextModifierBold,
-    TextModifierHeader, 
     TextModifierHeaderPrefix, 
     TextModifierItalic,
     TextModifierIndented, 
@@ -11,6 +10,7 @@ import {
 import { modLine } from '../../../app/postHelpers/textHelpers';
 
 export default function TextDisplay({
+    setPosts,
     t3,
     postText,
     setMediaText
@@ -65,7 +65,7 @@ export default function TextDisplay({
                 }
             } while (foundModifiers); // Loop through to catch multiple modifiers if present
 
-            var htmlified = modLine(moddedLine, setMediaText);
+            var htmlified = modLine(moddedLine);
             return { text: htmlified.html, modifiers: modifiers, media: htmlified.mediaLinks };
         }),
         [lines]
@@ -77,6 +77,17 @@ export default function TextDisplay({
             setMediaText(allLinks);
         }
     }, [moddedLines]);
+
+    useEffect(() => {
+        setPosts(prev =>
+            prev.map(p => {
+                if (p.name !== t3) return p;
+                const hasText = moddedLines.length > 0;
+                if (p.hasText === hasText) return p; // prevent no-op updates
+                return { ...p, hasText };
+            })
+        );
+    }, [moddedLines.length]);
 
     const htmlDisplay = useMemo(
         () => moddedLines.map((line, index) => {

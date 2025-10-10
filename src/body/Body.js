@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useRef } from 'react';
 import './Body.css';
 import User from './User/User';
-import { PostTypeAll, SortOptionNew, SortOptionPostCount } from '../app/constants';
+import { SortOptionNew, SortOptionPostCount } from '../app/constants';
+import { ImageCacheProvider } from '../app/contexts/ImageCacheContext';
+import { postDisplayFilter } from '../app/postHelpers/postFunctions';
 
 export default function Body({
     settings,
@@ -40,41 +42,22 @@ export default function Body({
     });
 
     const users = useMemo(() => {
-        let usersMap = (posts ?? [])
-            .filter(filterDisplay)
-            .sort((a, b) => b.created_utc - a.created_utc)
-            .reduce((currentUsers, post) => {
-                const username = post.author;
-                if (!currentUsers[username]) currentUsers[username] = [];
-                currentUsers[username].push(post);
-                return currentUsers;
-            }, {});
+            let usersMap = (posts ?? [])
+                .filter(post => postDisplayFilter(settings, post))
+                .sort((a, b) => b.created_utc - a.created_utc)
+                .reduce((currentUsers, post) => {
+                    const username = post.author;
+                    if (!currentUsers[username]) currentUsers[username] = [];
+                    currentUsers[username].push(post);
+                    return currentUsers;
+                }, {});
 
-        let sorted = Object.entries(usersMap).sort((userA, userB) => sortUsers(userA, userB));
+            let sorted = Object.entries(usersMap).sort((userA, userB) => sortUsers(userA, userB));
 
-        return Object.fromEntries(sorted);
-    },
+            return Object.fromEntries(sorted);
+        },
         [posts, settings.sort]
     );
-
-    function filterDisplay(post) {
-        if (post.disabled) return false;
-        if (post.filteredFor.length > 0) return false;
-
-        switch (settings.postTypes) {
-            case PostTypeAll.settingValue:
-                return true;
-            // TODO: Add filter options
-            //    How do I actually determine if a post has media?
-            //        Since there is post-processing on the text, I would need to have that available?
-            //        Do I need the post-processing for this?
-            //        An idea for that now is then to set text display + media display into the post itself, while keeping the originasl content
-            //        That way I can use that, unless the text/media changes somehow
-            default:
-                console.log('Unknown post type filter, defaulting to All');
-                return true;
-        }
-    }
 
     function sortUsers(userA, userB) {
         switch (settings.sort) {
@@ -104,6 +87,12 @@ export default function Body({
         [users]);
 
     return <div id="body" ref={containerRef}>
-        {usersDisplay}
+        {
+            // TODO: The provider is already causing massive lag on load
+            //    Move this to a savable object + pass it downstream here
+        }
+        <ImageCacheProvider>
+            {usersDisplay}
+        </ImageCacheProvider>
     </div>;
 }

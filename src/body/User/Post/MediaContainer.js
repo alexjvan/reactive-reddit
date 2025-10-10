@@ -1,12 +1,17 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useDeepCompareMemo } from 'use-deep-compare';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useImageCache } from '../../../app/contexts/ImageCacheContext';
 import { isImageLink, isVideoLink } from '../../../app/postHelpers/imageHelpers';
-import { useCallback } from 'react';
 
 export default function MediaContainer({
     textMedia,
-    postObj
+    postObj,
+    setPosts
 }) {
     const [imageIndex, setImageIndex] = useState(0);
+    const containerRef = useRef(null);
+
+    const cache = useImageCache();
 
     const extractMedia = useCallback((post) => {
         if (!post) return [];
@@ -31,46 +36,64 @@ export default function MediaContainer({
                     : []
                 : [])
         ]
-    });
+    }, []);
 
     const embeddedMedia = useMemo(() => extractMedia(postObj), [postObj]);
     const mediaCrossPost = useMemo(() => (postObj.crosspost_parent && postObj.crosspost_parent_list ? extractMedia(postObj.crosspost_parent_list[0]) : []), [postObj]);
 
-    const media = useMemo(
+    const media = useDeepCompareMemo(
         () => mergeMedia(),
         [mediaCrossPost, embeddedMedia, textMedia]
     );
 
-    // TODO: Re-enable after create a way to save processed posts
-    // const [validatedImages, setValidatedImages] = useState([]);
-    // useEffect(() => {
-    //     const cache = new Map();
+    const [validatedImages, setValidatedImages] = useState([]);
+    useEffect(() => {
+        async function validateImages() {
+            const validImages = await Promise.all(
+                media.map(async (url) => {
+                    if (cache.has(url)) return cache.get(url);
 
-    //     async function validateImages(){
-    //         const validImages = await Promise.all(
-    //             media.map(async (url) => {
-    //                 if (cache.has(url)) return cache.get(url);
-    //                 try {
-    //                     const response = await fetch(url, { method: 'HEAD' });
-    //                     if (response.ok) { // TODO: We probably only need to check its not 404? Other 400-error codes may be a side-effect (Ex: 429) But also in that case, the image will error out in display
-    //                         cache.set(url, url);
-    //                         return url;
-    //                     }
-    //                 } catch (error) {
-    //                     console.error(`Error fetching ${url}:`, error);
-    //                 }
-    //                 cache.set(url, null); // TODO: Do we want to set this? It will stop items from being re-attempted, but what if the second attempt works?
-    //                 return null;
-    //             })
-    //         );
-    //         setValidatedImages(validImages.filter(Boolean));
-    //     }
+                    // TODO: This check doesn't seem to fix the reddit placeholder image issue
+                    //     But it does seem to fix a lot of the other unfound images
+                    try {
+                        const validUrl = await new Promise((resolve) => {
+                            const img = new Image();
+                            img.onload = () => resolve(url);
+                            img.onerror = () => resolve(null);
+                            img.src = url;
+                        });
 
-    //     validateImages();
-    // }, [media]);
+                        cache.set(url, validUrl);
+                        return validUrl;
+                    } catch {
+                        cache.set(url, null);
+                        return null;
+                    }
+                })
+            );
 
-    const displaying = media;
+            setValidatedImages(validImages.filter(Boolean));
+        }
 
+        if (media.length) validateImages();
+    }, [media]);
+
+    const displaying = validatedImages;
+
+    useEffect(() => {
+        setPosts(prev =>
+            prev.map(p => {
+                if (p.name !== postObj.name) return p;
+                const hasMedia = displaying.length > 0;
+                if (p.hasMedia === hasMedia) return p; // prevent no-op updates
+                return { ...p, hasMedia };
+            })
+        );
+    }, [displaying.length]);
+
+    // TODO: 
+    // - https://www.redditmedia.com/mediaembed/*
+    //    The ONE I have of this is a video? Is it always? How do I actually see what this is?
     function mergeMedia() {
         const merged = [...embeddedMedia, ...mediaCrossPost, ...textMedia];
 
@@ -101,7 +124,6 @@ export default function MediaContainer({
         )];
     }
 
-    // UseEffect for click handling for <a> tags in <div> elements (I hate react)
     useEffect(() => {
         function handleImageClick(event) {
             const link = event.target.getAttribute("data-link");
@@ -109,11 +131,14 @@ export default function MediaContainer({
                 const index = displaying.indexOf(link);
                 if (index !== -1) setImageIndex(index);
             }
-        };
+        }
 
-        document.querySelector(".post-images")?.addEventListener("click", handleImageClick);
-        return () => document.querySelector(".post-images")?.removeEventListener("click", handleImageClick);
-    }, []);
+        const container = containerRef.current;
+        if (!container) return;
+
+        container.addEventListener("click", handleImageClick);
+        return () => container.removeEventListener("click", handleImageClick);
+    }, [displaying]);
 
     function prevImage() {
         setImageIndex((prev) => (prev === 0 ? displaying.length - 1 : prev - 1));
@@ -124,20 +149,20 @@ export default function MediaContainer({
     }
 
     const imageSelectors = useMemo(() => (
-        displaying.map((_, index) => (
+        displaying.map((_, index) =>
             <a
                 key={index}
                 className="post-imageselector-chooser clickable"
                 style={{ backgroundColor: (index === imageIndex ? 'var(--accent)' : 'white') }}
                 onClick={() => setImageIndex(index)}
             />
-        ))
+        )
     ), [displaying.length, imageIndex]);
 
     const currentMedia = displaying[imageIndex];
 
     return (displaying.length !== 0 &&
-        <div className="post-images">
+        <div className="post-images" ref={containerRef}>
             <div className="post-imagescontainer">
                 {displaying.length > 1 && (
                     <>

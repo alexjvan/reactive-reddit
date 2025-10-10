@@ -22,6 +22,7 @@ export default function Post({
 
     const textDisplay = useMemo(() =>
         <TextDisplay
+            setPosts={setPosts}
             postText={text}
             setMediaText={setMediaText}
             t3={postObj.name}
@@ -33,6 +34,7 @@ export default function Post({
         <MediaContainer
             textMedia={mediaText}
             postObj={postObj}
+            setPosts={setPosts}
         />,
         [postObj, mediaText]
     );

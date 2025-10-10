@@ -1,3 +1,5 @@
+import { PostTypeAll, PostTypeWithMedia, PostTypeMediaOnly, PostTypeTextOnly } from '../constants';
+
 export function cleanPost(post) {
     // Approval
     delete post.approved_at_utc;
@@ -131,4 +133,23 @@ export function cleanPost(post) {
     delete post.stickied;
 
     return post;
+}
+
+export function postDisplayFilter(settings, post) {
+    if (post.disabled) return false;
+    if (post.filteredFor.length > 0) return false;
+
+    switch (settings.postTypes) {
+        case PostTypeAll.settingValue:
+            return true;
+        case PostTypeWithMedia.settingValue:
+            return post.hasMedia;
+        case PostTypeMediaOnly.settingValue:
+            return post.hasMedia && !post.hasText;
+        case PostTypeTextOnly.settingValue:
+            return post.hasText && !post.hasMedia;
+        default:
+            console.log('Unknown post type filter, defaulting to All');
+            return true;
+    }
 }

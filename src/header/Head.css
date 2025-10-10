@@ -87,6 +87,9 @@
                     font-size: 16px;
                     padding: 5px;
                 }
+            .qa-dropdown {
+                margin-left: 15px;
+            }
     #progressbar-container {
         background-color: var(--light-secondary);
         height: 20px;
