@@ -69,7 +69,7 @@ export default function Head({
                 )}
             </select>
         </div>;
-    }, [posts]);
+    }, [posts, settings[SettingPostTypes.fieldName]]);
 
     function quickAdd(section, input, desired) {
         if (input === undefined || input === null || input === '' || input === ' ')

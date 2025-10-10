@@ -1,17 +1,16 @@
 import { useDeepCompareMemo } from 'use-deep-compare';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useImageCache } from '../../../app/contexts/ImageCacheContext';
 import { isImageLink, isVideoLink } from '../../../app/postHelpers/imageHelpers';
 
 export default function MediaContainer({
+    imageCache,
+    setImageCache,
     textMedia,
     postObj,
     setPosts
 }) {
     const [imageIndex, setImageIndex] = useState(0);
     const containerRef = useRef(null);
-
-    const cache = useImageCache();
 
     const extractMedia = useCallback((post) => {
         if (!post) return [];
@@ -51,22 +50,36 @@ export default function MediaContainer({
         async function validateImages() {
             const validImages = await Promise.all(
                 media.map(async (url) => {
-                    if (cache.has(url)) return cache.get(url);
-
-                    // TODO: This check doesn't seem to fix the reddit placeholder image issue
-                    //     But it does seem to fix a lot of the other unfound images
+                    if (imageCache.has(url)) return imageCache.get(url);
                     try {
                         const validUrl = await new Promise((resolve) => {
                             const img = new Image();
-                            img.onload = () => resolve(url);
+                            img.onload = () => {
+                                // TODO
+                                // Reddit "image deleted" placeholder is 130x60
+                                // This will catch other images, but at this point I have tried so many things I am happy with this
+                                if (img.naturalWidth === 130 && img.naturalHeight === 60) {
+                                    resolve(null);
+                                } else {
+                                    resolve(url);
+                                }
+                            };
                             img.onerror = () => resolve(null);
                             img.src = url;
                         });
 
-                        cache.set(url, validUrl);
+                        setImageCache((current) => {
+                            const newCache = new Map(current);
+                            newCache.set(url, validUrl);
+                            return newCache;
+                        });
                         return validUrl;
                     } catch {
-                        cache.set(url, null);
+                        setImageCache((current) => {
+                            const newCache = new Map(current);
+                            newCache.set(url, null);
+                            return newCache;
+                        });
                         return null;
                     }
                 })

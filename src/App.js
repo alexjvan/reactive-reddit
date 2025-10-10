@@ -5,6 +5,7 @@ import {
   DefaultSettings,
   GrabberCategoryGroups,
   GrabberCategoryFilters,
+  GrabberCategoryImageCache,
   GrabberCategoryMinUsers,
   GrabberCategoryPosts,
   GrabberCategorySettings,
@@ -39,8 +40,9 @@ export default function App() {
   const [extraDisplay, setExtraDisplay] = useState(null);
 
   // Load from Storage on init
-  const [settings, setSettings] = useState(() => getFromStorage('', GrabberCategorySettings, DefaultSettings, settingsValidation))
+  const [settings, setSettings] = useState(() => getFromStorage('', GrabberCategorySettings, DefaultSettings, settingsValidation));
   const [groups, setGroups] = useState(() => getFromStorage('', GrabberCategoryGroups, DefaultGroups, emptyValidation));
+  const [imageCache, setImageCache] = useState(() => getFromStorage('', GrabberCategoryImageCache, new Map(), emptyValidation));
   const [activeGroup, setActiveGroup] = useState(null);
   const previousActiveGroup = usePrevious(activeGroup);
 
@@ -232,6 +234,8 @@ export default function App() {
     />
     <Body
       settings={settings}
+      imageCache={imageCache}
+      setImageCache={setImageCache}
       posts={posts}
       setPosts={setPosts}
       setFilters={setFilters}

@@ -2,11 +2,12 @@ import { useEffect, useMemo, useRef } from 'react';
 import './Body.css';
 import User from './User/User';
 import { SortOptionNew, SortOptionPostCount } from '../app/constants';
-import { ImageCacheProvider } from '../app/contexts/ImageCacheContext';
 import { postDisplayFilter } from '../app/postHelpers/postFunctions';
 
 export default function Body({
     settings,
+    imageCache,
+    setImageCache,
     posts,
     setPosts,
     setFilters,
@@ -56,7 +57,7 @@ export default function Body({
 
             return Object.fromEntries(sorted);
         },
-        [posts, settings.sort]
+        [posts, settings.postTypes, settings.sort]
     );
 
     function sortUsers(userA, userB) {
@@ -75,6 +76,8 @@ export default function Body({
         Object.entries(users).map(([username, usersPosts]) => (
             <User
                 key={username}
+                imageCache={imageCache}
+                setImageCache={setImageCache}
                 username={username}
                 usersPosts={usersPosts}
                 posts={posts}
@@ -87,12 +90,6 @@ export default function Body({
         [users]);
 
     return <div id="body" ref={containerRef}>
-        {
-            // TODO: The provider is already causing massive lag on load
-            //    Move this to a savable object + pass it downstream here
-        }
-        <ImageCacheProvider>
-            {usersDisplay}
-        </ImageCacheProvider>
+        {usersDisplay}
     </div>;
 }

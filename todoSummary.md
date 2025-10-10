@@ -24,7 +24,6 @@ Looking at the TODOs in this repo, summarizing to narrow down items to work on:
 - Save scroll position (I believe the main issue with current implementation is post-shifting. But not 100% sure how to fix yet)
 - Figure out why duplicate posts are being grabbed. Why is the second filtering required in the grabber
 - Seperate CSS files out of one-parent (for example, bring TextDisplay css into its own file)
-- Move ImageCacheProvider to savable info
 
 ## Bugs/Errors:
 - SOMETIMES, crashing wipes all data?
@@ -32,3 +31,5 @@ Looking at the TODOs in this repo, summarizing to narrow down items to work on:
         * I think this means that the data is being corrupted on-load and never gets saved
         * But why does this *wipe* the current data?
         * Save-snapshots *might* fix this
+- To catch reddit placeholder images, I am checking for 130x60 images.
+    * This catches other images too, need to find a better option

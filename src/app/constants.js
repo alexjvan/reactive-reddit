@@ -18,6 +18,7 @@ export const FilterTagsOpener = [FilterTagStart, '[', '(', '{'];
 // ---------- Grabber ----------
 export const GrabberCategoryGroups = 'groups';
 export const GrabberCategoryFilters = 'filters';
+export const GrabberCategoryImageCache = 'imageCache';
 export const GrabberCategoryMinUsers = 'minUsers';
 export const GrabberCategoryPosts = 'posts';
 export const GrabberCategorySettings = 'settings';
