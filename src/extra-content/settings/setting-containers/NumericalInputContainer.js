@@ -1,3 +1,4 @@
+import './SettingsContainer.css';
 import { DefaultSettings } from "../../../app/constants";
 
 export default function NumericalInputContainer({

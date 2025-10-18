@@ -1,4 +1,5 @@
 import { useState } from "react";
+import './QuickAdd.css';
 import { AllFilterCategories } from "../app/constants.js";
 
 export default function QuickFilter({

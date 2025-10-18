@@ -1,5 +1,6 @@
 import { useDeepCompareMemo } from 'use-deep-compare';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import './MediaContainer.css';
 import { isImageLink, isVideoLink } from '../../../app/postHelpers/imageHelpers';
 
 export default function MediaContainer({
@@ -27,12 +28,21 @@ export default function MediaContainer({
                 )
                 : []),
             ...(post.preview
-                ? post.preview.images.map((imgs) => imgs.source.url)
+                ? post.preview.images 
+                    ? post.preview.images.map((imgs) => imgs.source.url)
+                    : []
+                : []),
+            ...(post.preview
+                ? post.preview.reddit_video_preview
+                    ? post.preview.reddit_video_preview.fallback_url // Interestingly, this isn't a list?
+                    : []
                 : []),
             ...(post.secure_media_embed
                 ? post.secure_media_embed.media_domain_url
                     ? [post.secure_media_embed.media_domain_url]
-                    : []
+                    : post.secure_media_embed.content
+                        ? [post.secure_media_embed.content.match(/src="([^"]+)"/)?.[1]].filter(Boolean)
+                        : []
                 : [])
         ]
     }, []);
@@ -104,9 +114,24 @@ export default function MediaContainer({
         );
     }, [displaying.length]);
 
+    // TODO
+    // RedditMedia is popping up as Non-Recognized, but why isn't imgur and postimg?
+
     // TODO: 
+    // I have created PHP webpage retriever + parsers before, not 100% sure how I would do that with react
+    //     But it seems like with most of these this is what I am going to have to do 
+    //
     // - https://www.redditmedia.com/mediaembed/*
     //    The ONE I have of this is a video? Is it always? How do I actually see what this is?
+    // - https://imgur.com/a/*
+    //     Imgur albums, series of images, how do I get this?
+    //     Need api key for the official api - I don't want to deal with that
+    // - https://redgifs.com
+    //      Need api key for the official api - I don't want to deal with that
+    // - https://postimg.cc/*
+    //     - Don't see any sort of official api for this
+    // - https://i.postimg.cc/*/<actual-image-link>
+    //     These are weird, if you actually go to the link it removes the /<actual-image-link> part and just shows the image?
     function mergeMedia() {
         const merged = [...embeddedMedia, ...mediaCrossPost, ...textMedia];
 

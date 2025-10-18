@@ -17,13 +17,12 @@ Looking at the TODOs in this repo, summarizing to narrow down items to work on:
     * Fixed Picture Size
 - Categorize Left Over Post Cleaner Items
 - Find better spot for image movers (prev/next) so they don't shift with each image-change
-- https://www.redditmedia.com/mediaembed/*
+- More Media links
 
 ## Performance-Based Items:
 - Not constantly be saving data into storage during retrieval
 - Save scroll position (I believe the main issue with current implementation is post-shifting. But not 100% sure how to fix yet)
 - Figure out why duplicate posts are being grabbed. Why is the second filtering required in the grabber
-- Seperate CSS files out of one-parent (for example, bring TextDisplay css into its own file)
 
 ## Bugs/Errors:
 - SOMETIMES, crashing wipes all data?

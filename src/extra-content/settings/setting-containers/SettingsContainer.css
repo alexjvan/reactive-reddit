@@ -1,0 +1,46 @@
+.settings-setcontainer {
+    align-items: flex-start;
+    display: flex;
+    max-width: calc(33% - 15px);
+    padding-top: 10px;
+    padding-right: 15px;
+}
+    .settings-checkbox {
+        margin-right: 10px;
+    }
+    .settings-dropdown {
+        background: transparent;
+        border-bottom: 2px solid var(--light-primary);
+        color: var(--light-primary);
+        font-family: 'Montserrat', verdana, arial, sans-serif;
+        font-size: 16px;
+        margin-right: 10px;
+    }
+        .settings-dropdown option {
+            background-color: var(--dark-primary);
+            color: var(--light-primary);
+        }
+    .settings-numberinput {
+        background: transparent;
+        border-bottom: 2px solid var(--light-primary);
+        color: var(--light-primary);
+        font-family: 'Montserrat', verdana, arial, sans-serif;
+        font-size: 16px;
+        margin-right: 10px;
+        text-align: right;
+        width: 50px;
+    }
+    .settings-label {
+        display: flex;
+        flex-direction: column;
+    }
+        .settingslabel-title {
+
+        }
+        .settingslabel-description {
+            color: var(--light-secondary);
+            font-size: 12px;
+        }
+        .setingslabel-default {
+            font-size: 12px;
+        }

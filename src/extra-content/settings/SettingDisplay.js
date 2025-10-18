@@ -1,3 +1,4 @@
+import './SettingsSection.css';
 import CheckboxContainer from "./setting-containers/CheckboxContainer";
 import DropdownContainer from "./setting-containers/DropdownContainer";
 import NumericalInputContainer from "./setting-containers/NumericalInputContainer";

@@ -95,6 +95,11 @@ export const SettingWaitBeforeReGrabbingInMinutes = {
     description: 'When re-grabbing posts, how far back (in minutes) to go. This helps catch any missed posts, but may cause duplicates.'
 };
 
+// ---------- Settings Pages ----------
+export const SettingsPageSettings = 'Settings';
+export const SettingsPageContent = 'Page Content';
+export const AllSettingsPages = [SettingsPageSettings, SettingsPageContent];
+
 // ---------- Sort Options ----------
 export const SortOptionNew = {
     settingValue: 'new',

@@ -1,3 +1,5 @@
+import './Footerlink.css';
+
 export default function FooterlinkComponent({
     section,
     setExtraDisplay

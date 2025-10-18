@@ -1,0 +1,56 @@
+
+.post-images {
+    width: 100%;
+}
+    .post-imagescontainer {
+        align-items: center;
+        display: flex;
+        position: relative;
+        width: 100%;
+    }
+        .post-imagescontainer button {
+            background-color: var(--dark-secondary);
+            border: 0px;
+            border-radius: 25px;
+            color: white;
+            font-size: 24px;
+            height: 40px;
+            width: 40px;
+        }
+            .post-imagescontainer button:hover {
+                background-color: #343434;
+            }
+        .post-prevImage {
+            left: 0px;
+            position: absolute;
+            top: 50%;
+            z-index: 10;
+        }
+        .post-nextImage {
+            position: absolute;
+            right: 0px;
+            top: 50%;
+            z-index: 10;
+        }
+        .post-displayimage {
+            max-height: 75vh;
+            object-fit: contain;
+            width: 100%;
+            z-index: 1;
+        }
+        .post-displayvideo {
+            max-height: 75vh;
+            object-fit: contain;
+            width: 100%;
+            z-index: 1;
+        }
+    .post-imageselector {
+        display: flex;
+        width: 100%;
+    }
+        .post-imageselector-chooser {
+            background-color: white;
+            flex: 1;
+            height: 5px;
+            margin: 0px 5px;
+        }

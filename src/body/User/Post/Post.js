@@ -88,7 +88,12 @@ export default function Post({
             <div className="post-banner">
                 <div className="post-header">
                     <a className="post-title" href={url} target="_blank" rel="noopener noreferrer">
-                        {postObj.title.replaceAll('&amp;', '&')}
+                        {
+                            postObj.title
+                                .replaceAll('&amp;', '&')
+                                .replaceAll('&lt;', '<')
+                                .replaceAll('&gt;', '>')
+                        }
                     </a>
                     <div className="post-actions">
                         <button className="post-min" onClick={toggleMinimized}>

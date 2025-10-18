@@ -1,3 +1,4 @@
+import './SettingsSection.css';
 import { GrabberCategoryFilters, GrabberCategoryPosts, GrabberCategorySubs } from '../../app/constants.js';
 import { getFromStorage, removeGroupFromStorage } from '../../app/storage/storage.js';
 import { emptyValidation } from '../../app/storage/validators.js';

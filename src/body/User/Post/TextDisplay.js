@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from 'react';
+import './TextDisplay.css';
 import { 
     TextModifierBold,
     TextModifierHeaderPrefix, 

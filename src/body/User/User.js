@@ -57,14 +57,54 @@ export default function User({
     function duplicatePost(post, duplicate) {
         let setting = (post.created_utc > duplicate.created_utc) ? post : duplicate;
         let disabling = (setting.name === post.name) ? duplicate : post;
+
+        let needSecondRun = false;
+        let foundDisabling = false;
+        let media_metadata = undefined;
+        let preview = undefined;
+        let secure_media_embed = undefined;
         setPosts((current) => current.map((curpost) => {
-            if (curpost.name === setting.name)
+            if (curpost.name === setting.name) {
                 curpost.duplicates += disabling.duplicates + 1;
-            else if (curpost.name === disabling.name)
+                if(!foundDisabling) {
+                    needSecondRun = true;
+                } else {
+                    mergeFields(curpost, 'media_metadata', media_metadata);
+                    mergeFields(curpost, 'preview', preview);
+                    mergeFields(curpost, 'secure_media_embed', secure_media_embed);
+                }
+            }
+            else if (curpost.name === disabling.name) {
                 curpost.disabled = true;
+                media_metadata = curpost.media_metadata;
+                preview = curpost.preview;
+                secure_media_embed = curpost.secure_media_embed;
+                foundDisabling = true;
+            }
 
             return curpost;
         }));
+        if(needSecondRun) {
+            setPosts((current) => current.map((curpost) => {
+                if (curpost.name === setting.name) {
+                    mergeFields(curpost, 'media_metadata', media_metadata);
+                    mergeFields(curpost, 'preview', preview);
+                    mergeFields(curpost, 'secure_media_embed', secure_media_embed);
+                }
+
+                return curpost;
+            }));
+        }
+    }
+
+    function mergeFields(post, fieldName, otherData) {
+        if(otherData) {
+            if(post[fieldName]) {
+                post[fieldName] = { ...post[fieldName], ...otherData };
+            } else {
+                post[fieldName] = otherData;
+            }
+        }
     }
 
     function disablePost(t3) {
@@ -99,11 +139,14 @@ export default function User({
                     return;
                 }
 
-                const titleSimilarity = stringSimilarity(left.title, right.title);
-                if (left.selftext === "" && right.selftext === "" && titleSimilarity >= 0.90) {
-                    console.log(`Found duplicate post; empty text, title-wise; ${left.name}, ${right.name}`);
-                    duplicatePost(left, right);
-                    return;
+                
+                if (left.selftext === "" && right.selftext === "") {
+                    const titleSimilarity = stringSimilarity(left.title, right.title);
+                    if(titleSimilarity >= 0.90) {
+                        console.log(`Found duplicate post; empty text, title-wise; ${left.name}, ${right.name}`);
+                        duplicatePost(left, right);
+                        return;
+                    }
                 }
 
                 const textSimilarity = stringSimilarity(left.selftext, right.selftext);

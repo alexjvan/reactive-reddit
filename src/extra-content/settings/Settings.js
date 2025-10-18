@@ -1,8 +1,9 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import './Settings.css';
 import GroupsDisplay from './GroupsDisplay.js';
 import GroupInternalsDisplay from './GroupInternalsDisplay.js';
 import SettingDisplay from './SettingDisplay.js';
+import { AllSettingsPages, SettingsPageContent, SettingsPageSettings } from '../../app/constants.js';
 
 export default function Settings({
     settings,
@@ -18,6 +19,22 @@ export default function Settings({
     setPosts,
     postsPerSub
 }) {
+    const [settingsPage, setSettingsPage] = useState(AllSettingsPages[0]);
+
+    const settingsTabs = useMemo(
+        () => <div id='settings-tabs'>
+            {AllSettingsPages.map((page) =>
+                <button 
+                    className={'settings-tab' + (settingsPage === page ? ' active' : '')}
+                    onClick={() => setSettingsPage(page)}
+                >
+                    {page}
+                </button>
+            )}
+        </div>, 
+        [settingsPage]
+    );
+
     const settingsDisplay = useMemo(
         () => <SettingDisplay
             settings={settings}
@@ -26,31 +43,41 @@ export default function Settings({
         [settings, setSettings]
     );
 
-    const groupsDisplay = useMemo(() =>
-        <GroupsDisplay
-            groups={groups}
-            setGroups={setGroups}
-            activeGroup={activeGroup}
-            subs={subs}
-            filters={filters}
-            posts={posts}
-            clearFilters={clearFilters}
-        />,
-        [groups, setGroups, activeGroup, subs, filters, posts, clearFilters]
+    const pageContentDisplay = useMemo(
+        () => <>
+            <GroupsDisplay
+                groups={groups}
+                setGroups={setGroups}
+                activeGroup={activeGroup}
+                subs={subs}
+                filters={filters}
+                posts={posts}
+                clearFilters={clearFilters}
+            />
+            <GroupInternalsDisplay
+                settings={settings}
+                subs={subs}
+                setSubs={setSubs}
+                filters={filters}
+                setFilters={setFilters}
+                setPosts={setPosts}
+                postsPerSub={postsPerSub}
+                clearFilters={clearFilters}
+            />
+        </>,
+        [settings, groups, activeGroup, subs, filters, posts, postsPerSub, clearFilters]
     );
 
-    const groupInternalsDisplay = useMemo(() =>
-        <GroupInternalsDisplay
-            settings={settings}
-            subs={subs}
-            setSubs={setSubs}
-            filters={filters}
-            setFilters={setFilters}
-            setPosts={setPosts}
-            postsPerSub={postsPerSub}
-            clearFilters={clearFilters}
-        />,
-        [subs, setSubs, filters, setPosts, postsPerSub, clearFilters]
+    const pageDisplay = useMemo(
+        () => {
+            switch (settingsPage) {
+                case SettingsPageSettings:
+                    return settingsDisplay;
+                case SettingsPageContent:
+                    return pageContentDisplay;
+            }
+        },
+        [settingsPage, settingsDisplay, pageContentDisplay]
     );
 
     function clearFilters() {
@@ -62,8 +89,7 @@ export default function Settings({
     }
 
     return <div id="settings">
-        {settingsDisplay}
-        {groupsDisplay}
-        {groupInternalsDisplay}
+        {settingsTabs}
+        {pageDisplay}
     </div>;
 }

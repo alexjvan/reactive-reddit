@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import './GroupSelector.css';
 
 export default function GroupSelector({
   groups,

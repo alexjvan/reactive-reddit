@@ -1,4 +1,5 @@
 import { useState } from "react";
+import './QuickAdd.css';
 import { FilterCategorySub } from "../app/constants";
 
 export default function QuickAdd({

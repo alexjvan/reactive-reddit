@@ -101,7 +101,12 @@ function getTextContent(category, post) {
     var content = '';
     switch (category) {
         case FilterCategoryTitle:
-            content = post.title?.toLowerCase().replaceAll('&amp;', '&').replaceAll('’', '\'') || '';
+            content = post.title
+                ?.toLowerCase()
+                .replaceAll('&amp;', '&')
+                .replaceAll('&lt;', '<')
+                .replaceAll('&gt;', '>')
+                .replaceAll('’', '\'') || '';
             break;
         case FilterCategoryText:
             content = post.selftext?.toLowerCase() || '';

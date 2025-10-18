@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import './SettingsSection.css';
 import { addFiltersAsRequested } from '../../app/filters.js';
 
 export default function GroupInternalsDisplay({

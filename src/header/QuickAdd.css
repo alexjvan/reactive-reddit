@@ -1,0 +1,64 @@
+.qa-section {
+    padding: 0px 10px;
+    text-align: center;
+}
+    .qa-cat {
+        background-color: var(--background-primary);
+        border: 0px;
+        color: var(--light-primary);
+        font-family: 'Montserrat', verdana, arial, sans-serif;
+        font-size: 16px;
+        padding: 5px 10px;
+    }
+        .qa-cat:hover {
+            background-color: var(--light-secondary);
+            color: var(--dark-secondary);
+        }
+        .qa-cat option {
+            background-color: var(--dark-primary);
+            color: var(--light-primary);
+        }
+    .qa-title {
+        display: block;
+        text-align: center;
+    }
+        .qa-want {
+            background-color: var(--dark-primary);
+            border: 0px;
+            color: var(--light-primary);
+            font-family: 'Montserrat', verdana, arial, sans-serif;
+            font-size: 16px;
+            padding: 5px 10px;
+        }
+            .qa-want:hover {
+                background-color: var(--light-secondary);
+                color: var(--dark-secondary);
+            }
+                .qa-want.include::before {
+                    color: var(--good);
+                    content: "+";
+                }
+                .qa-want.exclude::before {
+                    color: var(--bad);
+                    content: "-";
+                }
+        .qa-inputbox {
+            margin: 0px 5px;
+        }
+            .qa-input {
+                background-color: var(--dark-primary);
+                border: 0px;
+                border-bottom: 1px solid var(--light-primary);
+                color: var(--light-primary);
+                font-family: 'Montserrat';
+                padding: 5px;
+                width: 150px;
+            }
+        .qa-submit {
+            background-color: var(--dark-primary);
+            border: 0px;
+            color: var(--light-primary);
+            font-family: 'Montserrat', verdana, arial, sans-serif;
+            font-size: 16px;
+            padding: 5px;
+        }
