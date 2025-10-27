@@ -2,13 +2,18 @@ import { useMemo } from 'react';
 import './Stats.css';
 import { FilterCategoryTag, FilterCategoryTitle } from '../../app/constants.js';
 import { addNewFilter } from '../../app/filters';
+import { newSubWithName } from '../../app/subHelpers.js';
 
 export default function Stats({
+    postQueue,
     settings,
+    subs,
+    setSubs,
     setFilters,
     posts,
     setPosts,
-    postsPerSub
+    postsPerSub,
+    usersSubs
 }) {
     const _postsPerSub = useMemo(() =>
         postsPerSub.map(({ sub, count }) => 
@@ -54,6 +59,23 @@ export default function Stats({
             [posts]
     );
 
+    const _commonSubs = useMemo(() =>
+        Object.entries(commonSubs())
+            .sort((a, b) => b[1] - a[1])
+            .map(([sub, count]) => 
+                <div className='stats-row' key={"recommend"+ sub}>
+                    <div className='stats-left'>{sub}</div>
+                    <div className='stats-right'>
+                        <button className='stats-addSub' onClick={() => addNewSub(sub)}>
+                            +Add
+                        </button>
+                        {count}
+                    </div>
+                </div>
+            ),
+            [subs, usersSubs]
+    );
+
     function addTagFilter(tag) {
         addNewFilter(
             settings,
@@ -80,6 +102,19 @@ export default function Stats({
             setFilters,
             setPosts
         );
+    }
+
+    function addNewSub(subname) {
+        setSubs((current) => [
+            ...current,
+            newSubWithName(subname)
+        ]);
+
+        postQueue.enqueue({
+            sub: subname,
+            ba: undefined,
+            pre: false
+        }, 1);
     }
 
     function postsPerTag() {
@@ -131,6 +166,27 @@ export default function Stats({
 
         return wordCounts;
     }
+
+    function commonSubs() {
+        const subCounts = {};
+
+        let preExistingSubs = subs.map(s => s.name.toLowerCase());
+
+        // TODO: Dont recommend subs list
+
+        usersSubs
+            .forEach(userSubs => {
+                userSubs.subs.forEach(sub => {
+                    if(!sub.subname.startsWith('u_') && !preExistingSubs.includes(sub.subname.toLowerCase())) {
+                        subCounts[sub.subname] = (subCounts[sub.subname] || 0) + sub.t3s.length;
+                    }
+                });
+            });
+
+        // TODO: Setting to limit subs less than x count
+
+        return subCounts;
+    }
     
     return <div id="statistics">
         <div className='stats-section'>
@@ -149,6 +205,12 @@ export default function Stats({
             <div className='stats-header'>Common Keywords</div>
             <div className='stats-container'>
                 {_commonKeywords}
+            </div>
+        </div>
+        <div className='stats-section'>
+            <div className='stats-header'>Common Subs</div>
+            <div className='stats-container'>
+                {_commonSubs}
             </div>
         </div>
     </div>;

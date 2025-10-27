@@ -6,6 +6,7 @@ import Stats from './stats/Stats';
 import { DefaultGroups, ExtraContentHelp, ExtraContentSettings, ExtraContentStats } from '../app/constants';
 
 export default function ExtraContent({
+    postQueue,
     settings,
     setSettings,
     extraDisplay,
@@ -19,6 +20,7 @@ export default function ExtraContent({
     setFilters,
     posts,
     setPosts,
+    usersSubs,
     setMinimizedUsers
 }) {
     const help = useMemo(() => {
@@ -93,13 +95,23 @@ export default function ExtraContent({
 
     const stats = useMemo(() => {
         return <Stats
+            postQueue={postQueue}
             settings={settings}
+            subs={subs}
+            setSubs={setSubs}
             setFilters={setFilters}
             posts={posts}
             setPosts={setPosts}
             postsPerSub={postsPerSub}
+            usersSubs={usersSubs}
         />;
-    }, [settings, setFilters, posts, setPosts, postsPerSub]);
+    }, [postQueue,
+        settings, 
+        subs, setSubs,
+        setFilters, 
+        posts, setPosts, 
+        postsPerSub, 
+        usersSubs]);
 
     return (extraDisplay &&
         <div id="extrapage">

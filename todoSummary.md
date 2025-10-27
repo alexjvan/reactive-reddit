@@ -18,6 +18,12 @@ Looking at the TODOs in this repo, summarizing to narrow down items to work on:
 - Categorize Left Over Post Cleaner Items
 - Find better spot for image movers (prev/next) so they don't shift with each image-change
 - More Media links
+- Pop-Out Image Container
+- Limit image cache by media items in post
+- Limit usersSubs by active users
+- Pull duplicate subreddits into subreddit list
+- UsersSubs: Remove user on 404?
+- Try and make Grabber + UserRetriever generic
 
 ## Performance-Based Items:
 - Not constantly be saving data into storage during retrieval

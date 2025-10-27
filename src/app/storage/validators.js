@@ -14,6 +14,10 @@ export function emptyValidation(data, fallback) {
     return data;
 }
 
+export function mapConverter(data, fallback) {
+    return new Map(Object.entries(data));
+}
+
 // --- FILTERS ---
 export function postValidation(data, fallback, subs, filters) {
     return data.map((post) => {

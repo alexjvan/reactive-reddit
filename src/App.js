@@ -9,14 +9,17 @@ import {
   GrabberCategoryMinUsers,
   GrabberCategoryPosts,
   GrabberCategorySettings,
-  GrabberCategorySubs
+  GrabberCategorySubs,
+  GrabberCategoryUsersSubs
 } from './app/constants.js';
 import PriorityQueue from './app/grabber/PriorityQueue.js';
 import usePrevious from './app/usePrevious.js';
 import Grabber from './app/grabber/Grabber.js';
+import UserRetriever from './app/grabber/UserRetriever.js';
 import { getFromStorage, putInStorage } from './app/storage/storage.js';
 import {
   emptyValidation,
+  mapConverter,
   padSubs,
   postValidation,
   reduceFilters,
@@ -42,7 +45,8 @@ export default function App() {
   // Load from Storage on init
   const [settings, setSettings] = useState(() => getFromStorage('', GrabberCategorySettings, DefaultSettings, settingsValidation));
   const [groups, setGroups] = useState(() => getFromStorage('', GrabberCategoryGroups, DefaultGroups, emptyValidation));
-  const [imageCache, setImageCache] = useState(() => getFromStorage('', GrabberCategoryImageCache, new Map(), emptyValidation));
+  const [imageCache, setImageCache] = useState(() => getFromStorage('', GrabberCategoryImageCache, new Map(), mapConverter));
+  const [usersSubs, setUsersSubs] = useState(() => getFromStorage('', GrabberCategoryUsersSubs, [], emptyValidation));
   const [activeGroup, setActiveGroup] = useState(null);
   const previousActiveGroup = usePrevious(activeGroup);
 
@@ -52,6 +56,7 @@ export default function App() {
   const [minimizedUsers, setMinimizedUsers] = useState(undefined);
   const [posts, setPosts] = useState(undefined);
   const grabber = useRef();
+  const userRetriever = useRef();
 
   // Load objs off group
   useEffect(
@@ -86,6 +91,20 @@ export default function App() {
   useEffect(
     () => putInStorage('', GrabberCategoryGroups, groups),
     [groups]
+  );
+  useEffect(
+    () => {
+      // TODO: Limit by media items in posts
+      putInStorage('', GrabberCategoryImageCache, imageCache)
+    },
+    [imageCache]
+  );
+  useEffect(
+    () => {
+      // TODO: Limit by active users
+      putInStorage('', GrabberCategoryUsersSubs, usersSubs)
+    },
+    [usersSubs]
   );
   useEffect(
     () => {
@@ -144,6 +163,20 @@ export default function App() {
       );
     }
   }, [subs, posts, filters]);
+  // Update UserRetriever
+  useEffect(() => {
+    if (userRetriever.current) {
+      userRetriever.current.posts = posts;
+      userRetriever.current.usersSubs = usersSubs;
+    } else if (posts !== undefined && usersSubs !== undefined) {
+      userRetriever.current = new UserRetriever(
+        settings,
+        posts,
+        usersSubs,
+        setUsersSubs
+      );
+    }
+  }, [posts, usersSubs]);
   // Update postQueue on group switch
   useEffect(() => {
     // Discard race conditions on-load
@@ -215,6 +248,16 @@ export default function App() {
     }
   }
 
+  // Run user retrieval after posts have all been grabbed
+  useEffect(
+    () => {
+      if(userRetriever.current && !postQueueHasData) {
+        userRetriever.current.grabLoop();
+      }
+    },
+    [postQueueHasData]
+  );
+
   return <>
     <Head
       settings={settings}
@@ -246,6 +289,7 @@ export default function App() {
       setExtraDisplay={setExtraDisplay}
     />
     <ExtraContent
+      postQueue={postQueue}
       settings={settings}
       setSettings={setSettings}
       extraDisplay={extraDisplay}
@@ -259,6 +303,7 @@ export default function App() {
       setFilters={setFilters}
       posts={posts}
       setPosts={setPosts}
+      usersSubs={usersSubs}
       setMinimizedUsers={setMinimizedUsers}
     />
   </>;

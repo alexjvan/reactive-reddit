@@ -23,6 +23,7 @@ export const GrabberCategoryMinUsers = 'minUsers';
 export const GrabberCategoryPosts = 'posts';
 export const GrabberCategorySettings = 'settings';
 export const GrabberCategorySubs = 'subs';
+export const GrabberCategoryUsersSubs = 'usersSubs';
 
 export const GrabberTypeBackfill = 'Backfill';
 export const GrabberTypeContinual = 'Continual';

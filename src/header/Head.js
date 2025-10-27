@@ -3,7 +3,6 @@ import './Head.css';
 import GroupSelector from './GroupSelector.js';
 import QuickAdd from './QuickAdd.js';
 import QuickFilter from './QuickFilter.js';
-import { randSixHash } from '../app/colors.js';
 import {
     DefaultSettings,
     FilterCategorySub,
@@ -14,6 +13,7 @@ import {
     SettingPostTypes
 } from '../app/constants.js';
 import { addNewFilter } from '../app/filters.js';
+import { newSubWithName } from '../app/subHelpers.js';
 import { postDisplayFilter } from '../app/postHelpers/postFunctions.js';
 
 // TODO: Button to stop grabber
@@ -81,18 +81,9 @@ export default function Head({
                 let contains = (subs ?? []).includes(addition);
 
                 if (!contains) {
-                    let newSub = {};
-                    newSub.name = addition;
-                    newSub.color = randSixHash();
-                    newSub.ba = {};
-                    newSub.ba.beforet3 = undefined;
-                    newSub.ba.beforeutc = undefined;
-                    newSub.ba.aftert3 = undefined;
-                    newSub.ba.afterutc = undefined;
-                    newSub.reachedEnd = false;
                     setSubs((current) => [
                         ...current,
-                        newSub
+                        newSubWithName(addition)
                     ]);
 
                     postQueue.enqueue({

@@ -3,6 +3,7 @@ import { addFiltersAsRequested } from "../filters";
 import { cleanPost } from "../postHelpers/postFunctions";
 import { getSub } from "../subHelpers";
 
+// TODO: Try and generic-ize Grabber + Post Retriever
 export default class Grabber {
     constructor(
         settings,
@@ -215,7 +216,6 @@ export default class Grabber {
         }, postType === GrabberTypeContinual ? 2 : 1);
     }
 
-    // Exported since this is used in sub-validation
     finishRetrieval(
         sub,
         reason,
