@@ -87,19 +87,21 @@ export default function Post({
         <div className="post" style={{ borderColor: `#${postObj.color}` }} data-t3={postObj.name}>
             <div className="post-banner">
                 <div className="post-header">
-                    <a className="post-title" href={url} target="_blank" rel="noopener noreferrer">
-                        {
-                            postObj.title
-                                .replaceAll('&amp;', '&')
-                                .replaceAll('&lt;', '<')
-                                .replaceAll('&gt;', '>')
-                        }
-                    </a>
-                    <div className="post-actions">
-                        <button className="post-min" onClick={toggleMinimized}>
-                            {minimized ? '+' : '-'}
-                        </button>
-                        <button className="post-close" onClick={disable}>X</button>
+                    <div className='post-top'>
+                        <a className="post-title" href={url} target="_blank" rel="noopener noreferrer">
+                            {
+                                postObj.title
+                                    .replaceAll('&amp;', '&')
+                                    .replaceAll('&lt;', '<')
+                                    .replaceAll('&gt;', '>')
+                            }
+                        </a>
+                        <div className="post-actions">
+                            <button className="post-min" onClick={toggleMinimized}>
+                                {minimized ? '+' : '-'}
+                            </button>
+                            <button className="post-close" onClick={disable}>X</button>
+                        </div>
                     </div>
                     <div className="post-info">
                         <div className="post-sub">{postObj.subreddit}</div>

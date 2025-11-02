@@ -24,6 +24,7 @@ Looking at the TODOs in this repo, summarizing to narrow down items to work on:
 - Pull duplicate subreddits into subreddit list
 - UsersSubs: Remove user on 404?
 - Try and make Grabber + UserRetriever generic
+- Ignore common subs less than #x
 
 ## Performance-Based Items:
 - Not constantly be saving data into storage during retrieval

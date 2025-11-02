@@ -19,24 +19,28 @@
                 .post-header a:hover {
                     cursor: pointer;
                 }
-            .post-title {
-                color: white;
-                float: left;
-                padding: 0px!important;
-                width: calc(100% - 50px);
+            .post-top {
+                display: flex;
+                justify-content: space-between;
+                width: 100%;
             }
-            .post-actions {
-                float: right;
-                width: 50px;
-            }
-                .post-actions button {
-                    background-color: var(--dark-secondary);
-                    border: 0px;
+                .post-title {
                     color: white;
-                    font-family: 'Montserrat', verdana, arial, sans-serif;
-                    font-size: 16px;
-                    padding: 0px 5px;
+                    float: left;
+                    padding: 0px!important;
                 }
+                .post-actions {
+                    float: right;
+                    width: 50px;
+                }
+                    .post-actions button {
+                        background-color: var(--dark-secondary);
+                        border: 0px;
+                        color: white;
+                        font-family: 'Montserrat', verdana, arial, sans-serif;
+                        font-size: 16px;
+                        padding: 0px 5px;
+                    }
             .post-info {
                 display: block;
                 font-size: 12px;

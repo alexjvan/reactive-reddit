@@ -13,7 +13,9 @@ export default function Stats({
     posts,
     setPosts,
     postsPerSub,
-    usersSubs
+    usersSubs,
+    dontRecommendSubs,
+    setDontRecommendSubs
 }) {
     const _postsPerSub = useMemo(() =>
         postsPerSub.map(({ sub, count }) => 
@@ -68,6 +70,9 @@ export default function Stats({
                     <div className='stats-right'>
                         <button className='stats-addSub' onClick={() => addNewSub(sub)}>
                             +Add
+                        </button>
+                        <button className='stats-dontRec' onClick={() => setDontRecommendSubs(prev => [...prev, sub])}>
+                            +Dont Recommend
                         </button>
                         {count}
                     </div>
@@ -172,12 +177,14 @@ export default function Stats({
 
         let preExistingSubs = subs.map(s => s.name.toLowerCase());
 
-        // TODO: Dont recommend subs list
-
         usersSubs
             .forEach(userSubs => {
                 userSubs.subs.forEach(sub => {
-                    if(!sub.subname.startsWith('u_') && !preExistingSubs.includes(sub.subname.toLowerCase())) {
+                    if(
+                        (dontRecommendSubs && !dontRecommendSubs.includes(sub.subname))
+                        && !sub.subname.startsWith('u_') 
+                        && !preExistingSubs.includes(sub.subname.toLowerCase())
+                    ) {
                         subCounts[sub.subname] = (subCounts[sub.subname] || 0) + sub.t3s.length;
                     }
                 });

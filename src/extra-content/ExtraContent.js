@@ -21,7 +21,9 @@ export default function ExtraContent({
     posts,
     setPosts,
     usersSubs,
-    setMinimizedUsers
+    setMinimizedUsers,
+    dontRecommendSubs,
+    setDontRecommendSubs
 }) {
     const help = useMemo(() => {
         return <Help />;
@@ -104,6 +106,8 @@ export default function ExtraContent({
             setPosts={setPosts}
             postsPerSub={postsPerSub}
             usersSubs={usersSubs}
+            dontRecommendSubs={dontRecommendSubs}
+            setDontRecommendSubs={setDontRecommendSubs}
         />;
     }, [postQueue,
         settings, 

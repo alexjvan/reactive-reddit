@@ -16,6 +16,7 @@ export const FilterTagsCloser = [FilterTagEnd, ']', ')', '}'];
 export const FilterTagsOpener = [FilterTagStart, '[', '(', '{'];
 
 // ---------- Grabber ----------
+export const GrabberCategoryDontRecommendSubs = 'dontRecommendSubs';
 export const GrabberCategoryGroups = 'groups';
 export const GrabberCategoryFilters = 'filters';
 export const GrabberCategoryImageCache = 'imageCache';

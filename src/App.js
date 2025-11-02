@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
+import { act, useEffect, useRef, useState } from 'react';
 import './App.css';
 import { 
   DefaultGroups, 
   DefaultSettings,
+  GrabberCategoryDontRecommendSubs,
   GrabberCategoryGroups,
   GrabberCategoryFilters,
   GrabberCategoryImageCache,
@@ -55,6 +56,7 @@ export default function App() {
   const [filters, setFilters] = useState(undefined);
   const [minimizedUsers, setMinimizedUsers] = useState(undefined);
   const [posts, setPosts] = useState(undefined);
+  const [dontRecommendSubs, setDontRecommendSubs] = useState(undefined);
   const grabber = useRef();
   const userRetriever = useRef();
 
@@ -77,8 +79,9 @@ export default function App() {
 
       setSubs(getFromStorage(activeGroup, GrabberCategorySubs, [], resumeRetrieval, postQueue, setPostQueueHasData));
       setFilters(getFromStorage(activeGroup, GrabberCategoryFilters, [], emptyValidation));
-      setMinimizedUsers(getFromStorage(activeGroup, GrabberCategoryMinUsers, [], emptyValidation))
+      setMinimizedUsers(getFromStorage(activeGroup, GrabberCategoryMinUsers, [], emptyValidation));
       setPosts(getFromStorage(activeGroup, GrabberCategoryPosts, [], postValidation, subs, filters));
+      setDontRecommendSubs(getFromStorage(activeGroup, GrabberCategoryDontRecommendSubs, [], emptyValidation));
     },
     [activeGroup]
   );
@@ -141,6 +144,14 @@ export default function App() {
       }
     },
     [minimizedUsers]
+  );
+  useEffect(
+    () => {
+      if(dontRecommendSubs && dontRecommendSubs.length > 0) {
+        putInStorage(activeGroup, GrabberCategoryDontRecommendSubs, dontRecommendSubs)
+      }
+    },
+    [dontRecommendSubs]
   );
 
   // Update grabber
@@ -305,6 +316,8 @@ export default function App() {
       setPosts={setPosts}
       usersSubs={usersSubs}
       setMinimizedUsers={setMinimizedUsers}
+      dontRecommendSubs={dontRecommendSubs}
+      setDontRecommendSubs={setDontRecommendSubs}
     />
   </>;
 }
