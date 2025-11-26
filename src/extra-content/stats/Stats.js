@@ -78,7 +78,7 @@ export default function Stats({
                     </div>
                 </div>
             ),
-            [subs, usersSubs]
+            [dontRecommendSubs, subs, usersSubs]
     );
 
     function addTagFilter(tag) {

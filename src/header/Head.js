@@ -78,7 +78,7 @@ export default function Head({
         if (section === FilterCategorySub) {
             let updates = input.split(',');
             updates.forEach((addition) => {
-                let contains = (subs ?? []).includes(addition);
+                let contains = (subs ?? []).some(s => s && s.name === addition);
 
                 if (!contains) {
                     setSubs((current) => [

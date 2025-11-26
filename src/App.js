@@ -98,14 +98,22 @@ export default function App() {
   useEffect(
     () => {
       // TODO: Limit by media items in posts
-      putInStorage('', GrabberCategoryImageCache, imageCache)
+      const timer = setTimeout(() => {
+        putInStorage('', GrabberCategoryImageCache, imageCache);
+      }, 1000);
+
+      return () => clearTimeout(timer);
     },
     [imageCache]
   );
   useEffect(
     () => {
       // TODO: Limit by active users
-      putInStorage('', GrabberCategoryUsersSubs, usersSubs)
+      const timer = setTimeout(() => {
+        putInStorage('', GrabberCategoryUsersSubs, usersSubs);
+      }, 1000);
+
+      return () => clearTimeout(timer);
     },
     [usersSubs]
   );
@@ -124,7 +132,11 @@ export default function App() {
   useEffect(
     () => {
       if (posts && posts.length > 0) {
-        putInStorage(activeGroup, GrabberCategoryPosts, shrinkPosts(posts))
+        const timer = setTimeout(() => {
+          putInStorage(activeGroup, GrabberCategoryPosts, shrinkPosts(posts));
+        }, 1000);
+
+        return () => clearTimeout(timer);
       }
     },
     [posts]
@@ -160,6 +172,7 @@ export default function App() {
       grabber.current.subs = subs;
       grabber.current.posts = posts;
       grabber.current.filters = filters;
+      grabber.current.settings = settings;
     } else if (subs !== undefined && posts !== undefined && filters !== undefined) {
       grabber.current = new Grabber(
         settings,
@@ -179,6 +192,7 @@ export default function App() {
     if (userRetriever.current) {
       userRetriever.current.posts = posts;
       userRetriever.current.usersSubs = usersSubs;
+      userRetriever.current.settings = settings;
     } else if (posts !== undefined && usersSubs !== undefined) {
       userRetriever.current = new UserRetriever(
         settings,

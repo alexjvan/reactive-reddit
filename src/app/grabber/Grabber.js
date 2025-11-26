@@ -140,6 +140,8 @@ export default class Grabber {
         let retrievedPosts = data.data.children;
         let direction = (postType === GrabberTypeContinual) ? data.data.before : data.data.after;
 
+        // Creating deltas so we aren't constantly trying to change the posts during retrieval
+        const filterDeltas = {};
         let processed = retrievedPosts.map((post) => {
             let returning = post.data;
             cleanPost(returning);
@@ -149,10 +151,9 @@ export default class Grabber {
             returning.filteredFor = addFiltersAsRequested(this.settings, this.filters, returning);
 
             if (returning.filteredFor.length > 0) {
-                this.setFilters((prev) => prev.map((filter) => {
-                    filter.count = filter.count + (returning.filteredFor.includes(filter.filter) ? 1 : 0);
-                    return filter;
-                }));
+                returning.filteredFor.forEach((f) => {
+                    filterDeltas[f] = (filterDeltas[f] || 0) + 1;
+                });
             }
 
             return returning;
@@ -176,31 +177,49 @@ export default class Grabber {
         this.setPosts(prev => [...prev, ...filtered]);
 
         // Set before-after appropriately
+        let updatedBa = { ...(setting.ba || {}) };
+        let updatedReachedEnd = setting.reachedEnd;
+
         switch (postType) {
             case GrabberTypeContinual:
-                setting.ba.beforeutc = processed[0].created_utc;
-                setting.ba.beforet3 = processed[0].name;
+                updatedBa.beforeutc = processed[0].created_utc;
+                updatedBa.beforet3 = processed[0].name;
                 break;
             case GrabberTypeSavior:
                 // Only for the first
                 //  Reset after to grab anything missed
-                if (processed[0].created_utc > setting.ba.beforeutc) {
-                    setting.ba.beforeutc = processed[0].created_utc;
-                    setting.ba.beforet3 = processed[0].name;
-                    setting.ba.afterutc = processed[processed.length - 1].created_utc;
-                    setting.ba.aftert3 = processed[processed.length - 1].name;
-                    setting.reachedEnd = false;
+                if (processed[0].created_utc > (setting.ba?.beforeutc || 0)) {
+                    updatedBa.beforeutc = processed[0].created_utc;
+                    updatedBa.beforet3 = processed[0].name;
+                    updatedBa.afterutc = processed[processed.length - 1].created_utc;
+                    updatedBa.aftert3 = processed[processed.length - 1].name;
+                    updatedReachedEnd = false;
                 }
                 break;
             case GrabberTypeBackfill:
-                if (setting.ba.beforeutc === undefined) {
-                    setting.ba.beforeutc = processed[0].created_utc;
-                    setting.ba.beforet3 = processed[0].name;
+                if (setting.ba?.beforeutc === undefined) {
+                    updatedBa.beforeutc = processed[0].created_utc;
+                    updatedBa.beforet3 = processed[0].name;
                 }
-                setting.ba.afterutc = processed[processed.length - 1].created_utc;
-                setting.ba.aftert3 = processed[processed.length - 1].name;
+                updatedBa.afterutc = processed[processed.length - 1].created_utc;
+                updatedBa.aftert3 = processed[processed.length - 1].name;
                 break;
         }
+
+        // Push aggregated filter counts into state once
+        if (Object.keys(filterDeltas).length > 0) {
+            this.setFilters((prev) => prev.map((filter) => {
+                const inc = filterDeltas[filter.filter] || 0;
+                if (inc === 0) return filter;
+                return { ...filter, count: (filter.count || 0) + inc };
+            }));
+        }
+
+        // Update the sub entry in subs immutably
+        this.setSubs((prev) => prev.map((s) => {
+            if (s.name !== sub) return s;
+            return { ...s, ba: updatedBa, reachedEnd: updatedReachedEnd };
+        }));
 
         if (direction === undefined || direction === null) {
             this.finishRetrieval(sub, `No more ${(postType === GrabberTypeContinual ? 'before' : 'after')}.`, postType !== GrabberTypeContinual, true);
@@ -232,7 +251,7 @@ export default class Grabber {
         if (setEnd) {
             this.setSubs((prev) => prev.map((csub) => {
                 if (csub.name === sub) {
-                    csub.reachedEnd = true;
+                    return { ...csub, reachedEnd: true };
                 }
                 return csub;
             }));

@@ -40,7 +40,7 @@ export default function Body({
         if (containerRef.current) {
             containerRef.current.scrollTop = scrollPosition.current;
         }
-    });
+    }, [posts]); // Trying to avoid constant re-renders
 
     const users = useMemo(() => {
             let usersMap = (posts ?? [])

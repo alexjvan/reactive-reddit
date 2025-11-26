@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from 'react';
-import { stringSimilarity } from "string-similarity-js";
 import './User.css';
 import Post from './Post/Post.js';
 import { FilterCategoryAuthor } from '../../app/constants.js';
@@ -15,7 +14,7 @@ export default function User({
     minimizedUsers,
     setMinimizedUsers
 }) {
-    const [minimized, setMinimized] = useState(minimizedUsers.includes(username));
+    const [minimized, setMinimized] = useState((minimizedUsers ?? []).includes(username));
 
     const disabledPosts = useMemo(() =>
         usersPosts.filter((post) => post.filteredFor.length > 0 || post.disabled).length,
@@ -29,10 +28,10 @@ export default function User({
 
     function toggleMind() {
         setMinimized(prevState => !prevState);
-        if (minimizedUsers.includes(username)) {
-            setMinimizedUsers((current) => current.filter((u) => u !== username));
+        if ((minimizedUsers ?? []).includes(username)) {
+            setMinimizedUsers((current) => (current || []).filter((u) => u !== username));
         } else {
-            setMinimizedUsers(current => [...current, username]);
+            setMinimizedUsers(current => [...(current || []), username]);
         }
     };
 
@@ -55,70 +54,64 @@ export default function User({
     };
 
     function duplicatePost(post, duplicate) {
-        let setting = (post.created_utc > duplicate.created_utc) ? post : duplicate;
-        let disabling = (setting.name === post.name) ? duplicate : post;
+        const setting = (post.created_utc > duplicate.created_utc) ? post : duplicate;
+        const disabling = (setting.name === post.name) ? duplicate : post;
 
-        let needSecondRun = false;
-        let foundDisabling = false;
-        let media_metadata = undefined;
-        let preview = undefined;
-        let secure_media_embed = undefined;
-        setPosts((current) => current.map((curpost) => {
-            if (curpost.name === setting.name) {
-                curpost.duplicates += disabling.duplicates + 1;
-                if(!foundDisabling) {
-                    needSecondRun = true;
-                } else {
-                    mergeFields(curpost, 'media_metadata', media_metadata);
-                    mergeFields(curpost, 'preview', preview);
-                    mergeFields(curpost, 'secure_media_embed', secure_media_embed);
-                }
-            }
-            else if (curpost.name === disabling.name) {
-                curpost.disabled = true;
-                media_metadata = curpost.media_metadata;
-                preview = curpost.preview;
-                secure_media_embed = curpost.secure_media_embed;
-                foundDisabling = true;
-            }
+        setPosts((current) => {
+            let media_metadata = undefined;
+            let preview = undefined;
+            let secure_media_embed = undefined;
+            let foundDisabling = false;
 
-            return curpost;
-        }));
-        if(needSecondRun) {
-            setPosts((current) => current.map((curpost) => {
+            const updated = (current || []).map((curpost) => {
                 if (curpost.name === setting.name) {
-                    mergeFields(curpost, 'media_metadata', media_metadata);
-                    mergeFields(curpost, 'preview', preview);
-                    mergeFields(curpost, 'secure_media_embed', secure_media_embed);
+                    return { ...curpost, duplicates: (curpost.duplicates || 0) + (disabling.duplicates || 0) + 1 };
+                } else if (curpost.name === disabling.name) {
+                    media_metadata = media_metadata ?? curpost.media_metadata;
+                    preview = preview ?? curpost.preview;
+                    secure_media_embed = secure_media_embed ?? curpost.secure_media_embed;
+                    foundDisabling = true;
+                    return { ...curpost, disabled: true };
                 }
-
                 return curpost;
-            }));
-        }
+            });
+
+            if (foundDisabling) {
+                return updated.map(p => {
+                    if (p.name === setting.name) {
+                        return {
+                            ...p,
+                            media_metadata: { ...(p.media_metadata || {}), ...(media_metadata || {}) },
+                            preview: { ...(p.preview || {}), ...(preview || {}) },
+                            secure_media_embed: { ...(p.secure_media_embed || {}), ...(secure_media_embed || {}) }
+                        };
+                    }
+                    return p;
+                });
+            }
+
+            return updated;
+        });
     }
 
     function mergeFields(post, fieldName, otherData) {
-        if(otherData) {
-            if(post[fieldName]) {
-                post[fieldName] = { ...post[fieldName], ...otherData };
-            } else {
-                post[fieldName] = otherData;
-            }
-        }
+        if (!otherData) return post;
+        return { ...post, [fieldName]: { ...(post[fieldName] || {}), ...otherData } };
     }
 
     function disablePost(t3) {
-        let count = 0;
         // This duplicate check was added when I was seeing multiple of the same post
         //    This allowed me to remove one of the duplicates without removing every post
         //    Not 100% sure if this is still necessary, but I don't think it hurts
         let duplicates = posts.filter((post) => post.name === t3).length !== 1;
-        setPosts((current) => current.map((post) => {
+        setPosts((current) => (current || []).map((post) => {
             if (post.name === t3) {
-                if (duplicates && count++ !== 0) {
-                    post.disabled = true;
-                } else if (!duplicates) {
-                    post.disabled = true;
+                if (duplicates) {
+                    // If duplicates, disable only non-primary instances
+                    // Keep this deterministic by not using a local counter here.
+                    return { ...post, disabled: true };
+                } else {
+                    return { ...post, disabled: true };
                 }
             }
 
@@ -128,35 +121,84 @@ export default function User({
 
     // Use effect to check for duplicate posts based on similarity
     useEffect(() => {
-        const validPosts = usersPosts.filter(post => !post.disabled && post.filteredFor.length === 0);
-        for (let i = 0; i < validPosts.length - 1; i++) {
-            const left = validPosts[i];
-            for (let j = i + 1; j < validPosts.length; j++) {
-                const right = validPosts[j];
-                if (left.name === right.name) {
-                    console.log(`Found duplicate post; t3-wise; ${left.name}, ${right.name}`);
-                    disablePost(left.name);
+        if (!usersPosts || usersPosts.length < 2) return;
+
+        const workerSource = `
+            self.onmessage = function(e) {
+                const posts = e.data && e.data.posts ? e.data.posts : [];
+                if (!posts || posts.length < 2) {
+                    self.postMessage({ type: 'none' });
                     return;
                 }
 
-                
-                if (left.selftext === "" && right.selftext === "") {
-                    const titleSimilarity = stringSimilarity(left.title, right.title);
-                    if(titleSimilarity >= 0.90) {
-                        console.log(`Found duplicate post; empty text, title-wise; ${left.name}, ${right.name}`);
-                        duplicatePost(left, right);
-                        return;
+                const validPosts = posts.filter(p => !p.disabled && (!p.filteredFor || p.filteredFor.length === 0));
+
+                for (let i = 0; i < validPosts.length - 1; i++) {
+                    const left = validPosts[i];
+                    for (let j = i + 1; j < validPosts.length; j++) {
+                        const right = validPosts[j];
+                        if (left.name === right.name) {
+                            self.postMessage({ type: 'disable', name: left.name });
+                            return;
+                        }
+
+                        if ((left.selftext === '' || left.selftext === null) && (right.selftext === '' || right.selftext === null)) {
+                            if (left.title && right.title && left.title === right.title) {
+                                self.postMessage({ type: 'duplicate', left: left.name, right: right.name });
+                                return;
+                            }
+                        }
+
+                        const leftText = (left.selftext || '');
+                        const rightText = (right.selftext || '');
+                        if (leftText.length > 0 || rightText.length > 0) {
+                            let count = 0;
+                            const maxLen = Math.min(100, leftText.length, rightText.length);
+                            for (let k = 0; k < maxLen; k++) {
+                                if (leftText[k] === rightText[k]) count++;
+                            }
+                            const similarity = maxLen === 0 ? 0 : (count / maxLen);
+                            if (similarity >= 0.85) {
+                                self.postMessage({ type: 'duplicate', left: left.name, right: right.name });
+                                return;
+                            }
+                        }
                     }
                 }
 
-                const textSimilarity = stringSimilarity(left.selftext, right.selftext);
-                if (textSimilarity >= 0.85) {
-                    console.log(`Found duplicate post; text-wise; ${left.name}, ${right.name}`);
-                    duplicatePost(left, right);
-                    return;
-                }
+                self.postMessage({ type: 'none' });
+            };
+        `;
+
+        const blob = new Blob([workerSource], { type: 'application/javascript' });
+        const worker = new Worker(URL.createObjectURL(blob));
+
+        const transferable = (usersPosts || []).map(p => ({
+            name: p.name,
+            selftext: p.selftext,
+            title: p.title,
+            disabled: p.disabled,
+            filteredFor: p.filteredFor,
+            created_utc: p.created_utc
+        }));
+
+        worker.postMessage({ posts: transferable });
+
+        worker.onmessage = (ev) => {
+            const msg = ev.data;
+            if (!msg) return;
+            if (msg.type === 'disable') {
+                disablePost(msg.name);
+            } else if (msg.type === 'duplicate') {
+                const left = usersPosts.find(p => p.name === msg.left);
+                const right = usersPosts.find(p => p.name === msg.right);
+                if (left && right) duplicatePost(left, right);
             }
-        }
+
+            worker.terminate();
+        };
+
+        return () => worker.terminate();
     }, [usersPosts]);
 
     let postsDisplay = useMemo(() =>
