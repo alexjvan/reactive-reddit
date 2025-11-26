@@ -148,20 +148,30 @@ export default function MediaContainer({
     }
 
     function removeImage(url) {
-        console.log('Removing image ' + url + ' for user ' + username);
         setRemovedImages((current) => [...current, url]);
     }
 
-    const imageSelectors = useMemo(() => (
-        displaying.map((_, index) =>
+    const imageSelectors = useMemo(() => {
+        const total = displaying.length;
+
+        if (total === 0) return [];
+
+        const rows = Math.ceil(total / 50); // Max 50 items per row
+
+        const perRow = Math.ceil(total / rows);
+
+        return displaying.map((_, index) => (
             <a
                 key={index}
                 className="post-imageselector-chooser clickable"
-                style={{ backgroundColor: (index === imageIndex ? 'var(--accent)' : 'white') }}
+                style={{
+                    backgroundColor: index === imageIndex ? 'var(--accent)' : 'white',
+                    flex: `1 1 calc(100% / ${perRow} - 10px)`,
+                }}
                 onClick={() => setImageIndex(index)}
             />
-        )
-    ), [displaying.length, imageIndex]);
+        ));
+    }, [displaying.length, imageIndex]);
 
     const currentMedia = displaying[imageIndex];
 
