@@ -1,4 +1,4 @@
-import { act, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import './App.css';
 import { 
   DefaultGroups, 
@@ -6,7 +6,6 @@ import {
   GrabberCategoryDontRecommendSubs,
   GrabberCategoryGroups,
   GrabberCategoryFilters,
-  GrabberCategoryImageCache,
   GrabberCategoryMinUsers,
   GrabberCategoryPosts,
   GrabberCategorySettings,
@@ -24,6 +23,7 @@ import {
   padSubs,
   postValidation,
   reduceFilters,
+  removeInactiveUsers,
   resumeRetrieval,
   settingsValidation,
   shrinkPosts
@@ -36,7 +36,6 @@ import Head from './header/Head.js';
 // TODO: Save snapshot of storage to disk
 // TODO: Create way to load-from initial load-state
 //    Requires snapshotting storage to disk
-// TODO: Tooltips, how to use the app, help page
 export default function App() {
   // Class Obj variables
   const [postQueue,] = useState(new PriorityQueue());
@@ -46,7 +45,6 @@ export default function App() {
   // Load from Storage on init
   const [settings, setSettings] = useState(() => getFromStorage('', GrabberCategorySettings, DefaultSettings, settingsValidation));
   const [groups, setGroups] = useState(() => getFromStorage('', GrabberCategoryGroups, DefaultGroups, emptyValidation));
-  const [imageCache, setImageCache] = useState(() => getFromStorage('', GrabberCategoryImageCache, new Map(), mapConverter));
   const [usersSubs, setUsersSubs] = useState(() => getFromStorage('', GrabberCategoryUsersSubs, [], emptyValidation));
   const [activeGroup, setActiveGroup] = useState(null);
   const previousActiveGroup = usePrevious(activeGroup);
@@ -97,20 +95,8 @@ export default function App() {
   );
   useEffect(
     () => {
-      // TODO: Limit by media items in posts
       const timer = setTimeout(() => {
-        putInStorage('', GrabberCategoryImageCache, imageCache);
-      }, 1000);
-
-      return () => clearTimeout(timer);
-    },
-    [imageCache]
-  );
-  useEffect(
-    () => {
-      // TODO: Limit by active users
-      const timer = setTimeout(() => {
-        putInStorage('', GrabberCategoryUsersSubs, usersSubs);
+        putInStorage('', GrabberCategoryUsersSubs, removeInactiveUsers(usersSubs, posts));
       }, 1000);
 
       return () => clearTimeout(timer);
@@ -125,10 +111,7 @@ export default function App() {
     },
     [subs]
   );
-  // TODO: Create some way to not constantly be updating this during retrieval
-  //    Either listen to setPostQueueHasData (better approach, needs error code handling to be done first)
-  //    or maybe check value against value 1 second ago. If different, don't set
-  //      this runs into issue with multiple firing off, how do you garuntee that any of them will catch it
+
   useEffect(
     () => {
       if (posts && posts.length > 0) {
@@ -302,8 +285,6 @@ export default function App() {
     />
     <Body
       settings={settings}
-      imageCache={imageCache}
-      setImageCache={setImageCache}
       posts={posts}
       setPosts={setPosts}
       setFilters={setFilters}

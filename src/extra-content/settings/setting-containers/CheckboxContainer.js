@@ -4,9 +4,10 @@ import { DefaultSettings } from "../../../app/constants";
 export default function CheckboxContainer({
     settings,
     setSettings,
-    settingInfo
+    settingInfo,
+    enable = true
 }) {
-    return <div className="settings-setcontainer">
+    return enable && <div className="settings-setcontainer">
         <input
             type="checkbox"
             checked={settings[settingInfo.fieldName] ?? DefaultSettings[settingInfo.fieldName]}

@@ -113,11 +113,18 @@ export function shrinkPosts(posts) {
 
 // --- SETTINGS ---
 export function settingsValidation(data, fallback) {
-    Object.entries(fallback).forEach((key, value) => {
+    Object.entries(fallback).forEach(([key, value]) => {
         if (data[key] === undefined) {
             data[key] = value;
         }
     });
+    
+    Object.entries(data).forEach(([key, value]) => {
+        if (fallback[key] === undefined) {
+            delete data[key];
+        }
+    });
+    
     return data;
 }
 
@@ -176,4 +183,13 @@ export function padSubs(subs, posts) {
         returning.postCount = posts.filter(p => p.subreddit === sub.name).length;
         return returning;
     })
+}
+
+// --- UsersSubs ---
+export function removeInactiveUsers(usersSubs, posts) {
+    if(!usersSubs || !posts) return usersSubs;
+
+    let activeUsers = new Set(posts.map(p => p.author));
+
+    return usersSubs.filter(us => activeUsers.has(us.username));
 }

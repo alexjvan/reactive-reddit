@@ -63,6 +63,7 @@ export default function Stats({
 
     const _commonSubs = useMemo(() =>
         Object.entries(commonSubs())
+            .filter(([sub, count]) => count >= settings.ignoreCommonSubsCount)
             .sort((a, b) => b[1] - a[1])
             .map(([sub, count]) => 
                 <div className='stats-row' key={"recommend"+ sub}>
@@ -78,7 +79,7 @@ export default function Stats({
                     </div>
                 </div>
             ),
-            [dontRecommendSubs, subs, usersSubs]
+            [dontRecommendSubs, settings.ignoreCommonSubsCount, subs, usersSubs]
     );
 
     function addTagFilter(tag) {

@@ -1,11 +1,12 @@
 import { useDeepCompareMemo } from 'use-deep-compare';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import './MediaContainer.css';
+import './ValidatedImage.js';
 import { isImageLink, isVideoLink } from '../../../app/postHelpers/imageHelpers';
+import ValidatedImage from './ValidatedImage.js';
 
 export default function MediaContainer({
-    imageCache,
-    setImageCache,
+    username,
     textMedia,
     postObj,
     setPosts
@@ -34,7 +35,7 @@ export default function MediaContainer({
                 : []),
             ...(post.preview
                 ? post.preview.reddit_video_preview
-                    ? post.preview.reddit_video_preview.fallback_url // Interestingly, this isn't a list?
+                    ? [post.preview.reddit_video_preview.fallback_url] // Interestingly, this isn't a list?
                     : []
                 : []),
             ...(post.secure_media_embed
@@ -55,53 +56,9 @@ export default function MediaContainer({
         [mediaCrossPost, embeddedMedia, textMedia]
     );
 
-    const [validatedImages, setValidatedImages] = useState([]);
-    useEffect(() => {
-        async function validateImages() {
-            const validImages = await Promise.all(
-                media.map(async (url) => {
-                    if (imageCache.has(url)) return imageCache.get(url);
-                    try {
-                        const validUrl = await new Promise((resolve) => {
-                            const img = new Image();
-                            img.onload = () => {
-                                // TODO
-                                // Reddit "image deleted" placeholder is 130x60
-                                // This will catch other images, but at this point I have tried so many things I am happy with this
-                                if (img.naturalWidth === 130 && img.naturalHeight === 60) {
-                                    resolve(null);
-                                } else {
-                                    resolve(url);
-                                }
-                            };
-                            img.onerror = () => resolve(null);
-                            img.src = url;
-                        });
+    const [removedImages, setRemovedImages] = useState([]);
 
-                        setImageCache((current) => {
-                            const newCache = new Map(current);
-                            newCache.set(url, validUrl);
-                            return newCache;
-                        });
-                        return validUrl;
-                    } catch {
-                        setImageCache((current) => {
-                            const newCache = new Map(current);
-                            newCache.set(url, null);
-                            return newCache;
-                        });
-                        return null;
-                    }
-                })
-            );
-
-            setValidatedImages(validImages.filter(Boolean));
-        }
-
-        if (media.length) validateImages();
-    }, [media]);
-
-    const displaying = validatedImages;
+    const displaying = media.filter((url) => !removedImages.includes(url));
 
     useEffect(() => {
         setPosts(prev =>
@@ -153,7 +110,8 @@ export default function MediaContainer({
                     } else if (isImageLink(url) || isVideoLink(url)) {
                         // Do nothing, don't log
                     } else {
-                        console.log('Non-recognized URL in media metadata:', url);
+                        console.log('Non-recognized URL in media metadata for user ' +
+                            username + ': ', url);
                         return null; // The hope here is to not try and force a website link into an image or video tag
                     }
                     return url;
@@ -186,6 +144,10 @@ export default function MediaContainer({
         setImageIndex((prev) => (prev === displaying.length - 1 ? 0 : prev + 1));
     }
 
+    function removeImage(url) {
+        setRemovedImages((current) => [...current, url]);
+    }
+
     const imageSelectors = useMemo(() => (
         displaying.map((_, index) =>
             <a
@@ -213,12 +175,11 @@ export default function MediaContainer({
                     </>
                 )}
                 {isImageLink(currentMedia)
-                    ? <img
+                    ? <ValidatedImage
                         key={imageIndex}
-                        className="post-displayimage"
                         src={currentMedia}
                         alt={`Media item ${imageIndex + 1}`}
-                        loading="lazy"
+                        callback={() => removeImage(currentMedia)}
                     />
                     : <video
                         key={imageIndex}

@@ -12,14 +12,13 @@ export const FilterTagCloser = '%closer%';
 export const FilterTagEnd = '%end%';
 export const FilterTagOpener = '%opener%';
 export const FilterTagStart = '%start%';
-export const FilterTagsCloser = [FilterTagEnd, ']', ')', '}'];
-export const FilterTagsOpener = [FilterTagStart, '[', '(', '{'];
+export const FilterTagsCloser = [FilterTagEnd, '>', ']', ')', '}'];
+export const FilterTagsOpener = [FilterTagStart, '<', '[', '(', '{'];
 
 // ---------- Grabber ----------
 export const GrabberCategoryDontRecommendSubs = 'dontRecommendSubs';
 export const GrabberCategoryGroups = 'groups';
 export const GrabberCategoryFilters = 'filters';
-export const GrabberCategoryImageCache = 'imageCache';
 export const GrabberCategoryMinUsers = 'minUsers';
 export const GrabberCategoryPosts = 'posts';
 export const GrabberCategorySettings = 'settings';
@@ -80,6 +79,16 @@ export const SettingGrabIntervalInMinutes = {
     fieldName: 'grabIntervalInMinutes',
     title: 'Grab Interval In Minutes',
     description: 'How often (in minutes) to grab new posts from Reddit. Lower times may cause rate-limiting from Reddit.'
+};
+export const SettingIgnoreCommonSubsCount = {
+    fieldName: 'ignoreCommonSubsCount',
+    title: 'Ignore Common Subs Count',
+    description: 'How many posts to consider when displaying common subs. Any subs found with less posts won\'t be shown. It\'s recommended to use a higher value for this for readability.'
+};
+export const SettingRemoveInactiveUserTime = {
+    fieldName: 'removeInactiveUserTime',
+    title: 'Remove Inactive User Time',
+    description: 'How long (in days) a user must not have any new posts before their data is removed.'
 };
 export const SettingRemoveSubOn404 = {
     fieldName: 'removeSubOn404',
@@ -146,8 +155,10 @@ export const SettingSort = {
 export const DefaultSettings = {
     [SettingAddAllFiltersPossible.fieldName]: false,
     [SettingCommonKeywordsIgnoreLength.fieldName]: 3,
+    [SettingIgnoreCommonSubsCount.fieldName]: 25,
     [SettingGrabIntervalInMinutes.fieldName]: 15,
     [SettingPostTypes.fieldName]: PostTypeAll.settingValue,
+    [SettingRemoveInactiveUserTime.fieldName]: 180,
     [SettingRemoveSubOn404.fieldName]: true,
     [SettingRetrieveOnSubAddition.fieldName]: false,
     [SettingSort.fieldName]: SortOptionNew.settingValue,

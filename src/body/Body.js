@@ -6,8 +6,6 @@ import { postDisplayFilter } from '../app/postHelpers/postFunctions';
 
 export default function Body({
     settings,
-    imageCache,
-    setImageCache,
     posts,
     setPosts,
     setFilters,
@@ -76,8 +74,6 @@ export default function Body({
         Object.entries(users).map(([username, usersPosts]) => (
             <User
                 key={username}
-                imageCache={imageCache}
-                setImageCache={setImageCache}
                 username={username}
                 usersPosts={usersPosts}
                 posts={posts}

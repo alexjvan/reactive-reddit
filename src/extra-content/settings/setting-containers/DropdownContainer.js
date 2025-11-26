@@ -4,9 +4,10 @@ import { DefaultSettings } from "../../../app/constants";
 export default function DropdownContainer({
     settings,
     setSettings,
-    settingInfo
+    settingInfo,
+    enable = true
 }) {
-    return <div className="settings-setcontainer">
+    return enable && <div className="settings-setcontainer">
         <select
             value={settings[settingInfo.fieldName] ?? DefaultSettings[settingInfo.fieldName]}
             onChange={(e) =>

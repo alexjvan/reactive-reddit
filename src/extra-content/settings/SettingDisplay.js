@@ -7,7 +7,9 @@ import {
     SettingAddAllFiltersPossible,
     SettingCommonKeywordsIgnoreLength,
     SettingGrabIntervalInMinutes,
+    SettingIgnoreCommonSubsCount,
     SettingPostTypes,
+    SettingRemoveInactiveUserTime,
     SettingRemoveSubOn404,
     SettingRetrieveOnSubAddition,
     SettingSort,
@@ -37,6 +39,9 @@ export default function SettingDisplay({
             </div>
             <div className='settings-flexcontainer'>
                 {
+                    // Checkboxes
+                }
+                {
                     // Could generalize this more, but I want to control order settings appear in
                     //     This should be fine for now
                 }
@@ -55,6 +60,11 @@ export default function SettingDisplay({
                     setSettings={setSettings}
                     settingInfo={SettingRetrieveOnSubAddition}
                 />
+            </div>
+            <div className='settings-flexcontainer'>
+                {
+                    // Numerical Inputs
+                }
                 <NumericalInputContainer
                     settings={settings}
                     setSettings={setSettings}
@@ -68,8 +78,24 @@ export default function SettingDisplay({
                 <NumericalInputContainer
                     settings={settings}
                     setSettings={setSettings}
+                    settingInfo={SettingIgnoreCommonSubsCount}
+                />
+                <NumericalInputContainer
+                    settings={settings}
+                    setSettings={setSettings}
+                    settingInfo={SettingRemoveInactiveUserTime}
+                    enable={false}
+                />
+                <NumericalInputContainer
+                    settings={settings}
+                    setSettings={setSettings}
                     settingInfo={SettingWaitBeforeReGrabbingInMinutes}
                 />
+            </div>
+            <div className='settings-flexcontainer'>
+                {
+                    // Dropdowns
+                }
                 <DropdownContainer
                     settings={settings}
                     setSettings={setSettings}

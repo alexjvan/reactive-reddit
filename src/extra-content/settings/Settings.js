@@ -25,6 +25,7 @@ export default function Settings({
         () => <div id='settings-tabs'>
             {AllSettingsPages.map((page) =>
                 <button 
+                    key={`allSettings-${page}`}
                     className={'settings-tab' + (settingsPage === page ? ' active' : '')}
                     onClick={() => setSettingsPage(page)}
                 >

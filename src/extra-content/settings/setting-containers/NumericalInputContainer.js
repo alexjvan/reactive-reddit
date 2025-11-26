@@ -4,9 +4,10 @@ import { DefaultSettings } from "../../../app/constants";
 export default function NumericalInputContainer({
     settings,
     setSettings,
-    settingInfo
+    settingInfo,
+    enable = true
 }) {
-    return <div className="settings-setcontainer">
+    return enable && <div className="settings-setcontainer">
         <input
             type='number'
             value={settings[settingInfo.fieldName] ?? DefaultSettings[settingInfo.fieldName]}

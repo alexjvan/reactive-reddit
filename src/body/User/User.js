@@ -4,8 +4,6 @@ import Post from './Post/Post.js';
 import { FilterCategoryAuthor } from '../../app/constants.js';
 
 export default function User({
-    imageCache,
-    setImageCache,
     username,
     usersPosts,
     posts,
@@ -92,11 +90,6 @@ export default function User({
 
             return updated;
         });
-    }
-
-    function mergeFields(post, fieldName, otherData) {
-        if (!otherData) return post;
-        return { ...post, [fieldName]: { ...(post[fieldName] || {}), ...otherData } };
     }
 
     function disablePost(t3) {
@@ -206,8 +199,6 @@ export default function User({
             if (!post.disabled && post.filteredFor.length === 0) {
                 return <Post
                     key={post.name}
-                    imageCache={imageCache}
-                    setImageCache={setImageCache}
                     postObj={post}
                     setPosts={setPosts}
                     disablePost={disablePost}

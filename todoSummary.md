@@ -14,20 +14,18 @@ Looking at the TODOs in this repo, summarizing to narrow down items to work on:
     * Only keep posts before a certain time (setting?)
         - Might be worth having a sub-setting to keep old posts from users who have recent posts as well
             * This way you can view older posts from people still active, but remove inactive users
+        - !! Need to create some sort of dependent-setting system if I want to make this work. For now, just going to do inactive users
     * Fixed Picture Size
+        - !! Also requires some sort of dependent-setting system (need a numerical input if this is selected)
 - Categorize Left Over Post Cleaner Items
 - Find better spot for image movers (prev/next) so they don't shift with each image-change
 - More Media links
 - Pop-Out Image Container
-- Limit image cache by media items in post
-- Limit usersSubs by active users
 - Pull duplicate subreddits into subreddit list
 - UsersSubs: Remove user on 404?
 - Try and make Grabber + UserRetriever generic
-- Ignore common subs less than #x
 
 ## Performance-Based Items:
-- Not constantly be saving data into storage during retrieval
 - Save scroll position (I believe the main issue with current implementation is post-shifting. But not 100% sure how to fix yet)
 - Figure out why duplicate posts are being grabbed. Why is the second filtering required in the grabber
 
@@ -39,3 +37,4 @@ Looking at the TODOs in this repo, summarizing to narrow down items to work on:
         * Save-snapshots *might* fix this
 - To catch reddit placeholder images, I am checking for 130x60 images.
     * This catches other images too, need to find a better option
+- For SOME reason, the don't recommend in common subs takes FOREVER to update while the add doesn't?

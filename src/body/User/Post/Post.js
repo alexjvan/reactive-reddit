@@ -4,8 +4,6 @@ import MediaContainer from './MediaContainer';
 import TextDisplay from './TextDisplay';
 
 export default function Post({
-    imageCache,
-    setImageCache,
     postObj,
     setPosts,
     disablePost
@@ -34,8 +32,7 @@ export default function Post({
 
     const mediaContainer = useMemo(() =>
         <MediaContainer
-            imageCache={imageCache}
-            setImageCache={setImageCache}
+            username={postObj.author}
             textMedia={mediaText}
             postObj={postObj}
             setPosts={setPosts}
