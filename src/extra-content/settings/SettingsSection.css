@@ -1,114 +1,65 @@
 .settings-panel {
-        display: flex;
-        flex: 1 1 auto;
-        margin-top: 10px;
-        max-height: calc(25% - 10px);
+    display: flex;
+    flex: 1 1 auto;
+    margin-top: 10px;
+}
+    .settings-panel:first-of-type {
+        height: 150px;
     }
-        .settings-panel:last-of-type {
-            max-height: calc(100% - 10px);
-            min-height: calc(50% - 10px);
+    .settings-panel:last-of-type {
+        height: calc(100% - 180px);
+    }
+    .settingssection-container {
+        flex: 1;
+        height: 100%;
+        padding: 0px 1%;
+    }
+        .settingsection-title {
+            display: block;
+            font-size: 24px;
+            padding-bottom: 10px;
         }
-        .settingssection-container {
-            flex: 1;
-            height: 100%;
-            padding: 0px 1%;
-        }
-            .settingsection-title {
-                display: block;
-                font-size: 24px;
-                padding-bottom: 10px;
+            .settingsection-title-clear {
+                background-color: transparent;
+                border: 1px solid var(--light-primary);
+                color: var(--light-primary);
+                float: right;
+                font-family: 'Montserrat', verdana, arial, sans-serif;
+                font-size: 16px;
+                padding: 4px 15px;
             }
-                .settingsection-title-clear {
-                    background-color: transparent;
-                    border: 1px solid var(--light-primary);
-                    color: var(--light-primary);
-                    float: right;
-                    font-family: 'Montserrat', verdana, arial, sans-serif;
-                    font-size: 16px;
-                    padding: 4px 15px;
+                .settingsection-title-clear:hover {
+                    border: 1px solid var(--light-secondary);
                 }
-                    .settingsection-title-clear:hover {
-                        border: 1px solid var(--light-secondary);
-                    }
-            .settings-flexcontainer {
+        .settings-flexcontainer {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            padding-bottom: 25px;
+        }
+        .settings-listcontainer {
+            max-height: calc(100% - 40px);
+            overflow-y: scroll;
+            padding: 0px 2%;
+            width: 96%;
+        }
+            #groupspanel .settings-listcontainer {
                 display: flex;
-                flex-direction: row;
-                flex-wrap: wrap;
-                padding-bottom: 25px;
+                flex-direction: column;
             }
-            .settings-listcontainer {
-                max-height: calc(100% - 40px);
-                overflow-y: scroll;
-                padding: 0px 2%;
-                width: 96%;
+            .groupspanel {
+                border: 1px solid var(--light-primary);
+                display: flex;
+                flex-direction: column;
+                margin: 5px 0px;
+                width: calc(100% - 2px);
             }
-                #groupspanel .settings-listcontainer {
+                .groups-title {
                     display: flex;
-                    flex-direction: column;
-                }
-                .groupspanel {
-                    border: 1px solid var(--light-primary);
-                    display: flex;
-                    flex-direction: column;
-                    margin: 5px 0px;
-                    width: calc(100% - 2px);
-                }
-                    .groups-title {
-                        display: flex;
-                        font-size: 20px;
-                        justify-content: space-between;
-                    }
-                        .groups-remove {
-                            background-color: transparent;
-                            border: 0px;
-                            color: white;
-                            float: right;
-                            font-family: 'Montserrat', verdana, arial, sans-serif;
-                            font-size: 16px;
-                            padding: 0px 5px;
-                        }
-                    .groups-info {
-                        display: flex;
-                    }
-                        .groups-infopanel {
-                            border: 1px solid var(--light-primary);
-                            flex: 1 1;
-                        }
-                .settingsection-item {
-                    align-items: center;
-                    border-bottom: 1px solid lightgrey;
-                    display: flex;
+                    font-size: 20px;
                     justify-content: space-between;
-                    padding: 5px 0px;
-                    width: 100%;
                 }
-                    .settingsection-item div {
-                        flex: 1;
-                        padding-left: 5px;
-                    }
-                    .settingsection-item div:first-of-type {
-                        flex: 3 1; /* Let title grow/shrink */
-                        overflow-wrap: anywhere;
-                    }
-                    .settingsection-item:hover {
-                        background-color: rgba(255, 255, 255, 0.3);
-                    }
-                    .settingssection-filterdesired {
-                        
-                    }
-                        .settingsection-filterdesired.true::before {
-                            color: var(--good);
-                            content: "+";
-                            font-weight: bold;
-                            padding-right: 5px;
-                        }
-                        .settingsection-filterdesired.false::before {
-                            color: var(--bad);
-                            content: "-";
-                            font-weight: bold;
-                            padding-right: 5px;
-                        }
-                    .settingsection-itemremove {
+                    .groups-remove {
                         background-color: transparent;
                         border: 0px;
                         color: white;
@@ -117,3 +68,53 @@
                         font-size: 16px;
                         padding: 0px 5px;
                     }
+                .groups-info {
+                    display: flex;
+                }
+                    .groups-infopanel {
+                        border: 1px solid var(--light-primary);
+                        flex: 1 1;
+                    }
+            .settingsection-item {
+                align-items: center;
+                border-bottom: 1px solid lightgrey;
+                display: flex;
+                justify-content: space-between;
+                padding: 5px 0px;
+                width: 100%;
+            }
+                .settingsection-item div {
+                    flex: 1;
+                    padding-left: 5px;
+                }
+                .settingsection-item div:first-of-type {
+                    flex: 3 1; /* Let title grow/shrink */
+                    overflow-wrap: anywhere;
+                }
+                .settingsection-item:hover {
+                    background-color: rgba(255, 255, 255, 0.3);
+                }
+                .settingssection-filterdesired {
+                    
+                }
+                    .settingsection-filterdesired.true::before {
+                        color: var(--good);
+                        content: "+";
+                        font-weight: bold;
+                        padding-right: 5px;
+                    }
+                    .settingsection-filterdesired.false::before {
+                        color: var(--bad);
+                        content: "-";
+                        font-weight: bold;
+                        padding-right: 5px;
+                    }
+                .settingsection-itemremove {
+                    background-color: transparent;
+                    border: 0px;
+                    color: white;
+                    float: right;
+                    font-family: 'Montserrat', verdana, arial, sans-serif;
+                    font-size: 16px;
+                    padding: 0px 5px;
+                }

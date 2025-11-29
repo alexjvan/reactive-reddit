@@ -83,12 +83,14 @@ export default function Settings({
                 }
                 if (data.groups) {
                     setGroups(data.groups.map(g => ({ name: g.name, active: g.active })));
-                    data.groups.forEach((g) => {
-                        if (g.subs) putInStorage(g.name, GrabberCategorySubs, g.subs);
-                        if (g.filters) putInStorage(g.name, GrabberCategoryFilters, g.filters);
-                        if (g.posts) putInStorage(g.name, GrabberCategoryPosts, g.posts);
-                        if (g.minUsers) putInStorage(g.name, GrabberCategoryMinUsers, g.minUsers);
-                        if (g.dontRecommendSubs) putInStorage(g.name, GrabberCategoryDontRecommendSubs, g.dontRecommendSubs);
+                }
+                if(data.groupData) {
+                    Object.entries(data.groupData).forEach(([groupName, groupData]) => {
+                        if (groupData.subs) putInStorage(groupName, GrabberCategorySubs, groupData.subs);
+                        if (groupData.filters) putInStorage(groupName, GrabberCategoryFilters, groupData.filters);
+                        if (groupData.posts) putInStorage(groupName, GrabberCategoryPosts, groupData.posts);
+                        if (groupData.minUsers) putInStorage(groupName, GrabberCategoryMinUsers, groupData.minUsers);
+                        if (groupData.dontRecommendSubs) putInStorage(groupName, GrabberCategoryDontRecommendSubs, groupData.dontRecommendSubs);
                     });
                 }
                 if (data.usersSubs) {

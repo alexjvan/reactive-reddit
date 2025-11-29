@@ -149,7 +149,7 @@ export function postDisplayFilter(settings, post) {
         case PostTypeTextOnly.settingValue:
             return post.hasText && !post.hasMedia;
         default:
-            console.log('Unknown post type filter, defaulting to All');
+            console.log('Unknown post type filter, defaulting to All; ' + settings.postTypes);
             return true;
     }
 }
