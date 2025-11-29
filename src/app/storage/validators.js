@@ -1,8 +1,8 @@
 import { randSixHash } from "../colors";
-import { 
-    FilterCategoryAuthor, 
-    FilterCategoryTag, 
-    FilterCategoryText, 
+import {
+    FilterCategoryAuthor,
+    FilterCategoryTag,
+    FilterCategoryText,
     FilterCategoryTextOrTitle,
     FilterCategoryTitle,
 } from "../constants";
@@ -27,7 +27,7 @@ export function postValidation(data, fallback, subs, filters) {
         post.filteredFor = addFiltersAsRequested(
             // Instead of force-piping settings here, creating default object
             //      setting to false since most should already be filtered
-            { addAllFiltersPossible: false }, 
+            { addAllFiltersPossible: false },
             filters,
             post
         );
@@ -64,7 +64,7 @@ function removeInternalFilters(filters) {
             .sort((a, b) => a.filter.length - b.filter.length)
             .reduce((keep, filter) => {
                 // Tags are exact matches, only check for exact matches
-                if(filter.category === 'Tag') {
+                if (filter.category === 'Tag') {
                     const exists = keep.find(f => f.filter === filter.filter);
                     if (exists) {
                         exists.count += filter.count;
@@ -118,13 +118,13 @@ export function settingsValidation(data, fallback) {
             data[key] = value;
         }
     });
-    
+
     Object.entries(data).forEach(([key, value]) => {
         if (fallback[key] === undefined) {
             delete data[key];
         }
     });
-    
+
     return data;
 }
 
@@ -187,7 +187,7 @@ export function padSubs(subs, posts) {
 
 // --- UsersSubs ---
 export function removeInactiveUsers(usersSubs, posts) {
-    if(!usersSubs || !posts) return usersSubs;
+    if (!usersSubs || !posts) return usersSubs;
 
     let activeUsers = new Set(posts.map(p => p.author));
 

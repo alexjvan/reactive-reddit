@@ -110,11 +110,11 @@ export default function ExtraContent({
             setDontRecommendSubs={setDontRecommendSubs}
         />;
     }, [postQueue,
-        settings, 
+        settings,
         subs, setSubs,
-        setFilters, 
-        posts, setPosts, 
-        postsPerSub, 
+        setFilters,
+        posts, setPosts,
+        postsPerSub,
         usersSubs]);
 
     return (extraDisplay &&

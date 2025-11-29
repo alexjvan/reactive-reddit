@@ -29,7 +29,7 @@ export default function MediaContainer({
                 )
                 : []),
             ...(post.preview
-                ? post.preview.images 
+                ? post.preview.images
                     ? post.preview.images.map((imgs) => imgs.source.url)
                     : []
                 : []),
@@ -59,7 +59,7 @@ export default function MediaContainer({
     const [removedImages, setRemovedImages] = useState([]);
 
     const displaying = useMemo(
-        () => media.filter((url) => !removedImages.includes(url)), 
+        () => media.filter((url) => !removedImages.includes(url)),
         [media, removedImages]
     );
 
@@ -204,7 +204,7 @@ export default function MediaContainer({
                         alt={`Media item ${imageIndex + 1}`}
                         callback={() => removeImage(currentMedia)}
                     />
-                    : isVideoLink(currentMedia) 
+                    : isVideoLink(currentMedia)
                         ? <video
                             key={currentMedia}
                             className="post-displayvideo"

@@ -22,6 +22,5 @@ export default function ValidatedImage({
             alt={alt}
             onLoad={handleLoad}
             onError={() => setIsValid(false)}
-            loading="lazy"
         />;
 }

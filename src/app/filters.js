@@ -1,7 +1,7 @@
-import { 
-    FilterCategoryAuthor, 
-    FilterCategoryTag, 
-    FilterCategoryText, 
+import {
+    FilterCategoryAuthor,
+    FilterCategoryTag,
+    FilterCategoryText,
     FilterCategoryTitle,
     FilterTagStart,
     FilterTagEnd
@@ -15,7 +15,7 @@ export function addNewFilter(settings, newFilter, setFilters, setPosts) {
 
         let applicable = addApplicableFilter([newFilter], post);
 
-        if(applicable.length > 0) {
+        if (applicable.length > 0) {
             post.filteredFor = [...post.filteredFor, applicable];
             count++;
         }
@@ -30,7 +30,7 @@ export function addNewFilter(settings, newFilter, setFilters, setPosts) {
 }
 
 export function addFiltersAsRequested(settings, filters, post) {
-    return settings.addAllFiltersPossible 
+    return settings.addAllFiltersPossible
         ? addAllApplicableFilters(filters, post)
         : addApplicableFilter(filters, post);
 }
@@ -62,7 +62,7 @@ function shouldAddFilter(filter, post) {
         ]);
 
         return desired ? !tags.has(filterText.toLowerCase()) : tags.has(filterText.toLowerCase());
-    } else if(category === FilterCategoryAuthor) {
+    } else if (category === FilterCategoryAuthor) {
         let authorMatch = post.author === filterText;
         return desired !== authorMatch;
     }

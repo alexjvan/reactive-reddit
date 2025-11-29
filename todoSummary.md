@@ -7,7 +7,6 @@ Looking at the TODOs in this repo, summarizing to narrow down items to work on:
     * For whats left, I will need to be able to do evaluative filters
 
 ## One-off Items:
-- Snapshot the data to save to disk, "saves"
 - On initial load, snapshot storage. Create way to restore initial session
 - Stop grabber button
 - New Settings

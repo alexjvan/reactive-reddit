@@ -25,3 +25,22 @@
                 background-color: var(--light-secondary);
                 color: var(--dark-secondary)
             }
+    #settings-content {
+        height: calc(100% - 65px);
+    }
+    #settings-footer {
+        display: flex;
+        justify-content: center;;
+    }
+        #settings-footer button {
+            background-color: transparent;
+            border: 1px solid var(--light-primary);
+            color: var(--light-primary);
+            font-family: 'Montserrat', verdana, arial, sans-serif;
+            font-size: 16px;
+            padding: 5px 15px;
+        }
+            #settings-footer button:hover {
+                background-color: var(--accent);
+                color: var(--dark-secondary)
+            }

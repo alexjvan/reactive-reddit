@@ -1,10 +1,10 @@
 import { useEffect, useMemo } from 'react';
 import './TextDisplay.css';
-import { 
+import {
     TextModifierBold,
-    TextModifierHeaderPrefix, 
+    TextModifierHeaderPrefix,
     TextModifierItalic,
-    TextModifierIndented, 
+    TextModifierIndented,
     TextModifierListItem,
     TextModifierNoTopPadding
 } from '../../../app/constants';

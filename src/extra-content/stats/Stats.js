@@ -18,7 +18,7 @@ export default function Stats({
     setDontRecommendSubs
 }) {
     const _postsPerSub = useMemo(() =>
-        postsPerSub.map(({ sub, count }) => 
+        postsPerSub.map(({ sub, count }) =>
             <div className='stats-row' key={"pps" + sub}>
                 <div className='stats-left'>{sub}</div>
                 <div className='stats-right'>{count}</div>
@@ -30,7 +30,7 @@ export default function Stats({
     const _postsPerTag = useMemo(() =>
         Object.entries(postsPerTag())
             .sort((a, b) => b[1] - a[1])
-            .map(([tag, count]) => 
+            .map(([tag, count]) =>
                 <div className='stats-row' key={"ppt" + tag}>
                     <div className='stats-left'>{tag}</div>
                     <div className='stats-right'>
@@ -47,8 +47,8 @@ export default function Stats({
     const _commonKeywords = useMemo(() =>
         Object.entries(commonKeywords())
             .sort((a, b) => b[1] - a[1])
-            .map(([word, count]) => 
-                <div className='stats-row' key={"keywords"+ word}>
+            .map(([word, count]) =>
+                <div className='stats-row' key={"keywords" + word}>
                     <div className='stats-left'>{word}</div>
                     <div className='stats-right'>
                         <button className='stats-addFilter' onClick={() => addTitleFilter(word)}>
@@ -58,15 +58,15 @@ export default function Stats({
                     </div>
                 </div>
             ),
-            [posts]
+        [posts]
     );
 
     const _commonSubs = useMemo(() =>
         Object.entries(commonSubs())
             .filter(([sub, count]) => count >= settings.ignoreCommonSubsCount)
             .sort((a, b) => b[1] - a[1])
-            .map(([sub, count]) => 
-                <div className='stats-row' key={"recommend"+ sub}>
+            .map(([sub, count]) =>
+                <div className='stats-row' key={"recommend" + sub}>
                     <div className='stats-left'>{sub}</div>
                     <div className='stats-right'>
                         <button className='stats-addSub' onClick={() => addNewSub(sub)}>
@@ -79,7 +79,7 @@ export default function Stats({
                     </div>
                 </div>
             ),
-            [dontRecommendSubs, settings.ignoreCommonSubsCount, subs, usersSubs]
+        [dontRecommendSubs, settings.ignoreCommonSubsCount, subs, usersSubs]
     );
 
     function addTagFilter(tag) {
@@ -154,21 +154,21 @@ export default function Stats({
         posts
             .filter((p) => !p.disabled && p.filteredFor.length === 0)
             .forEach(post => {
-            const words = post.title
-                .toLowerCase()
-                // This doesn't work. If you want to filter these items, it needs to match
-                // .replace(/[^a-z0-9\s]/g, '')   // Remove punctuation
-                .split(/\s+/);                  // Split by whitespace
+                const words = post.title
+                    .toLowerCase()
+                    // This doesn't work. If you want to filter these items, it needs to match
+                    // .replace(/[^a-z0-9\s]/g, '')   // Remove punctuation
+                    .split(/\s+/);                  // Split by whitespace
 
-            words.forEach(word => {
-                if (word.length <= settings.commonKeywordsIgnoreLength) return;
+                words.forEach(word => {
+                    if (word.length <= settings.commonKeywordsIgnoreLength) return;
 
-                // Capitalize first letter only
-                const normalizedWord = word.charAt(0).toUpperCase() + word.slice(1);
+                    // Capitalize first letter only
+                    const normalizedWord = word.charAt(0).toUpperCase() + word.slice(1);
 
-                wordCounts[normalizedWord] = (wordCounts[normalizedWord] || 0) + 1;
+                    wordCounts[normalizedWord] = (wordCounts[normalizedWord] || 0) + 1;
+                });
             });
-        });
 
         return wordCounts;
     }
@@ -181,9 +181,9 @@ export default function Stats({
         usersSubs
             .forEach(userSubs => {
                 userSubs.subs.forEach(sub => {
-                    if(
+                    if (
                         (dontRecommendSubs && !dontRecommendSubs.includes(sub.subname))
-                        && !sub.subname.startsWith('u_') 
+                        && !sub.subname.startsWith('u_')
                         && !preExistingSubs.includes(sub.subname.toLowerCase())
                     ) {
                         subCounts[sub.subname] = (subCounts[sub.subname] || 0) + sub.t3s.length;
@@ -195,7 +195,7 @@ export default function Stats({
 
         return subCounts;
     }
-    
+
     return <div id="statistics">
         <div className='stats-section'>
             <div className='stats-header'>Posts Per Sub</div>

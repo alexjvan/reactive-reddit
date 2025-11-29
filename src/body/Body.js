@@ -41,20 +41,20 @@ export default function Body({
     }, [posts]); // Trying to avoid constant re-renders
 
     const users = useMemo(() => {
-            let usersMap = (posts ?? [])
-                .filter(post => postDisplayFilter(settings, post))
-                .sort((a, b) => b.created_utc - a.created_utc)
-                .reduce((currentUsers, post) => {
-                    const username = post.author;
-                    if (!currentUsers[username]) currentUsers[username] = [];
-                    currentUsers[username].push(post);
-                    return currentUsers;
-                }, {});
+        let usersMap = (posts ?? [])
+            .filter(post => postDisplayFilter(settings, post))
+            .sort((a, b) => b.created_utc - a.created_utc)
+            .reduce((currentUsers, post) => {
+                const username = post.author;
+                if (!currentUsers[username]) currentUsers[username] = [];
+                currentUsers[username].push(post);
+                return currentUsers;
+            }, {});
 
-            let sorted = Object.entries(usersMap).sort((userA, userB) => sortUsers(userA, userB));
+        let sorted = Object.entries(usersMap).sort((userA, userB) => sortUsers(userA, userB));
 
-            return Object.fromEntries(sorted);
-        },
+        return Object.fromEntries(sorted);
+    },
         [posts, settings.postTypes, settings.sort]
     );
 

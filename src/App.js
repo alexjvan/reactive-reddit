@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import './App.css';
-import { 
-  DefaultGroups, 
+import {
+  DefaultGroups,
   DefaultSettings,
   GrabberCategoryDontRecommendSubs,
   GrabberCategoryGroups,
@@ -142,7 +142,7 @@ export default function App() {
   );
   useEffect(
     () => {
-      if(dontRecommendSubs && dontRecommendSubs.length > 0) {
+      if (dontRecommendSubs && dontRecommendSubs.length > 0) {
         putInStorage(activeGroup, GrabberCategoryDontRecommendSubs, dontRecommendSubs)
       }
     },
@@ -259,7 +259,7 @@ export default function App() {
   // Run user retrieval after posts have all been grabbed
   useEffect(
     () => {
-      if(userRetriever.current && !postQueueHasData) {
+      if (userRetriever.current && !postQueueHasData) {
         userRetriever.current.grabLoop();
       }
     },

@@ -2,7 +2,7 @@ import { randSixHash } from "./colors";
 
 export function newSubWithName(name) {
     let newSub = {};
-    
+
     newSub.name = name;
     newSub.color = randSixHash();
     newSub.ba = {};

@@ -1,6 +1,6 @@
 import './Help.css';
 
-export default function Help({}) {
+export default function Help({ }) {
     return <div id="help">
         <div className='help-section'>
             <div className='help-section-title'>
@@ -15,7 +15,7 @@ export default function Help({}) {
                     My hope is that this helps others address similar grievances as well.
                 </p>
                 <p><b>
-                    This does <span style={{color: 'var(--bad)'}}>NOT</span> interact with your actual reddit account in any way.
+                    This does <span style={{ color: 'var(--bad)' }}>NOT</span> interact with your actual reddit account in any way.
                 </b></p>
             </div>
         </div>
