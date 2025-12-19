@@ -6,8 +6,8 @@ import {
   GrabberCategoryDontRecommendSubs,
   GrabberCategoryGroups,
   GrabberCategoryFilters,
-  GrabberCategoryMinUsers,
   GrabberCategoryPosts,
+  GrabberCategoryProcessedUsers,
   GrabberCategorySettings,
   GrabberCategorySubs,
   GrabberCategoryUsersSubs
@@ -16,17 +16,18 @@ import PriorityQueue from './app/grabber/PriorityQueue.js';
 import usePrevious from './app/usePrevious.js';
 import Grabber from './app/grabber/Grabber.js';
 import UserRetriever from './app/grabber/UserRetriever.js';
+import { postIntake } from './app/postHelpers/postFunctions.js';
 import { getFromStorage, putInStorage } from './app/storage/storage.js';
 import {
   emptyValidation,
-  mapConverter,
   padSubs,
   postValidation,
   reduceFilters,
   removeInactiveUsers,
   resumeRetrieval,
   settingsValidation,
-  shrinkPosts
+  shrinkPosts,
+  shrinkUsers
 } from './app/storage/validators.js';
 import Body from './body/Body.js';
 import ExtraContent from './extra-content/ExtraContent.js';
@@ -36,6 +37,8 @@ import Head from './header/Head.js';
 // TODO: Save snapshot of storage to disk
 // TODO: Create way to load-from initial load-state
 //    Requires snapshotting storage to disk
+// TODO: "Storage Managed Items"
+//    Automatically pulls/pushes items when updated, etc. Get rid of all this code in this file
 export default function App() {
   // Class Obj variables
   const [postQueue,] = useState(new PriorityQueue());
@@ -52,116 +55,90 @@ export default function App() {
   // Round 2 grabs
   const [subs, setSubs] = useState(undefined);
   const [filters, setFilters] = useState(undefined);
-  const [minimizedUsers, setMinimizedUsers] = useState(undefined);
   const [posts, setPosts] = useState(undefined);
+  const [processedUsers, setProcessedUsers] = useState(undefined);
   const [dontRecommendSubs, setDontRecommendSubs] = useState(undefined);
   const grabber = useRef();
   const userRetriever = useRef();
 
   // Load objs off group
-  useEffect(
-    () => {
-      groups.forEach((group) => {
-        if (group.active) {
-          setActiveGroup(group.name);
-        }
-      });
-    },
-    [groups]
-  );
+  useEffect(() => {
+    groups.forEach((group) => {
+      if (group.active) {
+        setActiveGroup(group.name);
+      }
+    });
+  }, [groups]);
   // Set group-data
   // Shouldn't need to re-save, since everything is saved automatically
-  useEffect(
-    () => {
-      if (!activeGroup) return;
+  useEffect(() => {
+    if (!activeGroup) return;
 
-      setSubs(getFromStorage(activeGroup, GrabberCategorySubs, [], resumeRetrieval, postQueue, setPostQueueHasData));
-      setFilters(getFromStorage(activeGroup, GrabberCategoryFilters, [], emptyValidation));
-      setMinimizedUsers(getFromStorage(activeGroup, GrabberCategoryMinUsers, [], emptyValidation));
-      setPosts(getFromStorage(activeGroup, GrabberCategoryPosts, [], postValidation, subs, filters));
-      setDontRecommendSubs(getFromStorage(activeGroup, GrabberCategoryDontRecommendSubs, [], emptyValidation));
-    },
-    [activeGroup]
-  );
+    setSubs(getFromStorage(activeGroup, GrabberCategorySubs, [], resumeRetrieval, postQueue, setPostQueueHasData));
+    setFilters(getFromStorage(activeGroup, GrabberCategoryFilters, [], emptyValidation));
+    setPosts(getFromStorage(activeGroup, GrabberCategoryPosts, [], postValidation, subs, filters));
+    // TODO: Validation - add filters
+    setProcessedUsers(getFromStorage(activeGroup, GrabberCategoryProcessedUsers, [], emptyValidation));
+    setDontRecommendSubs(getFromStorage(activeGroup, GrabberCategoryDontRecommendSubs, [], emptyValidation));
+  }, [activeGroup]);
 
   // Save Objs
-  useEffect(
-    () => putInStorage('', GrabberCategorySettings, settings),
-    [settings]
-  );
-  useEffect(
-    () => putInStorage('', GrabberCategoryGroups, groups),
-    [groups]
-  );
-  useEffect(
-    () => {
+  useEffect(() => putInStorage('', GrabberCategorySettings, settings), [settings]);
+  useEffect(() => putInStorage('', GrabberCategoryGroups, groups), [groups]);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      putInStorage('', GrabberCategoryUsersSubs, removeInactiveUsers(usersSubs, posts));
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [usersSubs]);
+  useEffect(() => {
+    if (subs) {
+      putInStorage(activeGroup, GrabberCategorySubs, padSubs(subs, posts));
+    }
+  }, [subs]);
+
+  useEffect(() => {
+    if (posts) {
       const timer = setTimeout(() => {
-        putInStorage('', GrabberCategoryUsersSubs, removeInactiveUsers(usersSubs, posts));
+        putInStorage(activeGroup, GrabberCategoryPosts, shrinkPosts(posts));
+      }, 500); // Setting to less than processedUsers to set first to not hit sstorage limit
+
+      return () => clearTimeout(timer);
+    }
+  }, [posts]);
+  useEffect(() => {
+    if (processedUsers) {
+      const timer = setTimeout(() => {
+        putInStorage(activeGroup, GrabberCategoryProcessedUsers, shrinkUsers(processedUsers));
       }, 1000);
 
       return () => clearTimeout(timer);
-    },
-    [usersSubs]
-  );
-  useEffect(
-    () => {
-      if (subs) {
-        putInStorage(activeGroup, GrabberCategorySubs, padSubs(subs, posts));
-      }
-    },
-    [subs]
-  );
-
-  useEffect(
-    () => {
-      if (posts && posts.length > 0) {
-        const timer = setTimeout(() => {
-          putInStorage(activeGroup, GrabberCategoryPosts, shrinkPosts(posts));
-        }, 1000);
-
-        return () => clearTimeout(timer);
-      }
-    },
-    [posts]
-  );
-  useEffect(
-    () => {
-      if (filters && filters.length > 0) {
-        putInStorage(activeGroup, GrabberCategoryFilters, reduceFilters(filters))
-      }
-    },
-    [filters]
-  );
-  useEffect(
-    () => {
-      if (minimizedUsers && minimizedUsers.length > 0) {
-        putInStorage(activeGroup, GrabberCategoryMinUsers, minimizedUsers)
-      }
-    },
-    [minimizedUsers]
-  );
-  useEffect(
-    () => {
-      if (dontRecommendSubs && dontRecommendSubs.length > 0) {
-        putInStorage(activeGroup, GrabberCategoryDontRecommendSubs, dontRecommendSubs)
-      }
-    },
-    [dontRecommendSubs]
-  );
+    }
+  }, [processedUsers]);
+  useEffect(() => {
+    if (filters && filters.length > 0) {
+      putInStorage(activeGroup, GrabberCategoryFilters, reduceFilters(filters))
+    }
+  }, [filters]);
+  useEffect(() => {
+    if (dontRecommendSubs && dontRecommendSubs.length > 0) {
+      putInStorage(activeGroup, GrabberCategoryDontRecommendSubs, dontRecommendSubs)
+    }
+  }, [dontRecommendSubs]);
 
   // Update grabber
   useEffect(() => {
     if (grabber.current) {
       grabber.current.subs = subs;
-      grabber.current.posts = posts;
       grabber.current.filters = filters;
       grabber.current.settings = settings;
-    } else if (subs !== undefined && posts !== undefined && filters !== undefined) {
+      grabber.current.postQueue = postQueue;
+    } else if (subs !== undefined && filters !== undefined) {
       grabber.current = new Grabber(
         settings,
         subs,
         setSubs,
-        posts,
         setPosts,
         postQueue,
         setPostQueueHasData,
@@ -169,22 +146,22 @@ export default function App() {
         setFilters
       );
     }
-  }, [subs, posts, filters]);
+  }, [settings, subs, postQueue, filters]);
   // Update UserRetriever
   useEffect(() => {
     if (userRetriever.current) {
-      userRetriever.current.posts = posts;
+      userRetriever.current.processedUsers = processedUsers;
       userRetriever.current.usersSubs = usersSubs;
       userRetriever.current.settings = settings;
-    } else if (posts !== undefined && usersSubs !== undefined) {
+    } else if (settings !== undefined && processedUsers !== undefined && usersSubs !== undefined) {
       userRetriever.current = new UserRetriever(
         settings,
-        posts,
+        processedUsers,
         usersSubs,
         setUsersSubs
       );
     }
-  }, [posts, usersSubs]);
+  }, [settings, processedUsers, usersSubs]);
   // Update postQueue on group switch
   useEffect(() => {
     // Discard race conditions on-load
@@ -201,14 +178,11 @@ export default function App() {
   }, [activeGroup]);
 
   // Run search
-  useEffect(
-    () => {
-      if (postQueueHasData && !postQueue.isEmpty()) {
-        grabber.current.grabLoop();
-      }
-    },
-    [postQueueHasData]
-  );
+  useEffect(() => {
+    if (grabber.current && postQueueHasData && !postQueue.isEmpty()) {
+      grabber.current.grabLoop();
+    }
+  }, [postQueueHasData]);
 
   // Timer for search calls
   const [postInterval, setPostInterval] = useState(undefined);
@@ -233,7 +207,7 @@ export default function App() {
     early.setMinutes(early.getMinutes() - settings.waitBeforeReGrabbingInMinutes);
     let earlyepoch = Math.floor(early / 1000);
 
-    (subs ?? []).forEach((sub) => {
+    (subs ?? []).forEach(sub => {
       if (!sub.reachedEnd) {
         postQueue.enqueue({
           sub: sub.name,
@@ -241,6 +215,7 @@ export default function App() {
           pre: false
         }, 1);
       }
+
       if (sub.ba.beforeutc !== undefined && sub.ba.beforeutc < earlyepoch) {
         postQueue.enqueue({
           sub: sub.name,
@@ -257,14 +232,37 @@ export default function App() {
   }
 
   // Run user retrieval after posts have all been grabbed
-  useEffect(
-    () => {
-      if (userRetriever.current && !postQueueHasData) {
-        userRetriever.current.grabLoop();
-      }
-    },
-    [postQueueHasData]
-  );
+  useEffect(() => {
+    if (userRetriever.current && !postQueueHasData) {
+      userRetriever.current.grabLoop();
+    }
+  }, [postQueueHasData]);
+
+  // Create processedUsers from posts
+  // TODO: React whines about the posts->setPosts dependency loop here
+  //     idfk how to fix, it works - it makes sense - does it matter?
+  const processingRef = useRef(false);
+  useEffect(() => {
+    if (processingRef.current) return;
+    if ((posts ?? []).length === 0) return;
+
+    processingRef.current = true;
+
+    setPosts(prev => {
+      if (prev.length === 0) return prev;
+
+      const processing = prev[0];
+
+      setProcessedUsers(postIntake(processing, settings, filters));
+
+      return prev.slice(1);
+    });
+
+    // Apparently this is a common tool to control async updates? I HATE react
+    queueMicrotask(() => {
+      processingRef.current = false;
+    });
+  }, [filters, posts, settings]);
 
   return <>
     <Head
@@ -281,15 +279,14 @@ export default function App() {
       postQueueHasData={postQueueHasData}
       setPostQueueHasData={setPostQueueHasData}
       posts={posts}
-      setPosts={setPosts}
+      processedUsers={processedUsers}
+      setProcessedUsers={setProcessedUsers}
     />
     <Body
       settings={settings}
-      posts={posts}
-      setPosts={setPosts}
+      processedUsers={processedUsers}
+      setProcessedUsers={setProcessedUsers}
       setFilters={setFilters}
-      minimizedUsers={minimizedUsers}
-      setMinimizedUsers={setMinimizedUsers}
     />
     <Foot
       setExtraDisplay={setExtraDisplay}
@@ -307,10 +304,12 @@ export default function App() {
       setSubs={setSubs}
       filters={filters}
       setFilters={setFilters}
-      posts={posts}
+      postQueueHasData={postQueueHasData}
+      setPostQueueHasData={setPostQueueHasData}
       setPosts={setPosts}
+      processedUsers={processedUsers}
+      setProcessedUsers={setProcessedUsers}
       usersSubs={usersSubs}
-      setMinimizedUsers={setMinimizedUsers}
       dontRecommendSubs={dontRecommendSubs}
       setDontRecommendSubs={setDontRecommendSubs}
     />

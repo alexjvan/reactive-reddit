@@ -4,40 +4,28 @@ import MediaContainer from './MediaContainer';
 import TextDisplay from './TextDisplay';
 
 export default function Post({
-    postObj,
-    setPosts,
-    disablePost
+    processedPost,
+    setProcessedUsers
 }) {
-    const [disabled, setDisabled] = useState(postObj.disabled ?? false);
     const [minimized, setMinimized] = useState(false);
 
-    let text = postObj.selftext
-        ? postObj.selftext
-        : postObj.crosspost_parent_list
-            ? postObj.crosspost_parent_list[0]
-                ? postObj.crosspost_parent_list[0].selftext
-                : undefined
-            : undefined;
-    const [mediaText, setMediaText] = useState([]);
+    let disabled = processedPost.disabled ?? false;
 
     const textDisplay = useMemo(() =>
         <TextDisplay
-            setPosts={setPosts}
-            postText={text}
-            setMediaText={setMediaText}
-            t3={postObj.name}
+            processedText={processedPost.text}
         />,
-        [postObj.name, text]
+        [processedPost]
     );
 
     const mediaContainer = useMemo(() =>
         <MediaContainer
-            username={postObj.author}
-            textMedia={mediaText}
-            postObj={postObj}
-            setPosts={setPosts}
+            t3={processedPost.t3}
+            username={processedPost.user}
+            processedMedia={processedPost.media}
+            setProcessedUsers={setProcessedUsers}
         />,
-        [postObj, mediaText]
+        [processedPost]
     );
 
     function toggleMinimized() {
@@ -45,49 +33,31 @@ export default function Post({
     }
 
     function disable() {
-        setDisabled((prev) => !prev);
-        disablePost(postObj.name);
+        setProcessedUsers(prev => prev.map(u => {
+            if (u.username == processedPost.user)
+                u.posts = u.posts.map(p => {
+                    if (p.t3 == processedPost.t3)
+                        p.disabled = true;
+
+                    return p;
+                });
+
+            return u;
+        }));
     };
 
-    const isHidden = disabled || postObj.filteredFor.length > 0;
+    const date = new Date(processedPost.date * 1000).toLocaleString();
 
-    const date = new Date(postObj.created_utc * 1000);
-    const displayDate = date.toLocaleString();
-    const url = postObj.permalink ? `https://www.reddit.com${postObj.permalink}` : postObj.url;
-
-    const tags = getTags();
-
-    function getTags() {
-        if (postObj.link_flair_richtext.length > 0) {
-            return postObj.link_flair_richtext.map((flair) => {
-                return {
-                    background: postObj.link_flair_background_color,
-                    item: flair.t,
-                    tag: postObj.link_flair_text_color
-                };
-            });
-        }
-
-        if (postObj.link_flair_text) {
-            return [{
-                background: postObj.link_flair_background_color,
-                item: postObj.link_flair_text,
-                tag: postObj.link_flair_text_color
-            }];
-        }
-
-        return [];
-    }
-
+    // TODO: Update border color + sub name based off of multi-sub enhancement
     return (
-        !isHidden &&
-        <div className="post" style={{ borderColor: `#${postObj.color}` }} data-t3={postObj.name}>
+        !disabled &&
+        <div className="post" style={{ borderColor: `#${processedPost.subs[0].color}` }} data-t3={processedPost.t3}>
             <div className="post-banner">
                 <div className="post-header">
                     <div className='post-top'>
-                        <a className="post-title" href={url} target="_blank" rel="noopener noreferrer">
+                        <a className="post-title" href={processedPost.url} target="_blank" rel="noopener noreferrer">
                             {
-                                postObj.title
+                                processedPost.title
                                     .replaceAll('&amp;', '&')
                                     .replaceAll('&lt;', '<')
                                     .replaceAll('&gt;', '>')
@@ -101,15 +71,15 @@ export default function Post({
                         </div>
                     </div>
                     <div className="post-info">
-                        <div className="post-sub">{postObj.subreddit}</div>
+                        <div className="post-sub">{processedPost.subs[0].name}</div>
                         <div className="post-info-separator">|</div>
-                        <div className="post-time">{displayDate}</div>
+                        <div className="post-time">{date}</div>
                         <div className="post-info-separator">|</div>
-                        <div className="post-duplicates">{postObj.duplicates} duplicates</div>
+                        <div className="post-duplicates">{processedPost.duplicates} duplicates</div>
                     </div>
-                    {tags.length !== 0 &&
+                    {processedPost.tags.length !== 0 &&
                         <div className='tags-container'>
-                            {tags.map((t) =>
+                            {processedPost.tags.map((t) =>
                                 <div
                                     key={`tag-${t}`}
                                     className={`postTag ${t.tag}`}
@@ -123,7 +93,7 @@ export default function Post({
                 </div>
                 {!minimized &&
                     <div className="post-contents">
-                        {text && textDisplay}
+                        {processedPost.text && textDisplay}
                         {mediaContainer}
                     </div>
                 }

@@ -29,7 +29,8 @@ export function postValidation(data, fallback, subs, filters) {
             //      setting to false since most should already be filtered
             { addAllFiltersPossible: false },
             filters,
-            post
+            post,
+            false
         );
         cleanPost(post);
         return post;
@@ -109,6 +110,26 @@ function sortPrioirty(category) {
 export function shrinkPosts(posts) {
     return posts
         .filter(post => !post.disabled && post.filteredFor.length === 0);
+}
+
+// --- PROCESSED USERS ---
+// TODO: Import validations
+//    - Re-grab first post time
+
+export function shrinkUsers(processedUsers) {
+    return processedUsers
+        .map(user => {
+            if (user.disabled) return undefined;
+
+            user.posts = user.posts.filter(p => !p.disabled);
+
+            if (user.posts.length === 0) return undefined;
+
+            // It seems like this //might// pull filteredPosts out of the object? - Need to validate
+            const { filteredPosts, ...userWithoutFilteredPosts } = user;
+            return userWithoutFilteredPosts;
+        })
+        .filter(u => u !== undefined);
 }
 
 // --- SETTINGS ---

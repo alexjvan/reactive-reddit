@@ -1,4 +1,8 @@
+import { stringSimilarity } from "string-similarity-js";
+import { alterLink } from './imageHelpers';
+import { processPostText } from './textHelpers.js';
 import { PostTypeAll, PostTypeWithMedia, PostTypeMediaOnly, PostTypeTextOnly } from '../constants';
+import { addFiltersAsRequested } from '../filters.js';
 
 export function cleanPost(post) {
     // Approval
@@ -135,21 +139,244 @@ export function cleanPost(post) {
     return post;
 }
 
-export function postDisplayFilter(settings, post) {
-    if (post.disabled) return false;
-    if (post.filteredFor.length > 0) return false;
+export function postIntake(post, settings, filters) {
+    return function updateProcessedUsers(prev) {
+        let processing = post;
+        if ((processing.crosspost_parent_list ?? []).length > 0)
+            processing = processing.crosspost_parent_list[0];
 
-    switch (settings.postTypes) {
-        case PostTypeAll.settingValue:
+        const processingUsername = processing.author;
+        const existingUser = prev.find(u => u.username === processingUsername);
+
+        let user;
+
+        if (existingUser) {
+            // Check duplicates
+            const duplicateIndex = existingUser.posts.findIndex(p => isPostDuplicateOfProcessed(processing, p));
+
+            if (duplicateIndex !== -1) {
+                const targetPost = existingUser.posts[duplicateIndex];
+
+                const updatedPost = {
+                    ...targetPost,
+                    duplicates: targetPost.duplicates + 1,
+                    subs: targetPost.subs.some(s => s.name === processing.subreddit)
+                        ? targetPost.subs
+                        : [
+                            ...targetPost.subs,
+                            { name: processing.subreddit, color: processing.color }
+                        ]
+                };
+
+                return prev.map(u =>
+                    u.username !== processingUsername
+                        ? u
+                        : {
+                            ...u,
+                            posts: u.posts.map((p, i) =>
+                                i === duplicateIndex ? updatedPost : p
+                            )
+                        }
+                );
+            }
+
+            user = existingUser;
+        } else {
+            user = {
+                username: processingUsername,
+                earliestPost: new Date(0),
+                posts: [],
+                filteredPosts: []
+            };
+        }
+
+        const applicableFilters = addFiltersAsRequested(settings, filters, processing, false)
+            .filter(f => f != null);
+
+        const newFilteredPosts = applicableFilters.length
+            ? [
+                ...(user.filteredPosts ?? []),
+                {
+                    filteredFor: applicableFilters.map(f => f.filter),
+                    post: processing
+                }
+            ]
+            : (user.filteredPosts ?? []);
+
+        const newProcessedPosts = applicableFilters.length
+            ? user.posts
+            : [...user.posts, processPost(processing)].sort(
+                (a, b) => b.created_utc - a.created_utc
+            );
+
+        const updatedUser = {
+            ...user,
+            posts: newProcessedPosts,
+            filteredPosts: newFilteredPosts,
+            earliestPost:
+                newProcessedPosts.length > 0
+                    ? newProcessedPosts[0].date
+                    : new Date(0)
+        };
+
+        if (existingUser) {
+            return prev.map(u =>
+                u.username === processingUsername ? updatedUser : u
+            );
+        } else {
+            return [...prev, updatedUser];
+        }
+    };
+}
+
+export function processPost(post) {
+    let processedText = processPostText(post.selftext);
+
+    let grabbedMedia = [
+        ...processedText.media,
+        ...(post.media_metadata
+            ? Object.entries(post.media_metadata).map(([_, value]) =>
+                value.o
+                    ? typeof value.o[0] === "string"
+                        ? value.o[0]
+                        : value.o[0].u
+                    : value.s
+                        ? value.s[0]
+                        : value.hlsUrl
+            )
+            : []),
+        ...(post.preview
+            ? post.preview.images
+                ? post.preview.images.map((imgs) => imgs.source.url)
+                : []
+            : []),
+        ...(post.preview
+            ? post.preview.reddit_video_preview
+                ? [post.preview.reddit_video_preview.fallback_url] // Interestingly, this isn't a list?
+                : []
+            : []),
+        ...(post.secure_media_embed
+            ? post.secure_media_embed.media_domain_url
+                ? [post.secure_media_embed.media_domain_url]
+                : post.secure_media_embed.content
+                    ? [post.secure_media_embed.content.match(/src="([^"]+)"/)?.[1]].filter(Boolean)
+                    : []
+            : [])
+    ]
+        .filter(i => i !== undefined)
+        .map(url => alterLink(url, post.author))
+        .filter(i => i !== null);
+
+    return {
+        t3: post.name,
+        user: post.author,
+        subs: [{
+            name: post.subreddit,
+            color: post.color
+        }],
+        url: post.permalink ? `https://www.reddit.com${post.permalink}` : post.url,
+        minimied: false,
+        title: post.title,
+        text: processedText.lines,
+        media: [...new Set(grabbedMedia)],
+        date: post.created_utc,
+        duplicates: 0,
+        tags: (post.link_flair_richtext.length > 0)
+            ? post.link_flair_richtext.map((flair) => {
+                return {
+                    background: post.link_flair_background_color,
+                    item: flair.t,
+                    tag: post.link_flair_text_color
+                };
+            })
+            : post.link_flair_text
+                ? [{
+                    background: post.link_flair_background_color,
+                    item: post.link_flair_text,
+                    tag: post.link_flair_text_color
+                }]
+                : []
+    };
+}
+
+export function isPostDuplicateOf(checking, against) {
+    if (checking.name === against.name) {
+        console.log(`Found duplicate post; t3-wise; ${checking.name}, ${against.name}`);
+        return true;
+    }
+
+    if (checking.selftext === '' && against.selftext === '') {
+        const titleSimilarity = stringSimilarity(checking.title, against.title);
+        if (titleSimilarity >= 0.90) {
+            console.log(`Found duplicate post; empty text, title-wise; ${checking.name}, ${against.name}`);
             return true;
-        case PostTypeWithMedia.settingValue:
-            return post.hasMedia;
-        case PostTypeMediaOnly.settingValue:
-            return post.hasMedia && !post.hasText;
-        case PostTypeTextOnly.settingValue:
-            return post.hasText && !post.hasMedia;
-        default:
-            console.log('Unknown post type filter, defaulting to All; ' + settings.postTypes);
+        }
+    }
+
+    const textSimilarity = stringSimilarity(checking.selftext, against.selftext);
+    if (textSimilarity >= 0.85) {
+        console.log(`Found duplicate post; text-wise; ${checking.name}, ${against.name}`);
+        return true;
+    }
+
+    return false;
+}
+
+export function isPostDuplicateOfProcessed(checking, against) {
+    if (checking.name === against.t3) {
+        console.log(`Found duplicate post; t3-wise; ${checking.name}, ${against.t3}`);
+        return true;
+    }
+
+    if (checking.selftext === '' && against.text.length === 0) {
+        const titleSimilarity = stringSimilarity(checking.title, against.title);
+        if (titleSimilarity >= 0.90) {
+            console.log(`Found duplicate post; empty text, title-wise; ${checking.name}, ${against.name}`);
             return true;
+        }
+    }
+
+    // TODO: This 100% will have differences, need to look into multi-line text comparing
+    const textSimilarity = stringSimilarity(checking.selftext, against.text.join('\n'));
+    if (textSimilarity >= 0.85) {
+        console.log(`Found duplicate post; text-wise; ${checking.name}, ${against.name}`);
+        return true;
+    }
+
+    return false;
+}
+
+export function postDisplayFilter(settings, post, processedPost) {
+    if (!processedPost && post.disabled) return false;
+    if (!processedPost && post.filteredFor.length > 0) return false;
+
+    if (processedPost) {
+        switch (settings.postTypes) {
+            case PostTypeAll.settingValue:
+                return true;
+            case PostTypeWithMedia.settingValue:
+                return post.media.length > 0;
+            case PostTypeMediaOnly.settingValue:
+                return post.media.length > 0 && post.text.length === 0;
+            case PostTypeTextOnly.settingValue:
+                return post.text.length > 0 && post.media.length === 0;
+            default:
+                console.log('Unknown post type filter, defaulting to All; ' + settings.postTypes);
+                return true;
+        }
+    } else {
+        switch (settings.postTypes) {
+            case PostTypeAll.settingValue:
+                return true;
+            case PostTypeWithMedia.settingValue:
+                return post.hasMedia;
+            case PostTypeMediaOnly.settingValue:
+                return post.hasMedia && !post.hasText;
+            case PostTypeTextOnly.settingValue:
+                return post.hasText && !post.hasMedia;
+            default:
+                console.log('Unknown post type filter, defaulting to All; ' + settings.postTypes);
+                return true;
+        }
     }
 }

@@ -7,21 +7,47 @@ import {
     FilterTagEnd
 } from "./constants";
 
-export function addNewFilter(settings, newFilter, setFilters, setPosts) {
+export function addNewFilter(settings, newFilter, setFilters, setProcessedUsers) {
     let count = 0;
-    setPosts((prev) => prev.map((post) => {
-        if (!settings.addAllFiltersPossible && post.filteredFor.length > 0 || post.disabled)
-            return post;
+    setProcessedUsers(prev => prev.map(u => {
+        let newlyFilteredPosts = [];
 
-        let applicable = addApplicableFilter([newFilter], post);
+        u.posts = u.posts
+            .map(p => {
+                let applicable = addFiltersAsRequested(settings, [newFilter], p, true);
 
-        if (applicable.length > 0) {
-            post.filteredFor = [...post.filteredFor, applicable];
-            count++;
+                if (applicable.length > 0) {
+                    count++;
+                    p.processed = true;
+                    newlyFilteredPosts.push({
+                        filteredFor: [newFilter],
+                        post: p
+                    });
+                    return undefined;
+                } else {
+                    return p;
+                }
+            })
+            .filter(p => p !== undefined);
+        u.earliestPost = u.posts.length > 0
+            ? u.posts[0].date
+            : new Date(0)
+        if (settings.addAllFiltersPossible) {
+            u.filteredPosts = (u.filteredPosts ?? []).map(pCombo => {
+                let applicable = addFiltersAsRequested(settings, [newFilter], pCombo.post, true);
+
+                if (applicable) {
+                    pCombo.filteredFor = [...pCombo.filteredFor, newFilter];
+                }
+
+                return pCombo;
+            });
         }
+        u.filteredPosts = [...(u.filteredPosts ?? []), ...newlyFilteredPosts];
 
-        return post;
+        return u;
     }));
+
     newFilter.count = count;
     setFilters((prev) => [
         ...prev,
@@ -29,41 +55,38 @@ export function addNewFilter(settings, newFilter, setFilters, setPosts) {
     ]);
 }
 
-export function addFiltersAsRequested(settings, filters, post) {
-    return settings.addAllFiltersPossible
-        ? addAllApplicableFilters(filters, post)
-        : addApplicableFilter(filters, post);
+export function addFiltersAsRequested(settings, filters, post, isProcessed) {
+    const result = [];
+
+    if ((filters ?? []).length > 0) {
+        for (const filter of filters) {
+            if (!shouldAddFilter(filter, post, isProcessed)) continue;
+
+            result.push(filter.filter);
+
+            if (!settings.addAllFiltersPossible) break;
+        }
+    }
+
+    return result;
 }
 
-function addAllApplicableFilters(filters, post) {
-    return (filters ?? [])
-        .filter(filter => shouldAddFilter(filter, post))
-        .map(filter => filter.filter);
-}
-
-function addApplicableFilter(filters, post) {
-    var foundFilter = undefined;
-    (filters ?? []).find((filter) => {
-        var check = shouldAddFilter(filter, post);
-        if (check) foundFilter = filter;
-
-        return check;
-    });
-    return foundFilter ? [foundFilter.filter] : [];
-}
-
-function shouldAddFilter(filter, post) {
+function shouldAddFilter(filter, post, isProcessed) {
     const { category, desired, filter: filterText } = filter;
 
     if (category === FilterCategoryTag) {
-        const tags = new Set([
-            ...(post.link_flair_richtext?.map((t) => t.t.toLowerCase()) || []),
-            ...(post.link_flair_text ? [post.link_flair_text.toLowerCase()] : [])
-        ]);
+        const tags = isProcessed
+            ? post.tags
+            : new Set([
+                ...(post.link_flair_richtext?.map((t) => t.t.toLowerCase()) || []),
+                ...(post.link_flair_text ? [post.link_flair_text.toLowerCase()] : [])
+            ]);
 
         return desired ? !tags.has(filterText.toLowerCase()) : tags.has(filterText.toLowerCase());
     } else if (category === FilterCategoryAuthor) {
-        let authorMatch = post.author === filterText;
+        let authorMatch = isProcessed
+            ? post.user
+            : post.author === filterText;
         return desired !== authorMatch;
     }
 
@@ -86,18 +109,18 @@ function shouldAddFilter(filter, post) {
                 But why wouldn't you just do Text||Title wants Solved + Text||Title wants Help?
     */
 
-    let checkContent = '';
-    category.split('||').forEach((c) => {
-        checkContent += getTextContent(c, post);
-    });
+    const checkContent = category
+        .split('||')
+        .map(c => getTextContent(c, post, isProcessed))
+        .join('');
+    let anyMatch = filterText.toLowerCase()
+        .split('||')
+        .some(f => checkContent.includes(f));
 
-    var lowerFilter = filterText.toLowerCase();
-    var split = lowerFilter.split('||');
-    var anyMatch = split.some(f => filterMatches(f, checkContent));
     return desired !== anyMatch;
 }
 
-function getTextContent(category, post) {
+function getTextContent(category, post, isProcessed) {
     var content = '';
     switch (category) {
         case FilterCategoryTitle:
@@ -109,7 +132,7 @@ function getTextContent(category, post) {
                 .replaceAll('’', '\'') || '';
             break;
         case FilterCategoryText:
-            content = post.selftext?.toLowerCase() || '';
+            content = (isProcessed ? post.text.join('\n') : post.selftext)?.toLowerCase() || '';
             break;
         default:
             console.log(`Unknown filter category, defaulting to false. Category: ${category}`);
@@ -117,8 +140,4 @@ function getTextContent(category, post) {
     }
 
     return FilterTagStart + content + FilterTagEnd;
-}
-
-function filterMatches(filterText, checkAgainst) {
-    return checkAgainst.includes(filterText);
 }

@@ -10,6 +10,7 @@ export default function GroupInternalsDisplay({
     setFilters,
     setPosts,
     postsPerSub,
+    setProcessedUsers,
     clearFilters
 }) {
     const sortedSubs = useMemo(() =>
@@ -67,24 +68,41 @@ export default function GroupInternalsDisplay({
 
     function removeFilter(filter) {
         setFilters((current) => current.filter((f) => f.filter !== filter));
-        setPosts((prev) => prev.map((post) => {
-            var oldFilteredLength = post.filteredFor;
+        setProcessedUsers(prev => prev.map(u => {
+            let reEnabledPosts = [];
 
-            post.filteredFor = post.filteredFor.filter((f) => f !== filter);
+            u.filteredPosts = u.filteredPosts
+                .map(p => {
+                    p.filteredFor = p.filteredFor.filter(f => f === filter.filter);
+                    if (p.filteredFor.length === 0) {
+                        let newlyApplicable = addFiltersAsRequested(settings, filters, p, false);
 
-            // Only try to add new filters if there was a filter before
-            if (post.filteredFor.length === 0 && oldFilteredLength === 1) {
-                post.filteredFor = addFiltersAsRequested(settings, filters, post);
+                        if (newlyApplicable.length === 0) {
+                            if (p.processed) {
+                                reEnabledPosts.push(p);
+                            } else {
+                                // If the post hasn't been processed - just throw it into the posts to get processed
+                                setPosts(prev => [...prev, p]);
+                            }
+                            return undefined;
+                        } else {
+                            p.filteredFor = newlyApplicable;
+                            setFilters(prev => prev.map(f => {
+                                if (newlyApplicable.contains(f.filter)) {
+                                    f.count = filter.count + 1;
+                                }
 
-                if (post.filteredFor.length > 0) {
-                    setFilters((prev) => prev.map((filter) => {
-                        filter.count = filter.count + (post.filteredFor.includes(filter.filter) ? 1 : 0);
-                        return filter;
-                    }));
-                }
-            }
+                                return filter;
+                            }));
+                            return p;
+                        }
+                    }
+                })
+                .filter(f => f !== undefined);
 
-            return post;
+            u.posts = [...u.posts, reEnabledPosts];
+
+            return u;
         }));
     }
 

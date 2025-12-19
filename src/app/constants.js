@@ -19,7 +19,7 @@ export const FilterTagsOpener = [FilterTagStart, '<', '[', '(', '{'];
 export const GrabberCategoryDontRecommendSubs = 'dontRecommendSubs';
 export const GrabberCategoryGroups = 'groups';
 export const GrabberCategoryFilters = 'filters';
-export const GrabberCategoryMinUsers = 'minUsers';
+export const GrabberCategoryProcessedUsers = 'processedUsers';
 export const GrabberCategoryPosts = 'posts';
 export const GrabberCategorySettings = 'settings';
 export const GrabberCategorySubs = 'subs';
@@ -68,42 +68,50 @@ export const DisplayablePostTypes = _allPostTypes;
 export const SettingAddAllFiltersPossible = {
     fieldName: 'addAllFiltersPossible',
     title: 'Add All Filters Possible',
-    description: 'Adding all filters possible will add some time upon retrieval, but can eliminate some when removing filters in-use.'
+    description: 'Adding all filters possible will add some time upon retrieval, but can eliminate some when removing filters in-use.',
+    default: false
 };
 export const SettingCommonKeywordsIgnoreLength = {
     fieldName: 'commonKeywordsIgnoreLength',
     title: 'Common Keywords Ignore Length',
-    description: 'When finding common keywords in titles (see Stats), max size of word to ignore. This helps ignore common words like \'the\'.'
+    description: 'When finding common keywords in titles (see Stats), max size of word to ignore. This helps ignore common words like \'the\'.',
+    default: 3
 };
 export const SettingGrabIntervalInMinutes = {
     fieldName: 'grabIntervalInMinutes',
     title: 'Grab Interval In Minutes',
-    description: 'How often (in minutes) to grab new posts from Reddit. Lower times may cause rate-limiting from Reddit.'
+    description: 'How often (in minutes) to grab new posts from Reddit. Lower times may cause rate-limiting from Reddit.',
+    default: 15
 };
 export const SettingIgnoreCommonSubsCount = {
     fieldName: 'ignoreCommonSubsCount',
     title: 'Ignore Common Subs Count',
-    description: 'How many posts to consider when displaying common subs. Any subs found with less posts won\'t be shown. It\'s recommended to use a higher value for this for readability.'
+    description: 'How many posts to consider when displaying common subs. Any subs found with less posts won\'t be shown. It\'s recommended to use a higher value for this for readability.',
+    default: 25
 };
 export const SettingRemoveInactiveUserTime = {
     fieldName: 'removeInactiveUserTime',
     title: 'Remove Inactive User Time',
-    description: 'How long (in days) a user must not have any new posts before their data is removed.'
+    description: 'How long (in days) a user must not have any new posts before their data is removed.',
+    default: 180
 };
 export const SettingRemoveSubOn404 = {
     fieldName: 'removeSubOn404',
     title: 'Remove Sub on 404 (Not Found)',
-    description: 'Remove a sub from the grabber when its not found. This can help performance, but means you will no longer try to get data from this subreddit.'
+    description: 'Remove a sub from the grabber when its not found. This can help performance, but means you will no longer try to get data from this subreddit.',
+    default: true
 };
 export const SettingRetrieveOnSubAddition = {
     fieldName: 'retrieveOnSubAddition',
     title: 'Restart Retrieval on Addition of Sub',
-    description: 'Try and restart the grab-loop when a new sub is added. May fix lag, but may cause rate-limiting from Reddit.'
+    description: 'Try and restart the grab-loop when a new sub is added. May fix lag, but may cause rate-limiting from Reddit.',
+    default: false
 };
 export const SettingWaitBeforeReGrabbingInMinutes = {
     fieldName: 'waitBeforeReGrabbingInMinutes',
     title: 'Wait Before Re-Grabbing In Minutes',
-    description: 'When re-grabbing posts, how far back (in minutes) to go. This helps catch any missed posts, but may cause duplicates.'
+    description: 'When re-grabbing posts, how far back (in minutes) to go. This helps catch any missed posts, but may cause duplicates.',
+    default: 15
 };
 
 // ---------- Settings Pages ----------
@@ -142,25 +150,27 @@ export const SettingPostTypes = {
     fieldName: 'postTypes',
     title: 'Post Types',
     description: 'What types of posts to display.',
-    options: DisplayablePostTypes
+    options: DisplayablePostTypes,
+    default: PostTypeAll.settingValue
 };
 export const SettingSort = {
     fieldName: 'sort',
     title: 'Sort',
     description: 'How to sort the users in the post-display.',
-    options: DisplayableSortOptions
+    options: DisplayableSortOptions,
+    default: SortOptionNew.settingValue
 };
 
 // ---------- Default Settings ----------
 export const DefaultSettings = {
-    [SettingAddAllFiltersPossible.fieldName]: false,
-    [SettingCommonKeywordsIgnoreLength.fieldName]: 3,
-    [SettingIgnoreCommonSubsCount.fieldName]: 25,
-    [SettingGrabIntervalInMinutes.fieldName]: 15,
-    [SettingPostTypes.fieldName]: PostTypeAll.settingValue,
-    [SettingRemoveInactiveUserTime.fieldName]: 180,
-    [SettingRemoveSubOn404.fieldName]: true,
-    [SettingRetrieveOnSubAddition.fieldName]: false,
-    [SettingSort.fieldName]: SortOptionNew.settingValue,
-    [SettingWaitBeforeReGrabbingInMinutes.fieldName]: 15
+    [SettingAddAllFiltersPossible.fieldName]: SettingAddAllFiltersPossible.default,
+    [SettingCommonKeywordsIgnoreLength.fieldName]: SettingCommonKeywordsIgnoreLength.default,
+    [SettingIgnoreCommonSubsCount.fieldName]: SettingIgnoreCommonSubsCount.default,
+    [SettingGrabIntervalInMinutes.fieldName]: SettingGrabIntervalInMinutes.default,
+    [SettingPostTypes.fieldName]: SettingPostTypes.default,
+    [SettingRemoveInactiveUserTime.fieldName]: SettingRemoveInactiveUserTime.default,
+    [SettingRemoveSubOn404.fieldName]: SettingRemoveSubOn404.default,
+    [SettingRetrieveOnSubAddition.fieldName]: SettingRetrieveOnSubAddition.default,
+    [SettingSort.fieldName]: SettingSort.default,
+    [SettingWaitBeforeReGrabbingInMinutes.fieldName]: SettingWaitBeforeReGrabbingInMinutes.default
 };

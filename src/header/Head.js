@@ -31,7 +31,8 @@ export default function Head({
     postQueueHasData,
     setPostQueueHasData,
     posts,
-    setPosts
+    processedUsers,
+    setProcessedUsers
 }) {
     const quickFilter = useMemo(() => {
         return <QuickFilter
@@ -46,12 +47,22 @@ export default function Head({
         />;
     }, []);
 
+    const numPosts = useMemo(() =>
+        (processedUsers ?? [])
+            .filter(u => !u.disabled)
+            .flatMap(u => u.posts)
+            .filter(p => !p.disabled)
+            .filter(post => postDisplayFilter(settings, post, true))
+            .length,
+        [processedUsers, settings]
+    );
+
     // Utilizing quick-add classes for ease
     const postCount = useMemo(() => {
         return <div className="qa-section" id="postCount">
             <div className="qa-title">Posts</div>
             <div className="qa-options">
-                {(posts ?? []).filter(post => postDisplayFilter(settings, post)).length}
+                {numPosts}
             </div>
             <select
                 value={settings[SettingPostTypes.fieldName] ?? DefaultSettings[SettingPostTypes.fieldName]}
@@ -128,7 +139,7 @@ export default function Head({
                         count: 0
                     },
                     setFilters,
-                    setPosts
+                    setProcessedUsers
                 );
             }
         }

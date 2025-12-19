@@ -23,10 +23,16 @@ Looking at the TODOs in this repo, summarizing to narrow down items to work on:
 - Pull duplicate subreddits into subreddit list
 - UsersSubs: Remove user on 404?
 - Try and make Grabber + UserRetriever generic
+- "Storage Managed Items"
+- Multi-sub duplicate post info
+- Image comparison for duplicates
+- Text compare on processed multilines
+- Move color retrieval to processing
 
 ## Performance-Based Items:
 - Save scroll position (I believe the main issue with current implementation is post-shifting. But not 100% sure how to fix yet)
 - Figure out why duplicate posts are being grabbed. Why is the second filtering required in the grabber
+- Lag spikes on saves
 
 ## Bugs/Errors:
 - SOMETIMES, crashing wipes all data?
@@ -37,3 +43,4 @@ Looking at the TODOs in this repo, summarizing to narrow down items to work on:
 - To catch reddit placeholder images, I am checking for 130x60 images.
     * This catches other images too, need to find a better option
 - For SOME reason, the don't recommend in common subs takes FOREVER to update while the add doesn't?
+- post->setPost loop

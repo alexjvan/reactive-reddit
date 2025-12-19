@@ -3,12 +3,12 @@ import { GrabberTypeBackfill, GrabberTypeContinual } from "../constants";
 export default class UserRetriever {
     constructor(
         settings,
-        posts,
+        processedUsers,
         usersSubs,
         setUsersSubs
     ) {
         this.settings = settings;
-        this.posts = posts;
+        this.processedUsers = processedUsers;
         this.usersSubs = usersSubs;
         this.setUsersSubs = setUsersSubs;
     }
@@ -42,7 +42,7 @@ export default class UserRetriever {
     }
 
     selectUser() {
-        let users = this.posts.map(p => p.author);
+        let users = this.processedUsers.filter(u => !u.disabled).map(u => u.username);
 
         let unRetrieved = users.filter(u => !this.usersSubs.map(us => us.username).includes(u));
 

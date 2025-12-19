@@ -10,8 +10,10 @@ export default function Stats({
     subs,
     setSubs,
     setFilters,
-    posts,
-    setPosts,
+    postQueueHasData,
+    setPostQueueHasData,
+    processedUsers,
+    setProcessedUsers,
     postsPerSub,
     usersSubs,
     dontRecommendSubs,
@@ -41,7 +43,7 @@ export default function Stats({
                     </div>
                 </div>
             ),
-        [posts]
+        [processedUsers]
     );
 
     const _commonKeywords = useMemo(() =>
@@ -58,7 +60,7 @@ export default function Stats({
                     </div>
                 </div>
             ),
-        [posts]
+        [processedUsers]
     );
 
     const _commonSubs = useMemo(() =>
@@ -92,7 +94,7 @@ export default function Stats({
                 count: 0
             },
             setFilters,
-            setPosts
+            setProcessedUsers
         );
     }
 
@@ -106,7 +108,7 @@ export default function Stats({
                 count: 0
             },
             setFilters,
-            setPosts
+            setProcessedUsers
         );
     }
 
@@ -121,26 +123,22 @@ export default function Stats({
             ba: undefined,
             pre: false
         }, 1);
+
+        if (!postQueueHasData)
+            setPostQueueHasData(true);
     }
 
     function postsPerTag() {
-        return posts
-            .filter((p) => !p.disabled && p.filteredFor.length === 0)
+        return [...processedUsers]
+            .filter(u => !u.disabled)
+            .flatMap(u => u.posts)
+            .filter(p => !p.disabled)
             .reduce((currentTags, post) => {
-                let setTags = false;
-
-                if (post.link_flair_richtext.length > 0) {
-                    post.link_flair_richtext.forEach(flair => {
-                        currentTags[flair.t] = (currentTags[flair.t] || 0) + 1;
-                    });
-                    setTags = true;
-                }
-                if (post.link_flair_text) {
-                    currentTags[post.link_flair_text] = (currentTags[post.link_flair_text] || 0) + 1;
-                    setTags = true;
-                }
-
-                if (!setTags) {
+                if (post.tags && post.tags.length > 0) {
+                    post.tags.forEach(t => {
+                        currentTags[t] = (currentTags[t] || 0) + 1;
+                    })
+                } else {
                     currentTags['None'] = (currentTags['None'] || 0) + 1;
                 }
 
@@ -151,8 +149,10 @@ export default function Stats({
     function commonKeywords() {
         const wordCounts = {};
 
-        posts
-            .filter((p) => !p.disabled && p.filteredFor.length === 0)
+        processedUsers
+            .filter(u => !u.disabled)
+            .flatMap(u => u.posts)
+            .filter(p => !p.disabled)
             .forEach(post => {
                 const words = post.title
                     .toLowerCase()
@@ -190,8 +190,6 @@ export default function Stats({
                     }
                 });
             });
-
-        // TODO: Setting to limit subs less than x count
 
         return subCounts;
     }

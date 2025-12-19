@@ -1,4 +1,70 @@
 import { isImageLink, isVideoLink } from './imageHelpers';
+import {
+    TextModifierBold,
+    TextModifierHeaderPrefix,
+    TextModifierItalic,
+    TextModifierIndented,
+    TextModifierListItem,
+    TextModifierNoTopPadding
+} from '../constants';
+
+export function processPostText(postText) {
+    let media = [];
+
+    let lines = postText
+        .split('\n')
+        .filter(line => line.trim() !== '')
+        .map((line, index) => {
+            var modifiers = (index === 0) ? [TextModifierNoTopPadding] : [];
+            var moddedLine = line;
+
+            var foundModifiers = false;
+            do {
+                moddedLine = moddedLine.trim();
+                foundModifiers = false;
+                if (moddedLine.startsWith('>')) {
+                    modifiers.push(TextModifierIndented);
+                    moddedLine = moddedLine.substring(1);
+                    foundModifiers = true;
+                }
+                if (moddedLine.startsWith('&gt;')) {
+                    modifiers.push(TextModifierIndented);
+                    moddedLine = moddedLine.substring(4);
+                    foundModifiers = true;
+                }
+                if (moddedLine.length > 3 && moddedLine.startsWith('**') && moddedLine.endsWith('**')) {
+                    modifiers.push(TextModifierBold);
+                    moddedLine = moddedLine.substring(2, moddedLine.length - 2);
+                    foundModifiers = true;
+                }
+                if (moddedLine.length > 1 && moddedLine.startsWith('*') && moddedLine.endsWith('*')) {
+                    modifiers.push(TextModifierItalic);
+                    moddedLine = moddedLine.substring(1, moddedLine.length - 1);
+                    foundModifiers = true;
+                }
+                if (moddedLine.startsWith('* ')) {
+                    modifiers.push(TextModifierListItem);
+                    moddedLine = moddedLine.substring(2);
+                    foundModifiers = true;
+                }
+                if (moddedLine.startsWith("#")) {
+                    let headerLevel = 0;
+                    while (moddedLine.startsWith("#")) {
+                        headerLevel++;
+                        moddedLine = moddedLine.substring(1);
+                    }
+                    modifiers.push(TextModifierHeaderPrefix + headerLevel);
+                    foundModifiers = true;
+                }
+            } while (foundModifiers); // Loop through to catch multiple modifiers if present
+
+            var htmlified = modLine(moddedLine);
+            media = media.concat(htmlified.mediaLinks);
+            return { text: htmlified.html, modifiers: modifiers };
+        });
+
+    return { lines: lines, media: media };
+}
 
 export function modLine(line) {
     let split = line.split('');

@@ -6,11 +6,9 @@ import { postDisplayFilter } from '../app/postHelpers/postFunctions';
 
 export default function Body({
     settings,
-    posts,
-    setPosts,
-    setFilters,
-    minimizedUsers,
-    setMinimizedUsers
+    processedUsers,
+    setProcessedUsers,
+    setFilters
 }) {
     // TODO: This does NOT work, but its better than before so I am keeping it until I find something better.
     const containerRef = useRef(null);
@@ -38,52 +36,40 @@ export default function Body({
         if (containerRef.current) {
             containerRef.current.scrollTop = scrollPosition.current;
         }
-    }, [posts]); // Trying to avoid constant re-renders
+    }, [processedUsers]); // Trying to avoid constant re-renders
 
-    const users = useMemo(() => {
-        let usersMap = (posts ?? [])
-            .filter(post => postDisplayFilter(settings, post))
-            .sort((a, b) => b.created_utc - a.created_utc)
-            .reduce((currentUsers, post) => {
-                const username = post.author;
-                if (!currentUsers[username]) currentUsers[username] = [];
-                currentUsers[username].push(post);
-                return currentUsers;
-            }, {});
+    let toDisplay = useMemo(() => filterAndSort((processedUsers ?? [])), [processedUsers, settings]);
 
-        let sorted = Object.entries(usersMap).sort((userA, userB) => sortUsers(userA, userB));
-
-        return Object.fromEntries(sorted);
-    },
-        [posts, settings.postTypes, settings.sort]
-    );
-
-    function sortUsers(userA, userB) {
+    function filterAndSort(passedUsers) {
+        let filtered = passedUsers
+            .map(u => ({
+                ...u,
+                posts: u.posts.filter(p => postDisplayFilter(settings, p, true))
+            }));
         switch (settings.sort) {
             case SortOptionNew.settingValue:
-                return 0;
+                return [...filtered].sort(
+                    (a, b) => (b.posts.length === 0 ? new Date(0) : b.posts[0].date)
+                        - (a.posts.length === 0 ? new Date(0) : a.posts[0].date)
+                );
             case SortOptionPostCount.settingValue:
-                return userB[1].length - userA[1].length;
+                return [...filtered].sort((a, b) => b.posts.length - a.posts.length);
             default:
                 console.log('Unknown sort option, defaulting to New');
-                return 0;
+                return [...filtered].sort((a, b) => b.earliestPost - a.earliestPost);
         }
     }
 
-    const usersDisplay = useMemo(() =>
-        Object.entries(users).map(([username, usersPosts]) => (
+    const usersDisplay = useMemo(() => <>
+        {toDisplay.map(user =>
             <User
-                key={username}
-                username={username}
-                usersPosts={usersPosts}
-                posts={posts}
-                setPosts={setPosts}
+                key={user.username}
+                processedUser={user}
+                setProcessedUsers={setProcessedUsers}
                 setFilters={setFilters}
-                minimizedUsers={minimizedUsers}
-                setMinimizedUsers={setMinimizedUsers}
             />
-        )),
-        [users]);
+        )}
+    </>, [toDisplay]);
 
     return <div id="body" ref={containerRef}>
         {usersDisplay}

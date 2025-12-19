@@ -1,4 +1,4 @@
-import { GrabberCategoryFilters, GrabberCategoryMinUsers, GrabberCategoryPosts, GrabberCategorySubs } from '../constants';
+import { GrabberCategoryFilters, GrabberCategoryPosts, GrabberCategoryProcessedUsers, GrabberCategorySubs } from '../constants';
 
 const lzstring = require('lz-string');
 
@@ -18,6 +18,7 @@ export function getFromStorage(group, key, fallback, validation, extraOne, extra
     }
 }
 
+// TODO: Pushing to storage is causing HUGE lag spikes
 export function putInStorage(group, key, obj) {
     if (obj === null || obj === undefined) {
         localStorage.removeItem(group + key); // Clean up storage for null values
@@ -32,7 +33,7 @@ export function putInStorage(group, key, obj) {
 }
 
 export function removeGroupFromStorage(group) {
-    const keys = [GrabberCategorySubs, GrabberCategoryFilters, GrabberCategoryPosts, GrabberCategoryMinUsers];
+    const keys = [GrabberCategorySubs, GrabberCategoryFilters, GrabberCategoryPosts, GrabberCategoryProcessedUsers];
     keys.forEach((key) => {
         removeItemFromStorage(group + key);
     });

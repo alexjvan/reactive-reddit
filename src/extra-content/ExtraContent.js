@@ -18,49 +18,51 @@ export default function ExtraContent({
     setSubs,
     filters,
     setFilters,
-    posts,
+    postQueueHasData,
+    setPostQueueHasData,
     setPosts,
+    processedUsers,
+    setProcessedUsers,
     usersSubs,
-    setMinimizedUsers,
     dontRecommendSubs,
     setDontRecommendSubs
 }) {
-    const help = useMemo(() => {
-        return <Help />;
-    }, []);
+    const help = useMemo(() => <Help />, []);
 
-    const postsPerSub = useMemo(
-        () => grabPostsPerSub(),
-        [posts, subs]
-    );
+    const postsPerSub = useMemo(() => grabPostsPerSub(), [processedUsers, subs]);
 
     function grabPostsPerSub() {
-        let postSubs = (posts ?? []).filter((p) => !p.disabled && p.filteredFor.length === 0).map((p) => p.subreddit);
-        let reduced = postSubs.reduce((acc, curr) => {
-            acc[curr] = (acc[curr] || 0) + 1;
-            return acc;
-        }, {});
+        let postSubs = (processedUsers ?? [])
+            .filter(u => !u.disabled)
+            .flatMap(u => u.posts)
+            .filter(p => !p.disabled)
+            .flatMap(p => p.subs)
+            .map(s => s.name)
+            .reduce((acc, curr) => {
+                acc[curr] = (acc[curr] || 0) + 1;
+                return acc;
+            }, {});
 
         // Fill missing subs with 0 count
         (subs ?? []).forEach((s) => {
-            const existingKey = Object.keys(reduced).find(
+            const existingKey = Object.keys(postSubs).find(
                 (k) => k.toLowerCase() === s.name.toLowerCase()
             );
 
             const key = existingKey ?? s.name;
-            if (!reduced[key]) reduced[key] = 0;
+            if (!postSubs[key]) postSubs[key] = 0;
         });
 
         // Sort entries by count in descending order
-        return Object.entries(reduced)
+        return Object.entries(postSubs)
             .sort((a, b) => b[1] - a[1])
             .map(([sub, count]) => ({ sub, count }));
     }
 
     function clearAllContent() {
         setPosts([]);
+        setProcessedUsers([]);
         setFilters([]);
-        setMinimizedUsers([]);
         setSubs([]);
         setGroups(DefaultGroups);
     }
@@ -83,16 +85,16 @@ export default function ExtraContent({
             setSubs={setSubs}
             filters={filters}
             setFilters={setFilters}
-            posts={posts}
             setPosts={setPosts}
+            processedUsers={processedUsers}
+            setProcessedUsers={setProcessedUsers}
             postsPerSub={postsPerSub}
         />;
-    }, [settings, setSettings,
-        groups, setGroups,
-        activeGroup,
-        subs, setSubs,
-        filters, setFilters,
-        posts, setPosts,
+    }, [settings,
+        groups, activeGroup,
+        subs,
+        filters,
+        processedUsers,
         postsPerSub]);
 
     const stats = useMemo(() => {
@@ -102,8 +104,10 @@ export default function ExtraContent({
             subs={subs}
             setSubs={setSubs}
             setFilters={setFilters}
-            posts={posts}
-            setPosts={setPosts}
+            postQueueHasData={postQueueHasData}
+            setPostQueueHasData={setPostQueueHasData}
+            processedUsers={processedUsers}
+            setProcessedUsers={setProcessedUsers}
             postsPerSub={postsPerSub}
             usersSubs={usersSubs}
             dontRecommendSubs={dontRecommendSubs}
@@ -111,11 +115,12 @@ export default function ExtraContent({
         />;
     }, [postQueue,
         settings,
-        subs, setSubs,
-        setFilters,
-        posts, setPosts,
+        subs,
+        postQueueHasData,
+        processedUsers,
         postsPerSub,
-        usersSubs]);
+        usersSubs,
+        dontRecommendSubs]);
 
     return (extraDisplay &&
         <div id="extrapage">

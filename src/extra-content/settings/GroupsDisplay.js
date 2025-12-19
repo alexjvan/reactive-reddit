@@ -1,5 +1,5 @@
 import './SettingsSection.css';
-import { GrabberCategoryFilters, GrabberCategoryPosts, GrabberCategorySubs } from '../../app/constants.js';
+import { GrabberCategoryFilters, GrabberCategoryPosts, GrabberCategoryProcessedUsers, GrabberCategorySubs } from '../../app/constants.js';
 import { getFromStorage, removeGroupFromStorage } from '../../app/storage/storage.js';
 import { emptyValidation } from '../../app/storage/validators.js';
 
@@ -9,7 +9,7 @@ export default function GroupsDisplay({
     activeGroup,
     subs,
     filters,
-    posts,
+    processedUsers,
     clearFilters
 }) {
     const groupsInfo = groups.map((group) => {
@@ -19,18 +19,18 @@ export default function GroupsDisplay({
                 name: group.name,
                 subs: subs.length,
                 filters: filters.length,
-                posts: posts.length
+                posts: processedUsers.filter(u => !u.disabled).flatMap(u => u.posts).filter(p => !p.disabled).length
             };
         } else {
             let curSubs = getFromStorage(group.name, GrabberCategorySubs, [], emptyValidation);
             let curFilters = getFromStorage(group.name, GrabberCategoryFilters, [], emptyValidation);
-            let curPosts = getFromStorage(group.name, GrabberCategoryPosts, [], emptyValidation);
+            let curProcessedUsers = getFromStorage(group.name, GrabberCategoryProcessedUsers, [], emptyValidation);
 
             return {
                 name: group.name,
                 subs: curSubs.length,
                 filters: curFilters.length,
-                posts: curPosts.length
+                posts: curProcessedUsers.filter(u => !u.disabled).flatMap(u => u.posts).filter(p => !p.disabled).length
             };
         }
     });

@@ -1,5 +1,4 @@
 import { GrabberTypeBackfill, GrabberTypeContinual, GrabberTypeSavior } from "../constants";
-import { addFiltersAsRequested } from "../filters";
 import { cleanPost } from "../postHelpers/postFunctions";
 import { getSub } from "../subHelpers";
 
@@ -9,7 +8,6 @@ export default class Grabber {
         settings,
         subs,
         setSubs,
-        posts,
         setPosts,
         postQueue,
         setPostQueueHasData,
@@ -19,7 +17,6 @@ export default class Grabber {
         this.settings = settings;
         this.subs = subs;
         this.setSubs = setSubs;
-        this.posts = posts;
         this.setPosts = setPosts;
         this.postQueue = postQueue;
         this.setPostQueueHasData = setPostQueueHasData;
@@ -72,7 +69,7 @@ export default class Grabber {
                 if (!resp.ok) {
                     if (resp.status === 403) {
                         // This is a really weird case - not sure why these pop up?
-                        this.finishRetrieval(sub, "403 error, assuming private.", false, false);
+                        this.finishRetrieval(sub, "403 error, assuming private.", false, true);
                     } else if (resp.status === 404) {
                         if (this.settings.removeSubOn404) {
                             console.log(`Removing ${sub} due to 404 error.`);
@@ -103,10 +100,12 @@ export default class Grabber {
             })
             .catch(error => {
                 // For some reason 403 + 429 errors are getting caught here instead of above?
+                console.log(error);
                 this.finishRetrieval(sub, `Transit Error.`, false, false);
             })
     }
 
+    // TODO: Move color retrieval to processing
     processFetch(
         postType,
         sub,
@@ -141,40 +140,30 @@ export default class Grabber {
         let direction = (postType === GrabberTypeContinual) ? data.data.before : data.data.after;
 
         // Creating deltas so we aren't constantly trying to change the posts during retrieval
-        const filterDeltas = {};
         let processed = retrievedPosts.map((post) => {
             let returning = post.data;
             cleanPost(returning);
             returning.disabled = false;
             returning.duplicates = 0;
             returning.color = setting.color;
-            returning.filteredFor = addFiltersAsRequested(this.settings, this.filters, returning);
-
-            if (returning.filteredFor.length > 0) {
-                returning.filteredFor.forEach((f) => {
-                    filterDeltas[f] = (filterDeltas[f] || 0) + 1;
-                });
-            }
 
             return returning;
         });
 
-        const preExistingPosts = new Set(this.posts.map(p => p.name));
-        let filtered = processed.filter(p => !preExistingPosts.has(p.name)); // TODO: Don't know why this is necessary, but it eliminates duplicate posts. Invesigate eventually, low pri
         if (postType === GrabberTypeBackfill) {
             if (setting.ba.afterutc) {
-                filtered = filtered.filter(p => p.created_utc < setting.ba.beforeutc);
+                processed = processed.filter(p => p.created_utc < setting.ba.beforeutc);
             }
         } else if (setting.ba.created_utc) {
-            filtered = filtered.filter(p => p.created_utc > setting.ba.beforeutc);
+            processed = processed.filter(p => p.created_utc > setting.ba.beforeutc);
         }
 
-        if (filtered.length === 0) {
+        if (processed.length === 0) {
             this.finishRetrieval(sub, "0 posts, assuming loop.", postType !== GrabberTypeContinual, true);
             return;
         }
 
-        this.setPosts(prev => [...prev, ...filtered]);
+        this.setPosts(prev => [...prev, ...processed]);
 
         // Set before-after appropriately
         let updatedBa = { ...(setting.ba || {}) };
@@ -206,17 +195,8 @@ export default class Grabber {
                 break;
         }
 
-        // Push aggregated filter counts into state once
-        if (Object.keys(filterDeltas).length > 0) {
-            this.setFilters((prev) => prev.map((filter) => {
-                const inc = filterDeltas[filter.filter] || 0;
-                if (inc === 0) return filter;
-                return { ...filter, count: (filter.count || 0) + inc };
-            }));
-        }
-
         // Update the sub entry in subs immutably
-        this.setSubs((prev) => prev.map((s) => {
+        this.setSubs((prev) => prev.map(s => {
             if (s.name !== sub) return s;
             return { ...s, ba: updatedBa, reachedEnd: updatedReachedEnd };
         }));
