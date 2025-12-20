@@ -108,13 +108,15 @@ function sortPrioirty(category) {
 
 // --- POSTS ---
 export function shrinkPosts(posts) {
-    return posts
-        .filter(post => !post.disabled && post.filteredFor.length === 0);
+    return posts.filter(post => !post.disabled);
 }
 
 // --- PROCESSED USERS ---
 // TODO: Import validations
 //    - Re-grab first post time
+export function processedUsersValidation(processedUsers, fallback) {
+    return processedUsers;
+}
 
 export function shrinkUsers(processedUsers) {
     return processedUsers

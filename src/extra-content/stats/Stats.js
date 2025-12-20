@@ -136,7 +136,7 @@ export default function Stats({
             .reduce((currentTags, post) => {
                 if (post.tags && post.tags.length > 0) {
                     post.tags.forEach(t => {
-                        currentTags[t] = (currentTags[t] || 0) + 1;
+                        currentTags[t.item] = (currentTags[t.item] || 0) + 1;
                     })
                 } else {
                     currentTags['None'] = (currentTags['None'] || 0) + 1;

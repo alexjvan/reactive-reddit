@@ -22,6 +22,7 @@ import {
   emptyValidation,
   padSubs,
   postValidation,
+  processedUsersValidation,
   reduceFilters,
   removeInactiveUsers,
   resumeRetrieval,
@@ -78,7 +79,7 @@ export default function App() {
     setFilters(getFromStorage(activeGroup, GrabberCategoryFilters, [], emptyValidation));
     setPosts(getFromStorage(activeGroup, GrabberCategoryPosts, [], postValidation, subs, filters));
     // TODO: Validation - add filters
-    setProcessedUsers(getFromStorage(activeGroup, GrabberCategoryProcessedUsers, [], emptyValidation));
+    setProcessedUsers(getFromStorage(activeGroup, GrabberCategoryProcessedUsers, [], processedUsersValidation));
     setDontRecommendSubs(getFromStorage(activeGroup, GrabberCategoryDontRecommendSubs, [], emptyValidation));
   }, [activeGroup]);
 
