@@ -76,9 +76,9 @@ function shouldAddFilter(filter, post, isProcessed) {
 
     if (category === FilterCategoryTag) {
         const tags = isProcessed
-            ? post.tags
+            ? new Set((post.tags ?? []).map(t => t.item.toLowerCase()))
             : new Set([
-                ...(post.link_flair_richtext?.map((t) => t.t.toLowerCase()) || []),
+                ...(post.link_flair_richtext?.map(t => t.t.toLowerCase()) || []),
                 ...(post.link_flair_text ? [post.link_flair_text.toLowerCase()] : [])
             ]);
 
