@@ -28,6 +28,7 @@ Looking at the TODOs in this repo, summarizing to narrow down items to work on:
 - Image comparison for duplicates
 - Text compare on processed multilines
 - Move color retrieval to processing
+- Image tags
 
 ## Performance-Based Items:
 - Save scroll position (I believe the main issue with current implementation is post-shifting. But not 100% sure how to fix yet)

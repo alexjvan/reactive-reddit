@@ -24,9 +24,9 @@ export default function GroupSelector({
   }
 
   function newGroup(newGroup) {
-    setGroups((old) => {
+    setGroups(old => {
       var newGroupObj = { name: newGroup, active: true }
-      var oldGroups = old.map((oldg) => {
+      var oldGroups = old.map(oldg => {
         if (oldg.active) {
           oldg.active = false;
         }
@@ -39,7 +39,7 @@ export default function GroupSelector({
   }
 
   function changeActive(oldGroup, newGroup) {
-    setGroups((old) => old.map((oldg) => {
+    setGroups(old => old.map(oldg => {
       if (oldg.name == oldGroup) {
         oldg.active = false;
       } else if (oldg.name == newGroup) {
@@ -51,7 +51,7 @@ export default function GroupSelector({
   }
 
   const groupDisplay = useMemo(
-    () => groups.map((group) => {
+    () => groups.map(group => {
       return <button
         key={'group' + group.name}
         className={`groupButton clickable ${group.active ? 'active' : ''}`}

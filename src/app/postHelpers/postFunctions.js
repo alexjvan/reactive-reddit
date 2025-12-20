@@ -247,7 +247,7 @@ export function processPost(post) {
             : []),
         ...(post.preview
             ? post.preview.images
-                ? post.preview.images.map((imgs) => imgs.source.url)
+                ? post.preview.images.map(imgs => imgs.source.url)
                 : []
             : []),
         ...(post.preview
@@ -282,10 +282,10 @@ export function processPost(post) {
         date: post.created_utc,
         duplicates: 0,
         tags: (post.link_flair_richtext.length > 0)
-            ? post.link_flair_richtext.map((flair) => {
+            ? post.link_flair_richtext.map(flair => {
                 return {
                     background: post.link_flair_background_color,
-                    item: flair.t,
+                    item: flair.t ?? "",
                     tag: post.link_flair_text_color
                 };
             })
@@ -337,7 +337,7 @@ export function isPostDuplicateOfProcessed(checking, against) {
     }
 
     // TODO: This 100% will have differences, need to look into multi-line text comparing
-    const textSimilarity = stringSimilarity(checking.selftext, against.text.join('\n'));
+    const textSimilarity = stringSimilarity(checking.selftext, against.text.map(t => t.text).join('\n'));
     if (textSimilarity >= 0.85) {
         console.log(`Found duplicate post; text-wise; ${checking.name}, ${against.name}`);
         return true;

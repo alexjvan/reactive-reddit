@@ -20,7 +20,7 @@ export function mapConverter(data, fallback) {
 
 // --- FILTERS ---
 export function postValidation(data, fallback, subs, filters) {
-    return data.map((post) => {
+    return data.map(post => {
         if (post.selftext_html !== undefined) delete post.selftext_html;
         if (post.color === undefined) post.color = getSub(subs, post.subreddit).color;
         if (post.duplicates === undefined) post.duplicates = 0;
@@ -114,8 +114,29 @@ export function shrinkPosts(posts) {
 // --- PROCESSED USERS ---
 // TODO: Import validations
 //    - Re-grab first post time
-export function processedUsersValidation(processedUsers, fallback) {
-    return processedUsers;
+//    - Re-Check Filters
+//    - Create filteredPosts array
+export function processedUsersValidation(processedUsers, fallback, settings, filters) {
+    return processedUsers.map(u => {
+
+        let missedFilteredPosts = [];
+        u.posts = u.posts.map(p => {
+            let nowApplicable = addFiltersAsRequested(settings, filters, p, true);
+
+            if(nowApplicable.length > 0) {
+                missedFilteredPosts.push({
+                    filteredFor: nowApplicable,
+                    post: p
+                });
+                return undefined;
+            } else {
+                return p;
+            }
+        }).filter(p => p !== undefined);
+        u.filteredPosts = missedFilteredPosts;
+
+        return u;
+    });
 }
 
 export function shrinkUsers(processedUsers) {
@@ -156,7 +177,7 @@ const dontGrabMinutes = 15;
 
 export function resumeRetrieval(data, fallback, postQueue, setPostQueueHasData) {
     let included = [];
-    let returning = data.map((sub) => {
+    let returning = data.map(sub => {
         if (included.includes(sub.name)) {
             return undefined;
         }
@@ -177,7 +198,7 @@ export function resumeRetrieval(data, fallback, postQueue, setPostQueueHasData) 
     early.setMinutes(early.getMinutes() - dontGrabMinutes);
     let earlyepoch = Math.floor(early / 1000);
 
-    sorted.forEach((sub) => {
+    sorted.forEach(sub => {
         if (!sub.reachedEnd) {
             postQueue.enqueue({
                 sub: sub.name,
@@ -201,7 +222,7 @@ export function resumeRetrieval(data, fallback, postQueue, setPostQueueHasData) 
 }
 
 export function padSubs(subs, posts) {
-    return subs.map((sub) => {
+    return subs.map(sub => {
         let returning = sub;
         returning.postCount = posts.filter(p => p.subreddit === sub.name).length;
         return returning;

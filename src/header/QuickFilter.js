@@ -26,7 +26,7 @@ export default function QuickFilter({
 
     return <div className="qa-section">
         <select className="qa-cat" value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)}>
-            {AllFilterCategories.map((c) => <option value={c} key={c}>
+            {AllFilterCategories.map(c => <option value={c} key={c}>
                 {c}
             </option>)}
         </select>

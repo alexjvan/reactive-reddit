@@ -73,7 +73,7 @@ export default class Grabber {
                     } else if (resp.status === 404) {
                         if (this.settings.removeSubOn404) {
                             console.log(`Removing ${sub} due to 404 error.`);
-                            this.setSubs((prev) => prev.filter((csub) => csub.name !== sub));
+                            this.setSubs(prev => prev.filter(csub => csub.name !== sub));
                         }
                         this.finishRetrieval(sub, `404 error${this.settings.removeSubOn404 ? ', removing sub' : ''}.`, false);
                     } else if (resp.status === 429) {
@@ -140,7 +140,7 @@ export default class Grabber {
         let direction = (postType === GrabberTypeContinual) ? data.data.before : data.data.after;
 
         // Creating deltas so we aren't constantly trying to change the posts during retrieval
-        let processed = retrievedPosts.map((post) => {
+        let processed = retrievedPosts.map(post => {
             let returning = post.data;
             cleanPost(returning);
             returning.disabled = false;
@@ -196,7 +196,7 @@ export default class Grabber {
         }
 
         // Update the sub entry in subs immutably
-        this.setSubs((prev) => prev.map(s => {
+        this.setSubs(prev => prev.map(s => {
             if (s.name !== sub) return s;
             return { ...s, ba: updatedBa, reachedEnd: updatedReachedEnd };
         }));
@@ -229,7 +229,7 @@ export default class Grabber {
         console.log(`Time: ${now.toLocaleString()}`)
         console.log("-=-=-=-=-=-=-=-=-=-=-");
         if (setEnd) {
-            this.setSubs((prev) => prev.map((csub) => {
+            this.setSubs(prev => prev.map(csub => {
                 if (csub.name === sub) {
                     return { ...csub, reachedEnd: true };
                 }

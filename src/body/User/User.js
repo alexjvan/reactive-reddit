@@ -36,7 +36,7 @@ export default function User({
             desired: false,
             count: 0
         };
-        setFilters((prev) => [
+        setFilters(prev => [
             ...prev,
             newFilter
         ]);

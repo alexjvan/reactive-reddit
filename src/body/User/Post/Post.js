@@ -29,7 +29,7 @@ export default function Post({
     );
 
     function toggleMinimized() {
-        setMinimized((prev) => !prev);
+        setMinimized(prev => !prev);
     }
 
     function disable() {
@@ -79,7 +79,7 @@ export default function Post({
                     </div>
                     {processedPost.tags.length !== 0 &&
                         <div className='tags-container'>
-                            {processedPost.tags.map((t) =>
+                            {processedPost.tags.map(t =>
                                 <div
                                     key={`tag-${t}`}
                                     className={`postTag ${t.tag}`}

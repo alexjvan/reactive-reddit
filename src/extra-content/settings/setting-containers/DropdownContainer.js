@@ -11,7 +11,7 @@ export default function DropdownContainer({
         <select
             value={settings[settingInfo.fieldName] ?? DefaultSettings[settingInfo.fieldName]}
             onChange={(e) =>
-                setSettings((current) => ({
+                setSettings(current => ({
                     ...current,
                     [settingInfo.fieldName]: e.target.value,
                 }))
@@ -19,7 +19,7 @@ export default function DropdownContainer({
             name={settingInfo.fieldName}
             className="settings-dropdown"
         >
-            {settingInfo.options.map((o) =>
+            {settingInfo.options.map(o =>
                 <option key={o.settingValue} value={o.settingValue}>{o.displayValue}</option>
             )}
         </select>

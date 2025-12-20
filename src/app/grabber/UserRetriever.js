@@ -197,7 +197,7 @@ export default class UserRetriever {
                     aftert3: undefined
                 }
             };
-            this.setUsersSubs((prev) => [...prev, newUser]);
+            this.setUsersSubs(prev => [...prev, newUser]);
 
             return newUser;
         } else {
@@ -217,7 +217,7 @@ export default class UserRetriever {
         console.log(`Reason: ${reason}`);
         console.log(`Time: ${now.toLocaleString()}`)
         console.log("-=-=-=-=-=-=-=-=-=-=-");
-        this.setUsersSubs((prev) => prev.map((csub) => {
+        this.setUsersSubs(prev => prev.map(csub => {
             if (csub.username === user) {
                 return {
                     ...csub,

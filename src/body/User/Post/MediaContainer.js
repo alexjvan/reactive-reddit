@@ -32,11 +32,11 @@ export default function MediaContainer({
     }, [displaying]);
 
     function prevImage() {
-        setImageIndex((prev) => (prev === 0 ? displaying.length - 1 : prev - 1));
+        setImageIndex(prev => (prev === 0 ? displaying.length - 1 : prev - 1));
     }
 
     function nextImage() {
-        setImageIndex((prev) => (prev === displaying.length - 1 ? 0 : prev + 1));
+        setImageIndex(prev => (prev === displaying.length - 1 ? 0 : prev + 1));
     }
 
     function removeImage(url) {

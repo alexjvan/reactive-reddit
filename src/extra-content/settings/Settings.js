@@ -31,7 +31,7 @@ export default function Settings({
     const [settingsPage, setSettingsPage] = useState(AllSettingsPages[0]);
 
     const settingsTabs = useMemo(() => <div id='settings-tabs'>
-        {AllSettingsPages.map((page) =>
+        {AllSettingsPages.map(page =>
             <button
                 key={`allSettings-${page}`}
                 className={'settings-tab' + (settingsPage === page ? ' active' : '')}

@@ -64,7 +64,7 @@ export default function App() {
 
   // Load objs off group
   useEffect(() => {
-    groups.forEach((group) => {
+    groups.forEach(group => {
       if (group.active) {
         setActiveGroup(group.name);
       }
@@ -78,8 +78,7 @@ export default function App() {
     setSubs(getFromStorage(activeGroup, GrabberCategorySubs, [], resumeRetrieval, postQueue, setPostQueueHasData));
     setFilters(getFromStorage(activeGroup, GrabberCategoryFilters, [], emptyValidation));
     setPosts(getFromStorage(activeGroup, GrabberCategoryPosts, [], postValidation, subs, filters));
-    // TODO: Validation - add filters
-    setProcessedUsers(getFromStorage(activeGroup, GrabberCategoryProcessedUsers, [], processedUsersValidation));
+    setProcessedUsers(getFromStorage(activeGroup, GrabberCategoryProcessedUsers, [], processedUsersValidation, settings, filters));
     setDontRecommendSubs(getFromStorage(activeGroup, GrabberCategoryDontRecommendSubs, [], emptyValidation));
   }, [activeGroup]);
 
@@ -99,15 +98,17 @@ export default function App() {
     }
   }, [subs]);
 
-  useEffect(() => {
-    if (posts) {
-      const timer = setTimeout(() => {
-        putInStorage(activeGroup, GrabberCategoryPosts, shrinkPosts(posts));
-      }, 500); // Setting to less than processedUsers to set first to not hit sstorage limit
+  // I don't think I actually want to save these? It will get pulled then should be immediately processed
+  //     Going to keep this here for a bit until I determine otherwise
+  // useEffect(() => {
+  //   if (posts) {
+  //     const timer = setTimeout(() => {
+  //       putInStorage(activeGroup, GrabberCategoryPosts, shrinkPosts(posts));
+  //     }, 500); // Setting to less than processedUsers to set first to not hit sstorage limit
 
-      return () => clearTimeout(timer);
-    }
-  }, [posts]);
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [posts]);
   useEffect(() => {
     if (processedUsers) {
       const timer = setTimeout(() => {

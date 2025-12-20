@@ -34,7 +34,7 @@ export function putInStorage(group, key, obj) {
 
 export function removeGroupFromStorage(group) {
     const keys = [GrabberCategorySubs, GrabberCategoryFilters, GrabberCategoryPosts, GrabberCategoryProcessedUsers];
-    keys.forEach((key) => {
+    keys.forEach(key => {
         removeItemFromStorage(group + key);
     });
 }

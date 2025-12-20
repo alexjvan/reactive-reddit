@@ -12,7 +12,7 @@ export default function GroupsDisplay({
     processedUsers,
     clearFilters
 }) {
-    const groupsInfo = groups.map((group) => {
+    const groupsInfo = groups.map(group => {
         // Ignore current group (use already loaded data)
         if (group.name === activeGroup) {
             return {
@@ -37,7 +37,7 @@ export default function GroupsDisplay({
 
     function removeGroup(groupName) {
         removeGroupFromStorage(groupName);
-        setGroups((current) => current.filter((g) => g.name !== groupName));
+        setGroups(current => current.filter(g => g.name !== groupName));
     }
 
     return <div className='settings-panel' id='groupspanel'>
@@ -54,7 +54,7 @@ export default function GroupsDisplay({
                 </button>
             </div>
             <div className='settings-listcontainer'>
-                {groupsInfo.map((group) =>
+                {groupsInfo.map(group =>
                     <div className='groupspanel' key={`grouppanel-${group.name}`}>
                         <div className='groups-title'>
                             {group.name}

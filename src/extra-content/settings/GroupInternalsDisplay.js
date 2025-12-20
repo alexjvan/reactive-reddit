@@ -17,7 +17,7 @@ export default function GroupInternalsDisplay({
         (subs ?? [])
             .map(s => s.name)
             .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
-            .map((item) => {
+            .map(item => {
                 return <div className="settingsection-item" key={`ss-${item}`}>
                     <div className="settingsection-itemname">
                         {item}
@@ -39,7 +39,7 @@ export default function GroupInternalsDisplay({
     const sortedFilters = useMemo(() =>
         (filters ?? [])
             .sort((a, b) => a.filter.toLowerCase().localeCompare(b.filter.toLowerCase()))
-            .map((filter) => {
+            .map(filter => {
                 return <div className="settingsection-item" key={`ss-${filter.filter + filter.category}`}>
                     <div className="settingsection-itemname">
                         <div className={'settingsection-filterdesired ' + (filter.desired)}></div>
@@ -63,15 +63,15 @@ export default function GroupInternalsDisplay({
     );
 
     function removeSub(sub) {
-        setSubs((current) => current.filter((s) => s.name !== sub));
+        setSubs(current => current.filter(s => s.name !== sub));
     }
 
     function removeFilter(filter) {
-        setFilters((current) => current.filter((f) => f.filter !== filter));
+        setFilters(current => current.filter(f => f.filter !== filter));
         setProcessedUsers(prev => prev.map(u => {
             let reEnabledPosts = [];
 
-            u.filteredPosts = u.filteredPosts
+            u.filteredPosts = (u.filteredPosts ?? [])
                 .map(p => {
                     p.filteredFor = p.filteredFor.filter(f => f === filter.filter);
                     if (p.filteredFor.length === 0) {

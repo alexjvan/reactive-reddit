@@ -6,7 +6,7 @@ export default function Foot({
     setExtraDisplay
 }) {
     return <div id="footer">
-        {AllExtraContent.map((section) =>
+        {AllExtraContent.map(section =>
             <Footerlink
                 key={section}
                 section={section}

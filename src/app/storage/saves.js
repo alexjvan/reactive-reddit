@@ -20,7 +20,7 @@ export function exportSave() {
     save.usersSubs = getFromStorage('', GrabberCategoryUsersSubs, [], emptyValidation);
 
     const groupsData = {};
-    (groupsMeta || []).forEach((g) => {
+    (groupsMeta || []).forEach(g => {
         groupsData[g.name] = {
             subs: getFromStorage(g.name, GrabberCategorySubs, [], emptyValidation),
             filters: getFromStorage(g.name, GrabberCategoryFilters, [], emptyValidation),

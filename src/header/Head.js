@@ -67,7 +67,7 @@ export default function Head({
             <select
                 value={settings[SettingPostTypes.fieldName] ?? DefaultSettings[SettingPostTypes.fieldName]}
                 onChange={(e) =>
-                    setSettings((current) => ({
+                    setSettings(current => ({
                         ...current,
                         [SettingPostTypes.fieldName]: e.target.value,
                     }))
@@ -75,7 +75,7 @@ export default function Head({
                 name={SettingPostTypes.fieldName}
                 className="qa-dropdown"
             >
-                {SettingPostTypes.options.map((o) =>
+                {SettingPostTypes.options.map(o =>
                     <option key={o.settingValue} value={o.settingValue}>{o.displayValue}</option>
                 )}
             </select>
@@ -88,11 +88,11 @@ export default function Head({
 
         if (section === FilterCategorySub) {
             let updates = input.split(',');
-            updates.forEach((addition) => {
+            updates.forEach(addition => {
                 let contains = (subs ?? []).some(s => s && s.name === addition);
 
                 if (!contains) {
-                    setSubs((current) => [
+                    setSubs(current => [
                         ...current,
                         newSubWithName(addition)
                     ]);
@@ -114,10 +114,10 @@ export default function Head({
             });
         } else if (input.startsWith(FilterTagOpener)) {
             var text = input.substring(8);
-            FilterTagsOpener.forEach((t) => quickAdd(section, t + text, desired));
+            FilterTagsOpener.forEach(t => quickAdd(section, t + text, desired));
         } else if (input.endsWith(FilterTagCloser)) {
             var text = input.substring(0, input.length - 8);
-            FilterTagsCloser.forEach((t) => quickAdd(section, text + t, desired));
+            FilterTagsCloser.forEach(t => quickAdd(section, text + t, desired));
         } else {
             var preExistingFilters = (filters ?? []);
             let contains = false;

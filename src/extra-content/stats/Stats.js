@@ -113,7 +113,7 @@ export default function Stats({
     }
 
     function addNewSub(subname) {
-        setSubs((current) => [
+        setSubs(current => [
             ...current,
             newSubWithName(subname)
         ]);

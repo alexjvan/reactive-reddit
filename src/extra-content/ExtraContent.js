@@ -44,7 +44,7 @@ export default function ExtraContent({
             }, {});
 
         // Fill missing subs with 0 count
-        (subs ?? []).forEach((s) => {
+        (subs ?? []).forEach(s => {
             const existingKey = Object.keys(postSubs).find(
                 (k) => k.toLowerCase() === s.name.toLowerCase()
             );

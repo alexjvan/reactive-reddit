@@ -49,7 +49,7 @@ export function addNewFilter(settings, newFilter, setFilters, setProcessedUsers)
     }));
 
     newFilter.count = count;
-    setFilters((prev) => [
+    setFilters(prev => [
         ...prev,
         newFilter
     ]);
@@ -75,10 +75,16 @@ function shouldAddFilter(filter, post, isProcessed) {
     const { category, desired, filter: filterText } = filter;
 
     if (category === FilterCategoryTag) {
+        // TODO: Found this as a tag?
+        // {
+        //     "a": ":mantishey:",
+        //     "e": "emoji",
+        //     "u": "https://emoji.redditmedia.com/x20fpc8u4uoe1_t5_c4p8t5/mantishey"
+        // }
         const tags = isProcessed
             ? new Set((post.tags ?? []).map(t => t.item.toLowerCase()))
             : new Set([
-                ...(post.link_flair_richtext?.map(t => t.t.toLowerCase()) || []),
+                ...(post.link_flair_richtext?.map(t => (t.t ?? "").toLowerCase()) || []),
                 ...(post.link_flair_text ? [post.link_flair_text.toLowerCase()] : [])
             ]);
 
@@ -132,7 +138,7 @@ function getTextContent(category, post, isProcessed) {
                 .replaceAll('’', '\'') || '';
             break;
         case FilterCategoryText:
-            content = (isProcessed ? post.text.join('\n') : post.selftext)?.toLowerCase() || '';
+            content = (isProcessed ? post.text.map(t => t.text).join('\n') : post.selftext)?.toLowerCase() || '';
             break;
         default:
             console.log(`Unknown filter category, defaulting to false. Category: ${category}`);
