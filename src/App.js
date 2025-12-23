@@ -21,13 +21,11 @@ import { getFromStorage, putInStorage } from './app/storage/storage.js';
 import {
   emptyValidation,
   padSubs,
-  postValidation,
   processedUsersValidation,
   reduceFilters,
   removeInactiveUsers,
   resumeRetrieval,
   settingsValidation,
-  shrinkPosts,
   shrinkUsers
 } from './app/storage/validators.js';
 import Body from './body/Body.js';
@@ -35,7 +33,6 @@ import ExtraContent from './extra-content/ExtraContent.js';
 import Foot from './footer/Foot.js';
 import Head from './header/Head.js';
 
-// TODO: Save snapshot of storage to disk
 // TODO: Create way to load-from initial load-state
 //    Requires snapshotting storage to disk
 // TODO: "Storage Managed Items"
@@ -77,8 +74,8 @@ export default function App() {
 
     setSubs(getFromStorage(activeGroup, GrabberCategorySubs, [], resumeRetrieval, postQueue, setPostQueueHasData));
     setFilters(getFromStorage(activeGroup, GrabberCategoryFilters, [], emptyValidation));
-    setPosts(getFromStorage(activeGroup, GrabberCategoryPosts, [], postValidation, subs, filters));
     setProcessedUsers(getFromStorage(activeGroup, GrabberCategoryProcessedUsers, [], processedUsersValidation, settings, filters));
+    setPosts(getFromStorage(activeGroup, GrabberCategoryPosts, [], emptyValidation));
     setDontRecommendSubs(getFromStorage(activeGroup, GrabberCategoryDontRecommendSubs, [], emptyValidation));
   }, [activeGroup]);
 
@@ -87,7 +84,7 @@ export default function App() {
   useEffect(() => putInStorage('', GrabberCategoryGroups, groups), [groups]);
   useEffect(() => {
     const timer = setTimeout(() => {
-      putInStorage('', GrabberCategoryUsersSubs, removeInactiveUsers(usersSubs, posts));
+      putInStorage('', GrabberCategoryUsersSubs, removeInactiveUsers(usersSubs, processedUsers));
     }, 1000);
 
     return () => clearTimeout(timer);
@@ -98,17 +95,16 @@ export default function App() {
     }
   }, [subs]);
 
-  // I don't think I actually want to save these? It will get pulled then should be immediately processed
-  //     Going to keep this here for a bit until I determine otherwise
-  // useEffect(() => {
-  //   if (posts) {
-  //     const timer = setTimeout(() => {
-  //       putInStorage(activeGroup, GrabberCategoryPosts, shrinkPosts(posts));
-  //     }, 500); // Setting to less than processedUsers to set first to not hit sstorage limit
+  // I didn't realize how slow queue processing was - will save this until I transition to full post processing
+  useEffect(() => {
+    if (posts) {
+      const timer = setTimeout(() => {
+        putInStorage(activeGroup, GrabberCategoryPosts, posts);
+      }, 500); // Setting to less than processedUsers to set first to not hit sstorage limit
 
-  //     return () => clearTimeout(timer);
-  //   }
-  // }, [posts]);
+      return () => clearTimeout(timer);
+    }
+  }, [posts]);
   useEffect(() => {
     if (processedUsers) {
       const timer = setTimeout(() => {
@@ -119,7 +115,7 @@ export default function App() {
     }
   }, [processedUsers]);
   useEffect(() => {
-    if (filters && filters.length > 0) {
+    if (filters) {
       putInStorage(activeGroup, GrabberCategoryFilters, reduceFilters(filters))
     }
   }, [filters]);
@@ -245,13 +241,12 @@ export default function App() {
   //     idfk how to fix, it works - it makes sense - does it matter?
   const processingRef = useRef(false);
   useEffect(() => {
-    if (processingRef.current) return;
-    if ((posts ?? []).length === 0) return;
+    if(processingRef.current) return;
 
     processingRef.current = true;
 
     setPosts(prev => {
-      if (prev.length === 0) return prev;
+      if (!prev || prev.length === 0) return prev;
 
       const processing = prev[0];
 

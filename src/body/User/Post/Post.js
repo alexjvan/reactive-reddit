@@ -48,6 +48,19 @@ export default function Post({
 
     const date = new Date(processedPost.date * 1000).toLocaleString();
 
+    const subname = () => {
+        switch (processedPost.subs.length) {
+            case 0:
+                return "No sub found";
+            case 1:
+                return processedPost.subs[0].name;
+            case 2:
+                return `${processedPost.subs[0].name}, ${processedPost.subs[1].name}`
+            default:
+                return `${processedPost.subs[0].name}, +${processedPost.subs.length - 1} others`
+        }
+    }
+
     // TODO: Update border color + sub name based off of multi-sub enhancement
     return (
         !disabled &&
@@ -71,7 +84,7 @@ export default function Post({
                         </div>
                     </div>
                     <div className="post-info">
-                        <div className="post-sub">{processedPost.subs[0].name}</div>
+                        <div className="post-sub">{subname()}</div>
                         <div className="post-info-separator">|</div>
                         <div className="post-time">{date}</div>
                         <div className="post-info-separator">|</div>

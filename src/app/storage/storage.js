@@ -20,10 +20,9 @@ export function getFromStorage(group, key, fallback, validation, extraOne, extra
 
 // TODO: Pushing to storage is causing HUGE lag spikes
 export function putInStorage(group, key, obj) {
-    if (obj === null || obj === undefined) {
-        localStorage.removeItem(group + key); // Clean up storage for null values
+    // No longer remove undefined objects, since they will probably be undefined during load (might fix deletion issues)
+    if (obj === null || obj === undefined)
         return;
-    }
 
     try {
         localStorage.setItem(group + key, lzstring.compress(JSON.stringify(obj)));

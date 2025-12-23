@@ -7,8 +7,6 @@ import {
     FilterCategoryTitle,
 } from "../constants";
 import { addFiltersAsRequested } from "../filters";
-import { getSub } from "../subHelpers";
-import { cleanPost } from "../postHelpers/postFunctions";
 
 export function emptyValidation(data, fallback) {
     return data;
@@ -19,24 +17,6 @@ export function mapConverter(data, fallback) {
 }
 
 // --- FILTERS ---
-export function postValidation(data, fallback, subs, filters) {
-    return data.map(post => {
-        if (post.selftext_html !== undefined) delete post.selftext_html;
-        if (post.color === undefined) post.color = getSub(subs, post.subreddit).color;
-        if (post.duplicates === undefined) post.duplicates = 0;
-        post.filteredFor = addFiltersAsRequested(
-            // Instead of force-piping settings here, creating default object
-            //      setting to false since most should already be filtered
-            { addAllFiltersPossible: false },
-            filters,
-            post,
-            false
-        );
-        cleanPost(post);
-        return post;
-    });
-}
-
 export function reduceFilters(filters) {
     return removeInternalFilters(filters).sort(function (a, b) {
         return sortPrioirty(a.category) - sortPrioirty(b.category);
@@ -107,23 +87,44 @@ function sortPrioirty(category) {
 }
 
 // --- POSTS ---
-export function shrinkPosts(posts) {
-    return posts.filter(post => !post.disabled);
-}
+// TODO: I don't think there is any need to do any validations on posts since they will get processed then removed
+//    Will remove later if I don't find another use for these
+// export function postValidation(data, fallback, subs, filters) {
+//     return data.map(post => {
+//         if (post.selftext_html !== undefined) delete post.selftext_html;
+//         if (post.color === undefined) post.color = getSub(subs, post.subreddit).color;
+//         if (post.duplicates === undefined) post.duplicates = 0;
+//         post.filteredFor = addFiltersAsRequested(
+//             // Instead of force-piping settings here, creating default object
+//             //      setting to false since most should already be filtered
+//             { addAllFiltersPossible: false },
+//             filters,
+//             post,
+//             false
+//         );
+//         cleanPost(post);
+//         return post;
+//     });
+// }
+
+// export function shrinkPosts(posts) {
+//     return posts.filter(post => !post.disabled);
+// }
 
 // --- PROCESSED USERS ---
 // TODO: Import validations
 //    - Re-grab first post time
+//        * Do I need to have the first post time? Its not actually being used for sorting
+//        * Do I need to rewrite post sorting?
 //    - Re-Check Filters
 //    - Create filteredPosts array
 export function processedUsersValidation(processedUsers, fallback, settings, filters) {
     return processedUsers.map(u => {
-
         let missedFilteredPosts = [];
         u.posts = u.posts.map(p => {
             let nowApplicable = addFiltersAsRequested(settings, filters, p, true);
 
-            if(nowApplicable.length > 0) {
+            if (nowApplicable.length > 0) {
                 missedFilteredPosts.push({
                     filteredFor: nowApplicable,
                     post: p
@@ -230,10 +231,14 @@ export function padSubs(subs, posts) {
 }
 
 // --- UsersSubs ---
-export function removeInactiveUsers(usersSubs, posts) {
-    if (!usersSubs || !posts) return usersSubs;
+export function removeInactiveUsers(usersSubs, processedUsers) {
+    if (!usersSubs || !processedUsers) return usersSubs;
 
-    let activeUsers = new Set(posts.map(p => p.author));
+    let activeUsers = new Set(
+        processedUsers
+            .filter(u => !u.disabled)
+            .map(u => u.name)
+    )
 
     return usersSubs.filter(us => activeUsers.has(us.username));
 }
