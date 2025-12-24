@@ -97,22 +97,12 @@ export default function App() {
 
   // I didn't realize how slow queue processing was - will save this until I transition to full post processing
   useEffect(() => {
-    if (posts) {
-      const timer = setTimeout(() => {
-        putInStorage(activeGroup, GrabberCategoryPosts, posts);
-      }, 500); // Setting to less than processedUsers to set first to not hit sstorage limit
-
-      return () => clearTimeout(timer);
-    }
+    if (posts)
+      putInStorage(activeGroup, GrabberCategoryPosts, posts);
   }, [posts]);
   useEffect(() => {
-    if (processedUsers) {
-      const timer = setTimeout(() => {
-        putInStorage(activeGroup, GrabberCategoryProcessedUsers, shrinkUsers(processedUsers));
-      }, 1000);
-
-      return () => clearTimeout(timer);
-    }
+    if (processedUsers)
+      putInStorage(activeGroup, GrabberCategoryProcessedUsers, shrinkUsers(processedUsers));
   }, [processedUsers]);
   useEffect(() => {
     if (filters) {
@@ -236,30 +226,31 @@ export default function App() {
     }
   }, [postQueueHasData]);
 
-  // Create processedUsers from posts
-  // TODO: React whines about the posts->setPosts dependency loop here
-  //     idfk how to fix, it works - it makes sense - does it matter?
-  const processingRef = useRef(false);
+  const processingRef = useRef(undefined);
   useEffect(() => {
-    if(processingRef.current) return;
-
-    processingRef.current = true;
+    if (processingRef.current) return;
 
     setPosts(prev => {
-      if (!prev || prev.length === 0) return prev;
+      if (!prev || prev.length === 0)
+        return prev;
 
-      const processing = prev[0];
-
-      setProcessedUsers(postIntake(processing, settings, filters));
+      processingRef.current = prev[0];
 
       return prev.slice(1);
     });
+  }, [posts, processingRef]);
+  useEffect(() => {
+    if (!processingRef.current) return;
 
-    // Apparently this is a common tool to control async updates? I HATE react
+    let t3 = processingRef.current.name;
+
+    setProcessedUsers(postIntake(processingRef.current, settings, filters));
+
     queueMicrotask(() => {
-      processingRef.current = false;
+      processingRef.current = undefined;
+      setPosts(prev => prev.filter(p => p.name !== t3));
     });
-  }, [filters, posts, settings]);
+  }, [processingRef]);
 
   return <>
     <Head
