@@ -84,7 +84,6 @@ export default function SettingDisplay({
                     settings={settings}
                     setSettings={setSettings}
                     settingInfo={SettingRemoveInactiveUserTime}
-                    enable={false}
                 />
                 <NumericalInputContainer
                     settings={settings}

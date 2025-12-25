@@ -5,6 +5,7 @@ import {
     FilterCategoryText,
     FilterCategoryTextOrTitle,
     FilterCategoryTitle,
+    SettingRemoveInactiveUserTime
 } from "../constants";
 import { addFiltersAsRequested } from "../filters";
 
@@ -140,14 +141,18 @@ export function processedUsersValidation(processedUsers, fallback, settings, fil
     });
 }
 
-export function shrinkUsers(processedUsers) {
+export function shrinkUsers(processedUsers, settings) {
     return processedUsers
         .map(user => {
             if (user.disabled) return undefined;
 
-            user.posts = user.posts.filter(p => !p.disabled);
-
             if (user.posts.length === 0) return undefined;
+
+            let today = new Date();
+            let cutoff = today.setDate(today.getDate() - settings[SettingRemoveInactiveUserTime.fieldName]);
+            let earliestDate = new Date(user.earliestPost * 1000);
+
+            if (earliestDate <= cutoff) return undefined;
 
             // It seems like this //might// pull filteredPosts out of the object? - Need to validate
             const { filteredPosts, ...userWithoutFilteredPosts } = user;

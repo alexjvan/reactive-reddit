@@ -102,7 +102,7 @@ export default function App() {
   }, [posts]);
   useEffect(() => {
     if (processedUsers)
-      putInStorage(activeGroup, GrabberCategoryProcessedUsers, shrinkUsers(processedUsers));
+      putInStorage(activeGroup, GrabberCategoryProcessedUsers, shrinkUsers(processedUsers, settings));
   }, [processedUsers]);
   useEffect(() => {
     if (filters) {

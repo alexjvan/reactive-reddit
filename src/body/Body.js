@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef } from 'react';
 import './Body.css';
 import User from './User/User';
-import { SortOptionNew, SortOptionPostCount } from '../app/constants';
+import { SettingRemoveInactiveUserTime, SortOptionNew, SortOptionPostCount } from '../app/constants';
 import { postDisplayFilter } from '../app/postHelpers/postFunctions';
 
 export default function Body({
@@ -42,10 +42,18 @@ export default function Body({
 
     function filterAndSort(passedUsers) {
         let filtered = passedUsers
-            .map(u => ({
-                ...u,
-                posts: u.posts.filter(p => postDisplayFilter(settings, p, true))
-            }));
+            .map(u => {
+                u.posts = u.posts.filter(p => postDisplayFilter(settings, p, true));
+
+                let today = new Date();
+                let cutoff = today.setDate(today.getDate() - settings[SettingRemoveInactiveUserTime.fieldName]);
+                let earliestDate = new Date(u.earliestPost * 1000);
+
+                if (earliestDate <= cutoff) return undefined;
+
+                return u;
+            })
+            .filter(u => u !== undefined);
         switch (settings.sort) {
             case SortOptionNew.settingValue:
                 return [...filtered].sort(
