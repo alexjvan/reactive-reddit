@@ -331,7 +331,7 @@ export function isPostDuplicateOfProcessed(checking, against) {
     if (checking.selftext === '' && against.text.length === 0) {
         const titleSimilarity = stringSimilarity(checking.title, against.title);
         if (titleSimilarity >= 0.90) {
-            console.log(`Found duplicate post; empty text, title-wise; ${checking.name}, ${against.name}`);
+            console.log(`Found duplicate post; empty text, title-wise; ${checking.name}, ${against.t3}`);
             return true;
         }
     }
@@ -339,7 +339,7 @@ export function isPostDuplicateOfProcessed(checking, against) {
     // TODO: This 100% will have differences, need to look into multi-line text comparing
     const textSimilarity = stringSimilarity(checking.selftext, against.text.map(t => t.text).join('\n'));
     if (textSimilarity >= 0.85) {
-        console.log(`Found duplicate post; text-wise; ${checking.name}, ${against.name}`);
+        console.log(`Found duplicate post; text-wise; ${checking.name}, ${against.t3}`);
         return true;
     }
 
@@ -383,7 +383,7 @@ export function postDisplayFilter(settings, post, processedPost) {
 
 export function isUserOutdated(user, settings) {
     if(!settings) return false;
-    
+
     let today = new Date();
     let cutoff = today.setDate(today.getDate() - settings[SettingRemoveInactiveUserTime.fieldName]);
     let earliestDate = new Date(user.earliestPost * 1000);

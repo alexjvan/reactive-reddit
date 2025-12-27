@@ -20,11 +20,9 @@ Looking at the TODOs in this repo, summarizing to narrow down items to work on:
 - Find better spot for image movers (prev/next) so they don't shift with each image-change
 - More Media links
 - Pop-Out Image Container
-- Pull duplicate subreddits into subreddit list
 - UsersSubs: Remove user on 404?
 - Try and make Grabber + UserRetriever generic
 - "Storage Managed Items"
-- Multi-sub duplicate post info
 - Image comparison for duplicates
 - Text compare on processed multilines
 - Move color retrieval to processing
@@ -44,4 +42,3 @@ Looking at the TODOs in this repo, summarizing to narrow down items to work on:
 - To catch reddit placeholder images, I am checking for 130x60 images.
     * This catches other images too, need to find a better option
 - For SOME reason, the don't recommend in common subs takes FOREVER to update while the add doesn't?
-- post->setPost loop

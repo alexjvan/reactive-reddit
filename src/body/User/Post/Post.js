@@ -61,10 +61,21 @@ export default function Post({
         }
     }
 
-    // TODO: Update border color + sub name based off of multi-sub enhancement
     return (
         !disabled &&
-        <div className="post" style={{ borderColor: `#${processedPost.subs[0].color}` }} data-t3={processedPost.t3}>
+        <div
+            className="post"
+            style={{
+                // Super complicated - but this creates blocks of the individual colors, so its not a gradient shift of all the different colors
+                borderImage: `linear-gradient(to bottom, ${processedPost.subs.map((sub, i, arr) => {
+                    const start = (i / arr.length * 100).toFixed(2);
+                    const end = ((i + 1) / arr.length * 100).toFixed(2);
+                    return `#${sub.color} ${start}%, #${sub.color} ${end}%`;
+                }).join(', ')
+                    }) 1`
+            }}
+            data-t3={processedPost.t3}
+        >
             <div className="post-banner">
                 <div className="post-header">
                     <div className='post-top'>

@@ -63,7 +63,7 @@ export default function Head({
         return <div className="qa-section" id="postCount">
             <div className="qa-title">Posts</div>
             <div className="qa-options">
-                {(posts ?? []).length}|{numPosts}
+                {numPosts} | {(posts ?? []).length}
             </div>
             <select
                 value={settings[SettingPostTypes.fieldName] ?? DefaultSettings[SettingPostTypes.fieldName]}
