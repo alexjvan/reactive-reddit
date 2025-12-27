@@ -14,7 +14,7 @@ import {
 } from '../app/constants.js';
 import { addNewFilter } from '../app/filters.js';
 import { newSubWithName } from '../app/subHelpers.js';
-import { postDisplayFilter } from '../app/postHelpers/postFunctions.js';
+import { isUserOutdated, postDisplayFilter } from '../app/postHelpers/postFunctions.js';
 
 // TODO: Button to stop grabber
 export default function Head({
@@ -50,6 +50,7 @@ export default function Head({
     const numPosts = useMemo(() =>
         (processedUsers ?? [])
             .filter(u => !u.disabled)
+            .filter(u => !isUserOutdated(u, settings))
             .flatMap(u => u.posts)
             .filter(p => !p.disabled)
             .filter(post => postDisplayFilter(settings, post, true))
@@ -62,7 +63,7 @@ export default function Head({
         return <div className="qa-section" id="postCount">
             <div className="qa-title">Posts</div>
             <div className="qa-options">
-                {numPosts}
+                {(posts ?? []).length}|{numPosts}
             </div>
             <select
                 value={settings[SettingPostTypes.fieldName] ?? DefaultSettings[SettingPostTypes.fieldName]}

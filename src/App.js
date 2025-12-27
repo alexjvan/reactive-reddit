@@ -97,12 +97,22 @@ export default function App() {
 
   // I didn't realize how slow queue processing was - will save this until I transition to full post processing
   useEffect(() => {
-    if (posts)
-      putInStorage(activeGroup, GrabberCategoryPosts, posts);
+    if (posts) {
+      const timer = setTimeout(() => {
+        putInStorage(activeGroup, GrabberCategoryPosts, posts);
+      }, 1250);
+
+      return () => clearTimeout(timer);
+    }
   }, [posts]);
   useEffect(() => {
-    if (processedUsers)
-      putInStorage(activeGroup, GrabberCategoryProcessedUsers, shrinkUsers(processedUsers, settings));
+    if (processedUsers) {
+      const timer = setTimeout(() => {
+        putInStorage(activeGroup, GrabberCategoryProcessedUsers, shrinkUsers(processedUsers));
+      }, 1000);
+
+      return () => clearTimeout(timer);
+    }
   }, [processedUsers]);
   useEffect(() => {
     if (filters) {
@@ -250,7 +260,7 @@ export default function App() {
       processingRef.current = undefined;
       setPosts(prev => prev.filter(p => p.name !== t3));
     });
-  }, [processingRef]);
+  }, [posts, processingRef]); // Triggering off posts because processingRef isn't catching here for some reason?
 
   return <>
     <Head

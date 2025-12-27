@@ -1,7 +1,7 @@
 import { stringSimilarity } from "string-similarity-js";
 import { alterLink } from './imageHelpers';
 import { processPostText } from './textHelpers.js';
-import { PostTypeAll, PostTypeWithMedia, PostTypeMediaOnly, PostTypeTextOnly } from '../constants';
+import { PostTypeAll, PostTypeWithMedia, PostTypeMediaOnly, PostTypeTextOnly, SettingRemoveInactiveUserTime } from '../constants';
 import { addFiltersAsRequested } from '../filters.js';
 
 export function cleanPost(post) {
@@ -379,4 +379,14 @@ export function postDisplayFilter(settings, post, processedPost) {
                 return true;
         }
     }
+}
+
+export function isUserOutdated(user, settings) {
+    if(!settings) return false;
+    
+    let today = new Date();
+    let cutoff = today.setDate(today.getDate() - settings[SettingRemoveInactiveUserTime.fieldName]);
+    let earliestDate = new Date(user.earliestPost * 1000);
+
+    return earliestDate <= cutoff;
 }

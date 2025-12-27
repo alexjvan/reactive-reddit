@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef } from 'react';
 import './Body.css';
 import User from './User/User';
 import { SettingRemoveInactiveUserTime, SortOptionNew, SortOptionPostCount } from '../app/constants';
-import { postDisplayFilter } from '../app/postHelpers/postFunctions';
+import { isUserOutdated, postDisplayFilter } from '../app/postHelpers/postFunctions';
 
 export default function Body({
     settings,
@@ -45,11 +45,7 @@ export default function Body({
             .map(u => {
                 u.posts = u.posts.filter(p => postDisplayFilter(settings, p, true));
 
-                let today = new Date();
-                let cutoff = today.setDate(today.getDate() - settings[SettingRemoveInactiveUserTime.fieldName]);
-                let earliestDate = new Date(u.earliestPost * 1000);
-
-                if (earliestDate <= cutoff) return undefined;
+                if(isUserOutdated(u, settings)) return undefined;
 
                 return u;
             })

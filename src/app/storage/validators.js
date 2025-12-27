@@ -8,6 +8,7 @@ import {
     SettingRemoveInactiveUserTime
 } from "../constants";
 import { addFiltersAsRequested } from "../filters";
+import { isUserOutdated } from "../postHelpers/postFunctions";
 
 export function emptyValidation(data, fallback) {
     return data;
@@ -148,11 +149,7 @@ export function shrinkUsers(processedUsers, settings) {
 
             if (user.posts.length === 0) return undefined;
 
-            let today = new Date();
-            let cutoff = today.setDate(today.getDate() - settings[SettingRemoveInactiveUserTime.fieldName]);
-            let earliestDate = new Date(user.earliestPost * 1000);
-
-            if (earliestDate <= cutoff) return undefined;
+            if(isUserOutdated(user, settings)) return undefined;
 
             // It seems like this //might// pull filteredPosts out of the object? - Need to validate
             const { filteredPosts, ...userWithoutFilteredPosts } = user;
