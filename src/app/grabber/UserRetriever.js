@@ -80,10 +80,11 @@ export default class UserRetriever {
                 if (!resp.ok) {
                     if (resp.status === 403) {
                         // This is a really weird case - not sure why these pop up?
-                        this.finishRetrieval(user, "403 error, assuming private.", false, false);
+                        // Forbidden???
+                        this.finishRetrieval(user, "403 error, assuming private.", false, true);
                     } else if (resp.status === 404) {
                         // TODO: Remove user info on 404? If they no longer exist?
-                        this.finishRetrieval(user, `404 error.`, false);
+                        this.finishRetrieval(user, `404 error.`, false, true);
                     } else if (resp.status === 429) {
                         console.log("429 error, rate limited, waiting until next interval.");
                         this.finishRetrieval(user, `Error code ${resp.status}.`, false, false);

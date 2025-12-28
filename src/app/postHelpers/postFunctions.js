@@ -1,8 +1,16 @@
 import { stringSimilarity } from "string-similarity-js";
 import { alterLink } from './imageHelpers';
 import { processPostText } from './textHelpers.js';
-import { PostTypeAll, PostTypeWithMedia, PostTypeMediaOnly, PostTypeTextOnly, SettingRemoveInactiveUserTime } from '../constants';
+import { randSixHash } from "../colors.js";
+import { 
+    PostTypeAll, 
+    PostTypeWithMedia, 
+    PostTypeMediaOnly, 
+    PostTypeTextOnly, 
+    SettingRemoveInactiveUserTime 
+} from '../constants';
 import { addFiltersAsRequested } from '../filters.js';
+import { getSub } from "../subHelpers.js";
 
 export function cleanPost(post) {
     // Approval
@@ -139,7 +147,7 @@ export function cleanPost(post) {
     return post;
 }
 
-export function postIntake(post, settings, filters) {
+export function postIntake(post, settings, filters, subs) {
     return function updateProcessedUsers(prev) {
         let processing = post;
         if ((processing.crosspost_parent_list ?? []).length > 0)
@@ -205,7 +213,7 @@ export function postIntake(post, settings, filters) {
 
         const newProcessedPosts = applicableFilters.length
             ? user.posts
-            : [...user.posts, processPost(processing)].sort(
+            : [...user.posts, processPost(processing, subs)].sort(
                 (a, b) => b.created_utc - a.created_utc
             );
 
@@ -229,7 +237,7 @@ export function postIntake(post, settings, filters) {
     };
 }
 
-export function processPost(post) {
+export function processPost(post, subs) {
     let processedText = processPostText(post.selftext);
 
     let grabbedMedia = [
@@ -267,12 +275,14 @@ export function processPost(post) {
         .map(url => alterLink(url, post.author))
         .filter(i => i !== null);
 
+    let sub = getSub(subs, post.subreddit);
+
     return {
         t3: post.name,
         user: post.author,
         subs: [{
             name: post.subreddit,
-            color: post.color
+            color: sub ? sub.color : randSixHash()
         }],
         url: post.permalink ? `https://www.reddit.com${post.permalink}` : post.url,
         minimied: false,
@@ -387,6 +397,19 @@ export function isUserOutdated(user, settings) {
     let today = new Date();
     let cutoff = today.setDate(today.getDate() - settings[SettingRemoveInactiveUserTime.fieldName]);
     let earliestDate = new Date(user.earliestPost * 1000);
+
+    return earliestDate <= cutoff;
+}
+
+export function isUserOutdatedFromPosts(posts, settings) {
+    if(!settings) return false;
+    if(posts.length === 0) return true;
+
+    let today = new Date();
+    let cutoff = today.setDate(today.getDate() - settings[SettingRemoveInactiveUserTime.fieldName]);
+
+    let earliestPost = posts.sort((a, b) => b.date - a.date)[0];
+    let earliestDate = new Date(earliestPost.date * 1000);
 
     return earliestDate <= cutoff;
 }

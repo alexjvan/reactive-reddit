@@ -91,7 +91,7 @@ function shouldAddFilter(filter, post, isProcessed) {
         return desired ? !tags.has(filterText.toLowerCase()) : tags.has(filterText.toLowerCase());
     } else if (category === FilterCategoryAuthor) {
         let authorMatch = isProcessed
-            ? post.user
+            ? post.user === filterText
             : post.author === filterText;
         return desired !== authorMatch;
     }

@@ -6,7 +6,8 @@ import { FilterCategoryAuthor } from '../../app/constants.js';
 export default function User({
     processedUser,
     setProcessedUsers,
-    setFilters
+    setFilters,
+    setPopOutMedia
 }) {
     let disabled = processedUser.disabled || processedUser.posts.filter(p => !p.disabled).length === 0;
     let minimized = processedUser.minimized ?? false;
@@ -50,6 +51,7 @@ export default function User({
                     key={post.t3}
                     processedPost={post}
                     setProcessedUsers={setProcessedUsers}
+                    setPopOutMedia={setPopOutMedia}
                 />
             )}
         </>,

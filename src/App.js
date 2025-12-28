@@ -13,6 +13,7 @@ import {
   GrabberCategoryUsersSubs
 } from './app/constants.js';
 import PriorityQueue from './app/grabber/PriorityQueue.js';
+import { enqueueSubs } from './app/subHelpers.js';
 import usePrevious from './app/usePrevious.js';
 import Grabber from './app/grabber/Grabber.js';
 import UserRetriever from './app/grabber/UserRetriever.js';
@@ -32,6 +33,7 @@ import Body from './body/Body.js';
 import ExtraContent from './extra-content/ExtraContent.js';
 import Foot from './footer/Foot.js';
 import Head from './header/Head.js';
+import PopOutMediaContainer from './pop-out-media/PopOutMediaContainer.js';
 
 // TODO: Create way to load-from initial load-state
 //    Requires snapshotting storage to disk
@@ -42,6 +44,7 @@ export default function App() {
   const [postQueue,] = useState(new PriorityQueue());
   const [postQueueHasData, setPostQueueHasData] = useState(false);
   const [extraDisplay, setExtraDisplay] = useState(null);
+  const [popoutMedia, setPopOutMedia] = useState(null);
 
   // Load from Storage on init
   const [settings, setSettings] = useState(() => getFromStorage('', GrabberCategorySettings, DefaultSettings, settingsValidation));
@@ -93,7 +96,7 @@ export default function App() {
     if (subs) {
       putInStorage(activeGroup, GrabberCategorySubs, padSubs(subs, posts));
     }
-  }, [subs]);
+  }, [activeGroup, subs]);
 
   // I didn't realize how slow queue processing was - will save this until I transition to full post processing
   useEffect(() => {
@@ -104,26 +107,26 @@ export default function App() {
 
       return () => clearTimeout(timer);
     }
-  }, [posts]);
+  }, [activeGroup, posts]);
   useEffect(() => {
     if (processedUsers) {
       const timer = setTimeout(() => {
-        putInStorage(activeGroup, GrabberCategoryProcessedUsers, shrinkUsers(processedUsers));
+        putInStorage(activeGroup, GrabberCategoryProcessedUsers, shrinkUsers(processedUsers, settings));
       }, 1000);
 
       return () => clearTimeout(timer);
     }
-  }, [processedUsers]);
+  }, [activeGroup, processedUsers]);
   useEffect(() => {
     if (filters) {
-      putInStorage(activeGroup, GrabberCategoryFilters, reduceFilters(filters))
+      putInStorage(activeGroup, GrabberCategoryFilters, reduceFilters(filters));
     }
-  }, [filters]);
+  }, [activeGroup, filters]);
   useEffect(() => {
     if (dontRecommendSubs && dontRecommendSubs.length > 0) {
-      putInStorage(activeGroup, GrabberCategoryDontRecommendSubs, dontRecommendSubs)
+      putInStorage(activeGroup, GrabberCategoryDontRecommendSubs, dontRecommendSubs);
     }
-  }, [dontRecommendSubs]);
+  }, [activeGroup, dontRecommendSubs]);
 
   // Update grabber
   useEffect(() => {
@@ -171,7 +174,7 @@ export default function App() {
     setPostQueueHasData(false); // This /should/ help with switching to/from groups
 
     if ((subs ?? []).length > 0) {
-      enqueueSubs();
+      enqueueSubs(settings, postQueue, subs, setPostQueueHasData);
     }
   }, [activeGroup]);
 
@@ -191,7 +194,7 @@ export default function App() {
 
     var newInterval = setInterval(function () {
       if (postQueue.isEmpty()) {
-        enqueueSubs();
+        enqueueSubs(settings, postQueue, subs, setPostQueueHasData);
       } else {
         grabber.current.grabLoop();
       }
@@ -200,35 +203,6 @@ export default function App() {
     setPostInterval(newInterval);
   }, [settings.grabIntervalInMinutes, subs]);
 
-  function enqueueSubs() {
-    let early = new Date();
-    early.setMinutes(early.getMinutes() - settings.waitBeforeReGrabbingInMinutes);
-    let earlyepoch = Math.floor(early / 1000);
-
-    (subs ?? []).forEach(sub => {
-      if (!sub.reachedEnd) {
-        postQueue.enqueue({
-          sub: sub.name,
-          ba: sub.ba.aftert3,
-          pre: false
-        }, 1);
-      }
-
-      if (sub.ba.beforeutc !== undefined && sub.ba.beforeutc < earlyepoch) {
-        postQueue.enqueue({
-          sub: sub.name,
-          ba: sub.ba.beforet3,
-          iterations: 0,
-          pre: true
-        }, 2);
-      }
-    });
-
-    if ((subs ?? []).length > 0) {
-      setPostQueueHasData(true);
-    }
-  }
-
   // Run user retrieval after posts have all been grabbed
   useEffect(() => {
     if (userRetriever.current && !postQueueHasData) {
@@ -236,6 +210,7 @@ export default function App() {
     }
   }, [postQueueHasData]);
 
+  // Posts -> ProcessedUsers
   const processingRef = useRef(undefined);
   useEffect(() => {
     if (processingRef.current) return;
@@ -254,13 +229,13 @@ export default function App() {
 
     let t3 = processingRef.current.name;
 
-    setProcessedUsers(postIntake(processingRef.current, settings, filters));
+    setProcessedUsers(postIntake(processingRef.current, settings, filters, subs));
 
     queueMicrotask(() => {
       processingRef.current = undefined;
-      setPosts(prev => prev.filter(p => p.name !== t3));
+      setPosts(prev => prev.filter(p => p.name !== t3)); // Not needed - but this helps trigger another refresh
     });
-  }, [posts, processingRef]); // Triggering off posts because processingRef isn't catching here for some reason?
+  }, [posts, processingRef]);
 
   return <>
     <Head
@@ -285,6 +260,7 @@ export default function App() {
       processedUsers={processedUsers}
       setProcessedUsers={setProcessedUsers}
       setFilters={setFilters}
+      setPopOutMedia={setPopOutMedia}
     />
     <Foot
       setExtraDisplay={setExtraDisplay}
@@ -310,6 +286,11 @@ export default function App() {
       usersSubs={usersSubs}
       dontRecommendSubs={dontRecommendSubs}
       setDontRecommendSubs={setDontRecommendSubs}
+    />
+    <PopOutMediaContainer
+      popOutMedia={popoutMedia}
+      setPopOutMedia={setPopOutMedia}
+      setProcessedUsers={setProcessedUsers}
     />
   </>;
 }

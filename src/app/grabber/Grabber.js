@@ -105,7 +105,6 @@ export default class Grabber {
             })
     }
 
-    // TODO: Move color retrieval to processing
     processFetch(
         postType,
         sub,
@@ -145,7 +144,6 @@ export default class Grabber {
             cleanPost(returning);
             returning.disabled = false;
             returning.duplicates = 0;
-            returning.color = setting.color;
 
             return returning;
         });

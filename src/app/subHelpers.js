@@ -21,3 +21,32 @@ export function getSub(subs, name) {
     }
     return undefined;
 }
+
+export function enqueueSubs(settings, postQueue, subs, setPostQueueHasData) {
+    let early = new Date();
+    early.setMinutes(early.getMinutes() - settings.waitBeforeReGrabbingInMinutes);
+    let earlyepoch = Math.floor(early / 1000);
+
+    (subs ?? []).forEach(sub => {
+      if (!sub.reachedEnd) {
+        postQueue.enqueue({
+          sub: sub.name,
+          ba: sub.ba.aftert3,
+          pre: false
+        }, 1);
+      }
+
+      if (sub.ba.beforeutc !== undefined && sub.ba.beforeutc < earlyepoch) {
+        postQueue.enqueue({
+          sub: sub.name,
+          ba: sub.ba.beforet3,
+          iterations: 0,
+          pre: true
+        }, 2);
+      }
+    });
+
+    if ((subs ?? []).length > 0) {
+      setPostQueueHasData(true);
+    }
+  }

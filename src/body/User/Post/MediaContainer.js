@@ -8,7 +8,9 @@ export default function MediaContainer({
     t3,
     username,
     processedMedia,
-    setProcessedUsers
+    fromPopOut,
+    setProcessedUsers,
+    setPopOutMedia
 }) {
     const [imageIndex, setImageIndex] = useState(0);
     const containerRef = useRef(null);
@@ -89,35 +91,46 @@ export default function MediaContainer({
         setImageIndex((prev) => Math.min(prev, displaying.length - 1));
     }, [displaying.length]);
 
+    let currentDisplay =
+        isImageLink(currentMedia)
+            ? <ValidatedImage
+                key={currentMedia} // For some reason the key as the index doesn't trigger a reload? But the url does
+                src={currentMedia}
+                alt={`Media item ${imageIndex + 1}`}
+                callback={() => removeImage(currentMedia)}
+            />
+            : isVideoLink(currentMedia)
+                ? <video
+                    key={currentMedia}
+                    className="post-displayvideo"
+                    src={currentMedia}
+                    loading="lazy"
+                    controls
+                />
+                : null
+
     return (displaying.length !== 0 &&
         <div className="post-images" ref={containerRef}>
             <div className="post-imagescontainer">
                 {displaying.length > 1 &&
-                    <>
-                        <button className="post-prevImage" onClick={prevImage}>
-                            &lt;
-                        </button>
-                        <button className="post-nextImage" onClick={nextImage}>
-                            &gt;
-                        </button>
-                    </>
+                    <button className="post-prevImage" onClick={prevImage}>
+                        &lt;
+                    </button>
                 }
-                {isImageLink(currentMedia)
-                    ? <ValidatedImage
-                        key={currentMedia} // For some reason the key as the index doesn't trigger a reload? But the url does
-                        src={currentMedia}
-                        alt={`Media item ${imageIndex + 1}`}
-                        callback={() => removeImage(currentMedia)}
-                    />
-                    : isVideoLink(currentMedia)
-                        ? <video
-                            key={currentMedia}
-                            className="post-displayvideo"
-                            src={currentMedia}
-                            loading="lazy"
-                            controls
-                        />
-                        : null
+                {fromPopOut
+                    ? currentDisplay
+                    : <a className="post-mediawrapper" onClick={() => setPopOutMedia({
+                        t3: t3,
+                        username: username,
+                        processedMedia: processedMedia
+                    })}>
+                        {currentDisplay}
+                    </a>
+                }
+                {displaying.length > 1 &&
+                    <button className="post-nextImage" onClick={nextImage}>
+                        &gt;
+                    </button>
                 }
             </div>
             <div className="post-imageselector">

@@ -5,7 +5,8 @@ import TextDisplay from './TextDisplay';
 
 export default function Post({
     processedPost,
-    setProcessedUsers
+    setProcessedUsers,
+    setPopOutMedia
 }) {
     const [minimized, setMinimized] = useState(false);
 
@@ -23,7 +24,9 @@ export default function Post({
             t3={processedPost.t3}
             username={processedPost.user}
             processedMedia={processedPost.media}
+            fromPopOut={false}
             setProcessedUsers={setProcessedUsers}
+            setPopOutMedia={setPopOutMedia}
         />,
         [processedPost]
     );

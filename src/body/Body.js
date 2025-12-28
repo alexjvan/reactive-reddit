@@ -1,14 +1,15 @@
 import { useEffect, useMemo, useRef } from 'react';
 import './Body.css';
 import User from './User/User';
-import { SettingRemoveInactiveUserTime, SortOptionNew, SortOptionPostCount } from '../app/constants';
-import { isUserOutdated, postDisplayFilter } from '../app/postHelpers/postFunctions';
+import { SortOptionNew, SortOptionPostCount } from '../app/constants';
+import { isUserOutdatedFromPosts, postDisplayFilter } from '../app/postHelpers/postFunctions';
 
 export default function Body({
     settings,
     processedUsers,
     setProcessedUsers,
-    setFilters
+    setFilters,
+    setPopOutMedia
 }) {
     // TODO: This does NOT work, but its better than before so I am keeping it until I find something better.
     const containerRef = useRef(null);
@@ -43,11 +44,14 @@ export default function Body({
     function filterAndSort(passedUsers) {
         let filtered = passedUsers
             .map(u => {
-                u.posts = u.posts.filter(p => postDisplayFilter(settings, p, true));
+                let filteredPosts = u.posts.filter(p => postDisplayFilter(settings, p, true));
 
-                if(isUserOutdated(u, settings)) return undefined;
+                if (isUserOutdatedFromPosts(filteredPosts, settings)) return undefined;
 
-                return u;
+                return {
+                    ...u,
+                    posts: filteredPosts
+                };
             })
             .filter(u => u !== undefined);
         switch (settings.sort) {
@@ -71,6 +75,7 @@ export default function Body({
                 processedUser={user}
                 setProcessedUsers={setProcessedUsers}
                 setFilters={setFilters}
+                setPopOutMedia={setPopOutMedia}
             />
         )}
     </>, [toDisplay]);

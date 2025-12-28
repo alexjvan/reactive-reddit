@@ -1,4 +1,3 @@
-
 .post-images {
     width: 100%;
 }
@@ -20,30 +19,22 @@
             .post-imagescontainer button:hover {
                 background-color: #343434;
             }
-        .post-prevImage {
-            left: 0px;
-            position: absolute;
-            top: 50%;
-            z-index: 10;
-        }
-        .post-nextImage {
-            position: absolute;
-            right: 0px;
-            top: 50%;
-            z-index: 10;
-        }
-        .post-displayimage {
+        .post-mediawrapper {
+            cursor: pointer;
             max-height: 75vh;
             object-fit: contain;
-            width: 100%;
-            z-index: 1;
+            width: calc(100% - 80px);
         }
-        .post-displayvideo {
-            max-height: 75vh;
-            object-fit: contain;
-            width: 100%;
-            z-index: 1;
-        }
+            .post-displayimage {
+                max-height: 75vh;
+                object-fit: contain;
+                width: 100%;
+            }
+            .post-displayvideo {
+                max-height: 75vh;
+                object-fit: contain;
+                width: 100%;
+            }
     .post-imageselector {
         display: flex;
         flex-wrap: wrap;
