@@ -2,12 +2,14 @@ import { useEffect, useRef, useState } from 'react';
 import './App.css';
 import {
   DefaultGroups,
+  DefaultSaveData,
   DefaultSettings,
   GrabberCategoryDontRecommendSubs,
   GrabberCategoryGroups,
   GrabberCategoryFilters,
   GrabberCategoryPosts,
   GrabberCategoryProcessedUsers,
+  GrabberCategorySaveData,
   GrabberCategorySettings,
   GrabberCategorySubs,
   GrabberCategoryUsersSubs
@@ -26,6 +28,8 @@ import {
   reduceFilters,
   removeInactiveUsers,
   resumeRetrieval,
+  saveDataRetrieval,
+  saveDataStorage,
   settingsValidation,
   shrinkUsers
 } from './app/storage/validators.js';
@@ -48,6 +52,7 @@ export default function App() {
 
   // Load from Storage on init
   const [settings, setSettings] = useState(() => getFromStorage('', GrabberCategorySettings, DefaultSettings, settingsValidation));
+  const [saveData, setSaveData] = useState(() => getFromStorage('', GrabberCategorySaveData, saveDataRetrieval(DefaultSaveData), saveDataRetrieval))
   const [groups, setGroups] = useState(() => getFromStorage('', GrabberCategoryGroups, DefaultGroups, emptyValidation));
   const [usersSubs, setUsersSubs] = useState(() => getFromStorage('', GrabberCategoryUsersSubs, [], emptyValidation));
   const [activeGroup, setActiveGroup] = useState(null);
@@ -84,6 +89,7 @@ export default function App() {
 
   // Save Objs
   useEffect(() => putInStorage('', GrabberCategorySettings, settings), [settings]);
+  useEffect(() => putInStorage('', GrabberCategorySaveData, saveDataStorage(saveData)), [saveData]);
   useEffect(() => putInStorage('', GrabberCategoryGroups, groups), [groups]);
   useEffect(() => {
     const timer = setTimeout(() => {

@@ -51,7 +51,7 @@ export default function GroupSelector({
   }
 
   const groupDisplay = useMemo(
-    () => groups.map(group => {
+    () => (groups ?? []).map(group => {
       return <button
         key={'group' + group.name}
         className={`groupButton clickable ${group.active ? 'active' : ''}`}

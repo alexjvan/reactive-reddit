@@ -3,6 +3,7 @@ import { useState } from 'react';
 export default function ValidatedImage({
     src,
     alt,
+    fromPopOut,
     callback
 }) {
     const [isValid, setIsValid] = useState(true);
@@ -17,7 +18,7 @@ export default function ValidatedImage({
 
     return isValid &&
         <img
-            className="post-displayimage"
+            className={`post-displayimage ${fromPopOut ? "popout" : ""}`}
             src={src}
             alt={alt}
             onLoad={handleLoad}

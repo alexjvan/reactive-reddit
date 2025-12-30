@@ -21,6 +21,7 @@ export const GrabberCategoryGroups = 'groups';
 export const GrabberCategoryFilters = 'filters';
 export const GrabberCategoryProcessedUsers = 'processedUsers';
 export const GrabberCategoryPosts = 'posts';
+export const GrabberCategorySaveData = 'saveData';
 export const GrabberCategorySettings = 'settings';
 export const GrabberCategorySubs = 'subs';
 export const GrabberCategoryUsersSubs = 'usersSubs';
@@ -63,6 +64,17 @@ export const PostTypeTextOnly = {
 const _allPostTypes = [PostTypeAll, PostTypeWithMedia, PostTypeMediaOnly, PostTypeTextOnly];
 export const AllPostTypes = _allPostTypes.map(pt => pt.settingValue);
 export const DisplayablePostTypes = _allPostTypes;
+
+// ---------- Save Data ----------
+// These are for the iteration values for items that need to happen once after data has already been saved/processed
+// Changes:
+// --= Global =--
+// --= Subs =--
+// --= Filters =--
+// --= Posts =--
+// --= Processed Users =--
+// --= Don't Recommend Subs =--
+export const DefaultSaveData = '0.0.0.0.0.0';
 
 // ---------- Settings ----------
 export const SettingAddAllFiltersPossible = {

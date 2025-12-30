@@ -149,13 +149,22 @@ export function shrinkUsers(processedUsers, settings) {
 
             if (user.posts.length === 0) return undefined;
 
-            if(isUserOutdated(user, settings)) return undefined;
+            if (isUserOutdated(user, settings)) return undefined;
 
             // It seems like this //might// pull filteredPosts out of the object? - Need to validate
             const { filteredPosts, ...userWithoutFilteredPosts } = user;
             return userWithoutFilteredPosts;
         })
         .filter(u => u !== undefined);
+}
+
+// --- SAVE DATA ---
+export function saveDataRetrieval(data, fallback) {
+    return data.split('.');
+}
+
+export function saveDataStorage(data) {
+    return data.join('.');
 }
 
 // --- SETTINGS ---
@@ -229,7 +238,7 @@ export function padSubs(subs, posts) {
         let returning = sub;
         returning.postCount = posts.filter(p => p.subreddit === sub.name).length;
         return returning;
-    })
+    });
 }
 
 // --- UsersSubs ---

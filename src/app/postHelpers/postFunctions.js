@@ -30,6 +30,7 @@ export function cleanPost(post) {
     delete post.author_is_blocked;
     delete post.author_patreon_flair;
     delete post.author_premium;
+    delete post.send_replies; // If the author wants email replies? Why is this in the post data?
 
     // Awards
     delete post.all_awardings;
@@ -50,12 +51,16 @@ export function cleanPost(post) {
     delete post.is_crosspostable;
     delete post.num_crossposts;
 
+    // Experimentation
+    delete post.treatment_tags;
+
     // Flair
     delete post.link_flair_css_class;
     delete post.link_flair_template_id;
     delete post.link_flair_type;
 
     // Gilds
+    delete post.can_gild;
     delete post.gilded;
     delete post.gildings;
 
@@ -71,6 +76,7 @@ export function cleanPost(post) {
     // Mod
     delete post.can_mod_post;
     delete post.mod_note;
+    delete post.suggested_sort;
 
     // Post Data -- Categorize?
     delete post.created;
@@ -84,14 +90,20 @@ export function cleanPost(post) {
     delete post.category;
     delete post.content_categories;
     delete post.clicked;
+    delete post.contest_mode;
+    delete post.distinguished; // Item to highlight mod posts
+    delete post.domain; // What site the post is about? I don't get this one
     delete post.edited;
     delete post.hidden;
     delete post.is_created_from_ads_ui;
+    delete post.is_meta;
+    delete post.is_self; // Apparently tied to domain. True if domain = reddit
     delete post.locked;
     delete post.over_18;
     delete post.pinned;
     delete post.quarantine;
     delete post.saved;
+    delete post.stickied;
     delete post.visited;
 
     // Removal
@@ -129,20 +141,9 @@ export function cleanPost(post) {
     delete post.thumbnail_height;
     delete post.thumbnail_width;
 
-    // Other [Not really sure what these are]
-    // TODO - Categorize these
+    // Whitelist
     delete post.pwls;
-    delete post.is_meta;
-    delete post.is_self;
     delete post.wls;
-    delete post.domain;
-    delete post.suggested_sort;
-    delete post.can_gild;
-    delete post.treatment_tags;
-    delete post.distinguished;
-    delete post.send_replies;
-    delete post.contest_mode;
-    delete post.stickied;
 
     return post;
 }

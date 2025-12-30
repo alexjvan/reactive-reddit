@@ -97,12 +97,13 @@ export default function MediaContainer({
                 key={currentMedia} // For some reason the key as the index doesn't trigger a reload? But the url does
                 src={currentMedia}
                 alt={`Media item ${imageIndex + 1}`}
+                fromPopOut={fromPopOut}
                 callback={() => removeImage(currentMedia)}
             />
             : isVideoLink(currentMedia)
                 ? <video
                     key={currentMedia}
-                    className="post-displayvideo"
+                    className={`post-displayvideo ${fromPopOut ? "popout" : ""}`}
                     src={currentMedia}
                     loading="lazy"
                     controls

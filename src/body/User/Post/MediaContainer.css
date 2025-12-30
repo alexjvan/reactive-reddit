@@ -30,11 +30,17 @@
                 object-fit: contain;
                 width: 100%;
             }
+                .post-displayimage.popout {
+                    width: calc(100% - 80px);
+                }
             .post-displayvideo {
                 max-height: 75vh;
                 object-fit: contain;
                 width: 100%;
             }
+                .post-displayvideo.popout {
+                    width: calc(100% - 80px);
+                }
     .post-imageselector {
         display: flex;
         flex-wrap: wrap;

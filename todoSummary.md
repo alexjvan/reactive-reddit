@@ -12,11 +12,12 @@ Looking at the TODOs in this repo, summarizing to narrow down items to work on:
         - !! Need to create some sort of dependent-setting system if I want to make this work. For now, just going to do inactive users
     * Fixed Picture Size
         - !! Also requires some sort of dependent-setting system (need a numerical input if this is selected)
+    * Remove users' posts when deleted (from UserRetriever)
+    * Highlight required filters
 
 ## One-off Items:
 - On initial load, snapshot storage. Create way to restore initial session
 - Stop grabber button
-- Categorize Left Over Post Cleaner Items
 - Find better spot for image movers (prev/next) so they don't shift with each image-change
 - More Media links
 - UsersSubs: Remove user on 404?
@@ -33,12 +34,5 @@ Looking at the TODOs in this repo, summarizing to narrow down items to work on:
 - Lag spikes on saves
 
 ## Bugs/Errors:
-- SOMETIMES, crashing wipes all data?
-    * With groups, this only wipes the CURRENT groups data???
-        * I think this means that the data is being corrupted on-load and never gets saved
-        * But why does this *wipe* the current data?
-        * Save-snapshots *might* fix this
-    * This hasn't happened in a long while (other than the issue with processedUsers insert) - should I just remove this?
 - To catch reddit placeholder images, I am checking for 130x60 images.
     * This catches other images too, need to find a better option
-- For SOME reason, the don't recommend in common subs takes FOREVER to update while the add doesn't?
