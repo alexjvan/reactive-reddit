@@ -4,6 +4,7 @@
     .post-imagescontainer {
         align-items: center;
         display: flex;
+        justify-content: center;
         position: relative;
         width: 100%;
     }
@@ -21,12 +22,12 @@
             }
         .post-mediawrapper {
             cursor: pointer;
-            max-height: 75vh;
+            max-height: 75dvh;
             object-fit: contain;
             width: calc(100% - 80px);
         }
             .post-displayimage {
-                max-height: 75vh;
+                max-height: 75dvh;
                 object-fit: contain;
                 width: 100%;
             }
@@ -34,7 +35,7 @@
                     width: calc(100% - 80px);
                 }
             .post-displayvideo {
-                max-height: 75vh;
+                max-height: 75dvh;
                 object-fit: contain;
                 width: 100%;
             }

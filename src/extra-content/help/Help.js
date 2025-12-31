@@ -257,7 +257,7 @@ export default function Help({ }) {
                 </p>
                 <p>
                     Similar to that above, we have %closer%.
-                    Having a filter of '.%closer%' will filter all of the following; '.)', '.]', '.{'}'}', and '.%end'.
+                    Having a filter of '.%closer%' will filter all of the following; '.)', '.]', '.{'}'}', and '.%end%'.
                 </p>
             </div>
         </div>

@@ -2,7 +2,7 @@
     background-color: rgba(0, 0, 0, 0.9);
     color: white;
     left: 0;
-    height: calc(100vh - 20px);
+    height: calc(100dvh - 20px);
     padding: 10px 2.5%;
     position: fixed;
     top: 0;

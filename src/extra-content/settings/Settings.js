@@ -86,7 +86,7 @@ export default function Settings({
             <input
                 ref={fileInputRef}
                 type='file'
-                accept='.json,application/json'
+                accept='.json'
                 style={{ display: 'none' }}
                 onChange={(e) => importSaveFile(e, setSettings, setGroups)}
             />

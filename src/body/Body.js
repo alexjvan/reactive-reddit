@@ -9,7 +9,8 @@ export default function Body({
     processedUsers,
     setProcessedUsers,
     setFilters,
-    setPopOutMedia
+    setPopOutMedia,
+    headerMinimized
 }) {
     // TODO: This does NOT work, but its better than before so I am keeping it until I find something better.
     const containerRef = useRef(null);
@@ -80,7 +81,7 @@ export default function Body({
         )}
     </>, [toDisplay]);
 
-    return <div id="body" ref={containerRef}>
+    return <div id="body" className={headerMinimized ? 'headerMin' : ''} ref={containerRef}>
         {usersDisplay}
     </div>;
 }

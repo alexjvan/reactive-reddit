@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import './Head.css';
 import GroupSelector from './GroupSelector.js';
 import QuickAdd from './QuickAdd.js';
@@ -32,7 +32,9 @@ export default function Head({
     setPostQueueHasData,
     posts,
     processedUsers,
-    setProcessedUsers
+    setProcessedUsers,
+    headerMinimized,
+    setHeaderMinimized
 }) {
     const quickFilter = useMemo(() => {
         return <QuickFilter
@@ -168,12 +170,19 @@ export default function Head({
     }, [subs, postQueue.length()]);
 
     return <div id="header">
-        <div id="title">ReactiveReddit by <a href="alexvanmatre.com">alexvanmatre.com</a></div>
-        <div id="quickadd">
+        <div id="title">
+            <div id="titletext">
+                ReactiveReddit by <a href="alexvanmatre.com">alexvanmatre.com</a>
+            </div>
+            <a id="headerreducer" className={headerMinimized ? 'min' : ''} onClick={() => setHeaderMinimized(prev => !prev)}>
+                &gt;
+            </a>
+        </div>
+        {!headerMinimized && <div id="quickadd">
             {quickAddSection}
             {quickFilter}
             {postCount}
-        </div>
+        </div>}
         {progressBar}
         {groupSelection}
     </div>;

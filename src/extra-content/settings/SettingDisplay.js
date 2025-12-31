@@ -24,88 +24,80 @@ export default function SettingDisplay({
         setSettings(DefaultSettings);
     }
 
-    return <div className='settings-panel' id='settingspanel'>
-        <div className="settingssection-container">
-            <div className="settingsection-title">
-                <div className='settingsection-title-name'>
-                    Settings
-                </div>
-                <button
-                    className="settingsection-title-clear clickable"
-                    onClick={() => { resetSettings() }}
-                >
-                    Reset
-                </button>
+    return <div className="settingssection-container scrollable">
+        <div className="settingsection-title">
+            <div className='settingsection-title-name'>
+                Settings
             </div>
-            <div className='settings-flexcontainer'>
-                {
-                    // Checkboxes
-                }
-                {
-                    // Could generalize this more, but I want to control order settings appear in
-                    //     This should be fine for now
-                }
-                <CheckboxContainer
-                    settings={settings}
-                    setSettings={setSettings}
-                    settingInfo={SettingAddAllFiltersPossible}
-                />
-                <CheckboxContainer
-                    settings={settings}
-                    setSettings={setSettings}
-                    settingInfo={SettingRemoveSubOn404}
-                />
-                <CheckboxContainer
-                    settings={settings}
-                    setSettings={setSettings}
-                    settingInfo={SettingRetrieveOnSubAddition}
-                />
-            </div>
-            <div className='settings-flexcontainer'>
-                {
-                    // Numerical Inputs
-                }
-                <NumericalInputContainer
-                    settings={settings}
-                    setSettings={setSettings}
-                    settingInfo={SettingCommonKeywordsIgnoreLength}
-                />
-                <NumericalInputContainer
-                    settings={settings}
-                    setSettings={setSettings}
-                    settingInfo={SettingGrabIntervalInMinutes}
-                />
-                <NumericalInputContainer
-                    settings={settings}
-                    setSettings={setSettings}
-                    settingInfo={SettingIgnoreCommonSubsCount}
-                />
-                <NumericalInputContainer
-                    settings={settings}
-                    setSettings={setSettings}
-                    settingInfo={SettingRemoveInactiveUserTime}
-                />
-                <NumericalInputContainer
-                    settings={settings}
-                    setSettings={setSettings}
-                    settingInfo={SettingWaitBeforeReGrabbingInMinutes}
-                />
-            </div>
-            <div className='settings-flexcontainer'>
-                {
-                    // Dropdowns
-                }
-                <DropdownContainer
-                    settings={settings}
-                    setSettings={setSettings}
-                    settingInfo={SettingPostTypes}
-                />
-                <DropdownContainer
-                    settings={settings}
-                    setSettings={setSettings}
-                    settingInfo={SettingSort}
-                />
-            </div>
+            <button
+                className="settingsection-title-clear clickable"
+                onClick={() => { resetSettings() }}
+            >
+                Reset
+            </button>
+        </div>
+        <div className='settings-flexcontainer'>
+            {/* Checkboxes */}
+            {
+                // Could generalize this more, but I want to control order settings appear in
+                //     This should be fine for now
+            }
+            <CheckboxContainer
+                settings={settings}
+                setSettings={setSettings}
+                settingInfo={SettingAddAllFiltersPossible}
+            />
+            <CheckboxContainer
+                settings={settings}
+                setSettings={setSettings}
+                settingInfo={SettingRemoveSubOn404}
+            />
+            <CheckboxContainer
+                settings={settings}
+                setSettings={setSettings}
+                settingInfo={SettingRetrieveOnSubAddition}
+            />
+        </div>
+        <div className='settings-flexcontainer'>
+            {/* Numerical Inputs */}
+            <NumericalInputContainer
+                settings={settings}
+                setSettings={setSettings}
+                settingInfo={SettingCommonKeywordsIgnoreLength}
+            />
+            <NumericalInputContainer
+                settings={settings}
+                setSettings={setSettings}
+                settingInfo={SettingGrabIntervalInMinutes}
+            />
+            <NumericalInputContainer
+                settings={settings}
+                setSettings={setSettings}
+                settingInfo={SettingIgnoreCommonSubsCount}
+            />
+            <NumericalInputContainer
+                settings={settings}
+                setSettings={setSettings}
+                settingInfo={SettingRemoveInactiveUserTime}
+            />
+            <NumericalInputContainer
+                settings={settings}
+                setSettings={setSettings}
+                settingInfo={SettingWaitBeforeReGrabbingInMinutes}
+            />
+        </div>
+        <div className='settings-flexcontainer'>
+            {/* Dropdowns */}
+            <DropdownContainer
+                settings={settings}
+                setSettings={setSettings}
+                settingInfo={SettingPostTypes}
+            />
+            <DropdownContainer
+                settings={settings}
+                setSettings={setSettings}
+                settingInfo={SettingSort}
+            />
         </div>
     </div>;
 }

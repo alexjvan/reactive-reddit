@@ -13,7 +13,10 @@
             font-size: 24px;
         }
         .help-section-content {
-            padding: 0px 3%;
+            border-left: 1px solid var(--light-secondary);
+            margin-left: 1%;
+            padding-left: 2%;
+            padding-right: 3%;
             width: 94%;
         }
             .help-section-content .help-section-title {

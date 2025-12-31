@@ -26,6 +26,7 @@ Looking at the TODOs in this repo, summarizing to narrow down items to work on:
 - Image comparison for duplicates
 - Text compare on processed multilines
 - Image tags
+- I HATE the header layout on mobile/reduced screens
 
 ## Performance-Based Items:
 - Save scroll position (I believe the main issue with current implementation is post-shifting. But not 100% sure how to fix yet)
@@ -36,3 +37,9 @@ Looking at the TODOs in this repo, summarizing to narrow down items to work on:
 ## Bugs/Errors:
 - To catch reddit placeholder images, I am checking for 130x60 images.
     * This catches other images too, need to find a better option
+- Import on mobile completely broken?
+    * Filters aren't applying
+    * Progress Bar not working
+    * No "page content" (subs, filters) - but grabbing new posts?
+    * !! After a while, filters applied - but still no page content being shown? Not sure what changed here?
+        * Then more showed up that aren't being filtered? NO CLUE whats happening with importss here

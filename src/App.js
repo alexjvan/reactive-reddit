@@ -49,6 +49,7 @@ export default function App() {
   const [postQueueHasData, setPostQueueHasData] = useState(false);
   const [extraDisplay, setExtraDisplay] = useState(null);
   const [popoutMedia, setPopOutMedia] = useState(null);
+  const [headerMinimized, setHeaderMinimized] = useState(false);
 
   // Load from Storage on init
   const [settings, setSettings] = useState(() => getFromStorage('', GrabberCategorySettings, DefaultSettings, settingsValidation));
@@ -260,6 +261,8 @@ export default function App() {
       posts={posts}
       processedUsers={processedUsers}
       setProcessedUsers={setProcessedUsers}
+      headerMinimized={headerMinimized}
+      setHeaderMinimized={setHeaderMinimized}
     />
     <Body
       settings={settings}
@@ -267,6 +270,7 @@ export default function App() {
       setProcessedUsers={setProcessedUsers}
       setFilters={setFilters}
       setPopOutMedia={setPopOutMedia}
+      headerMinimized={headerMinimized}
     />
     <Foot
       setExtraDisplay={setExtraDisplay}

@@ -5,6 +5,12 @@
     padding: 0px 10px 5px 10px;
     width: calc(100% - 50px);
 }
+    @media (max-width: 600px) {
+        .user {
+            margin: 10px 5px 10px 5px;
+            width: calc(100% - 30px);
+        }
+    }
     .user-header {
         display: flex;
         justify-content: space-between;

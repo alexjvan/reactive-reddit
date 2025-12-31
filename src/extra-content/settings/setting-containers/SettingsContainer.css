@@ -5,6 +5,11 @@
     padding-top: 10px;
     padding-right: 15px;
 }
+    @media (max-width: 600px) {
+        .settings-setcontainer {
+            max-width: 100%;
+        }
+    }
     .settings-checkbox {
         margin-right: 10px;
     }
