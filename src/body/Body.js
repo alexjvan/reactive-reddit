@@ -2,7 +2,8 @@ import { useEffect, useMemo, useRef } from 'react';
 import './Body.css';
 import User from './User/User';
 import { SortOptionNew, SortOptionPostCount } from '../app/constants';
-import { isUserOutdatedFromPosts, postDisplayFilter } from '../app/postHelpers/postFunctions';
+import { isUserOutdatedFromPosts } from '../app/userHelpers';
+import { postDisplayFilter } from '../app/postHelpers/postFunctions';
 
 export default function Body({
     settings,
@@ -65,7 +66,10 @@ export default function Body({
                 return [...filtered].sort((a, b) => b.posts.length - a.posts.length);
             default:
                 console.log('Unknown sort option, defaulting to New');
-                return [...filtered].sort((a, b) => b.earliestPost - a.earliestPost);
+                return [...filtered].sort(
+                    (a, b) => (b.posts.length === 0 ? new Date(0) : b.posts[0].date)
+                        - (a.posts.length === 0 ? new Date(0) : a.posts[0].date)
+                );
         }
     }
 

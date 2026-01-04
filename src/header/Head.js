@@ -14,7 +14,8 @@ import {
 } from '../app/constants.js';
 import { addNewFilter } from '../app/filters.js';
 import { newSubWithName } from '../app/subHelpers.js';
-import { isUserOutdated, postDisplayFilter } from '../app/postHelpers/postFunctions.js';
+import { isUserOutdated } from '../app/userHelpers.js';
+import { postDisplayFilter } from '../app/postHelpers/postFunctions.js';
 
 // TODO: Button to stop grabber
 export default function Head({

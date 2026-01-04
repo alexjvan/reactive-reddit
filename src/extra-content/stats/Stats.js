@@ -84,6 +84,15 @@ export default function Stats({
         [dontRecommendSubs, settings.ignoreCommonSubsCount, subs, usersSubs]
     );
 
+    const postTimes = useMemo(
+        () => [...(processedUsers ?? [])]
+            .filter(u => !u.disabled)
+            .flatMap(u => u.posts)
+            .filter(p => !p.disabled)
+            .map(p => p.date * 1000),
+        [processedUsers]
+    );
+
     function addTagFilter(tag) {
         addNewFilter(
             settings,
@@ -195,28 +204,33 @@ export default function Stats({
     }
 
     return <div id="statistics">
-        <div className='stats-section'>
-            <div className='stats-header'>Posts Per Sub</div>
-            <div className='stats-container'>
-                {_postsPerSub}
-            </div>
+        <div id="stats-timechart">
+            {/* TODO */}
         </div>
-        <div className='stats-section'>
-            <div className='stats-header'>Posts Per Tag</div>
-            <div className='stats-container'>
-                {_postsPerTag}
+        <div id="stats-sections">
+            <div className='stats-section'>
+                <div className='stats-header'>Posts Per Sub</div>
+                <div className='stats-container'>
+                    {_postsPerSub}
+                </div>
             </div>
-        </div>
-        <div className='stats-section'>
-            <div className='stats-header'>Common Keywords</div>
-            <div className='stats-container'>
-                {_commonKeywords}
+            <div className='stats-section'>
+                <div className='stats-header'>Posts Per Tag</div>
+                <div className='stats-container'>
+                    {_postsPerTag}
+                </div>
             </div>
-        </div>
-        <div className='stats-section'>
-            <div className='stats-header'>Common Subs</div>
-            <div className='stats-container'>
-                {_commonSubs}
+            <div className='stats-section'>
+                <div className='stats-header'>Common Keywords</div>
+                <div className='stats-container'>
+                    {_commonKeywords}
+                </div>
+            </div>
+            <div className='stats-section'>
+                <div className='stats-header'>Common Subs</div>
+                <div className='stats-container'>
+                    {_commonSubs}
+                </div>
             </div>
         </div>
     </div>;

@@ -2,13 +2,7 @@ import { stringSimilarity } from "string-similarity-js";
 import { alterLink } from './imageHelpers';
 import { processPostText } from './textHelpers.js';
 import { randSixHash } from "../colors.js";
-import { 
-    PostTypeAll, 
-    PostTypeWithMedia, 
-    PostTypeMediaOnly, 
-    PostTypeTextOnly, 
-    SettingRemoveInactiveUserTime 
-} from '../constants';
+import { PostTypeAll, PostTypeWithMedia, PostTypeMediaOnly, PostTypeTextOnly } from '../constants';
 import { addFiltersAsRequested } from '../filters.js';
 import { getSub } from "../subHelpers.js";
 
@@ -168,6 +162,7 @@ export function postIntake(post, settings, filters, subs) {
 
                 const updatedPost = {
                     ...targetPost,
+                    date: (targetPost.date > processing.created_utc) ? targetPost.date : processing.created_utc,
                     duplicates: targetPost.duplicates + 1,
                     subs: targetPost.subs.some(s => s.name === processing.subreddit)
                         ? targetPost.subs
@@ -182,9 +177,10 @@ export function postIntake(post, settings, filters, subs) {
                         ? u
                         : {
                             ...u,
-                            posts: u.posts.map((p, i) =>
-                                i === duplicateIndex ? updatedPost : p
-                            )
+                            earliestPost: (u.earliestPost > processing.created_utc) ? u.earliestPost : processing.created_utc,
+                            posts: u.posts
+                                .map((p, i) => i === duplicateIndex ? updatedPost : p)
+                                .sort((a, b) => b.date - a.date)
                         }
                 );
             }
@@ -193,7 +189,7 @@ export function postIntake(post, settings, filters, subs) {
         } else {
             user = {
                 username: processingUsername,
-                earliestPost: new Date(0),
+                earliestPost: 0,
                 posts: [],
                 filteredPosts: []
             };
@@ -225,7 +221,7 @@ export function postIntake(post, settings, filters, subs) {
             earliestPost:
                 newProcessedPosts.length > 0
                     ? newProcessedPosts[0].date
-                    : new Date(0)
+                    : 0
         };
 
         if (existingUser) {
@@ -390,27 +386,4 @@ export function postDisplayFilter(settings, post, processedPost) {
                 return true;
         }
     }
-}
-
-export function isUserOutdated(user, settings) {
-    if(!settings) return false;
-
-    let today = new Date();
-    let cutoff = today.setDate(today.getDate() - settings[SettingRemoveInactiveUserTime.fieldName]);
-    let earliestDate = new Date(user.earliestPost * 1000);
-
-    return earliestDate <= cutoff;
-}
-
-export function isUserOutdatedFromPosts(posts, settings) {
-    if(!settings) return false;
-    if(posts.length === 0) return true;
-
-    let today = new Date();
-    let cutoff = today.setDate(today.getDate() - settings[SettingRemoveInactiveUserTime.fieldName]);
-
-    let earliestPost = posts.sort((a, b) => b.date - a.date)[0];
-    let earliestDate = new Date(earliestPost.date * 1000);
-
-    return earliestDate <= cutoff;
 }

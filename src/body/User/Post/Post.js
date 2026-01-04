@@ -25,6 +25,7 @@ export default function Post({
             username={processedPost.user}
             processedMedia={processedPost.media}
             fromPopOut={false}
+            startIndex={0}
             setProcessedUsers={setProcessedUsers}
             setPopOutMedia={setPopOutMedia}
         />,

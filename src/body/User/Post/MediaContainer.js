@@ -9,10 +9,11 @@ export default function MediaContainer({
     username,
     processedMedia,
     fromPopOut,
+    startIndex,
     setProcessedUsers,
     setPopOutMedia
 }) {
-    const [imageIndex, setImageIndex] = useState(0);
+    const [imageIndex, setImageIndex] = useState(startIndex ?? 0);
     const containerRef = useRef(null);
 
     let displaying = (processedMedia ?? []);
@@ -123,7 +124,8 @@ export default function MediaContainer({
                     : <a className="post-mediawrapper" onClick={() => setPopOutMedia({
                         t3: t3,
                         username: username,
-                        processedMedia: processedMedia
+                        processedMedia: processedMedia,
+                        currentIndex: imageIndex
                     })}>
                         {currentDisplay}
                     </a>

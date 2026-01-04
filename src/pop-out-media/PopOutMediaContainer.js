@@ -17,6 +17,7 @@ export default function PopOutMediaContainer({
                     username={popOutMedia.username}
                     processedMedia={popOutMedia.processedMedia}
                     fromPopOut={true}
+                    startIndex={popOutMedia.currentIndex}
                     setProcessedUsers={setProcessedUsers}
                     setPopOutMedia={setPopOutMedia}
                 />

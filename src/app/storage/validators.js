@@ -4,11 +4,10 @@ import {
     FilterCategoryTag,
     FilterCategoryText,
     FilterCategoryTextOrTitle,
-    FilterCategoryTitle,
-    SettingRemoveInactiveUserTime
+    FilterCategoryTitle
 } from "../constants";
 import { addFiltersAsRequested } from "../filters";
-import { isUserOutdated } from "../postHelpers/postFunctions";
+import { isUserOutdated } from "../userHelpers";
 
 export function emptyValidation(data, fallback) {
     return data;
@@ -88,55 +87,28 @@ function sortPrioirty(category) {
     }
 }
 
-// --- POSTS ---
-// TODO: I don't think there is any need to do any validations on posts since they will get processed then removed
-//    Will remove later if I don't find another use for these
-// export function postValidation(data, fallback, subs, filters) {
-//     return data.map(post => {
-//         if (post.selftext_html !== undefined) delete post.selftext_html;
-//         if (post.color === undefined) post.color = getSub(subs, post.subreddit).color;
-//         if (post.duplicates === undefined) post.duplicates = 0;
-//         post.filteredFor = addFiltersAsRequested(
-//             // Instead of force-piping settings here, creating default object
-//             //      setting to false since most should already be filtered
-//             { addAllFiltersPossible: false },
-//             filters,
-//             post,
-//             false
-//         );
-//         cleanPost(post);
-//         return post;
-//     });
-// }
-
-// export function shrinkPosts(posts) {
-//     return posts.filter(post => !post.disabled);
-// }
-
 // --- PROCESSED USERS ---
-// TODO: Import validations
-//    - Re-grab first post time
-//        * Do I need to have the first post time? Its not actually being used for sorting
-//        * Do I need to rewrite post sorting?
-//    - Re-Check Filters
-//    - Create filteredPosts array
 export function processedUsersValidation(processedUsers, fallback, settings, filters) {
     return processedUsers.map(u => {
         let missedFilteredPosts = [];
-        u.posts = u.posts.map(p => {
-            let nowApplicable = addFiltersAsRequested(settings, filters, p, true);
+        u.posts = u.posts
+            .map(p => {
+                let nowApplicable = addFiltersAsRequested(settings, filters, p, true);
 
-            if (nowApplicable.length > 0) {
-                missedFilteredPosts.push({
-                    filteredFor: nowApplicable,
-                    post: p
-                });
-                return undefined;
-            } else {
-                return p;
-            }
-        }).filter(p => p !== undefined);
+                if (nowApplicable.length > 0) {
+                    missedFilteredPosts.push({
+                        filteredFor: nowApplicable,
+                        post: p
+                    });
+                    return undefined;
+                } else {
+                    return p;
+                }
+            })
+            .filter(p => p !== undefined)
+            .sort((a, b) => b.date - a.date);
         u.filteredPosts = missedFilteredPosts;
+        u.earliestPost = u.posts.length > 0 ? u.posts[0].date : 0;
 
         return u;
     });

@@ -11,10 +11,14 @@ export default function ValidatedImage({
     const handleLoad = (e) => {
         const img = e.target;
         if (img.naturalWidth === 130 && img.naturalHeight === 60) {
-            setIsValid(false);
-            callback();
+            invalidate();
         }
     };
+
+    function invalidate() {
+        setIsValid(false);
+        callback();
+    }
 
     return isValid &&
         <img
@@ -22,6 +26,6 @@ export default function ValidatedImage({
             src={src}
             alt={alt}
             onLoad={handleLoad}
-            onError={() => setIsValid(false)}
+            onError={() => invalidate()}
         />;
 }

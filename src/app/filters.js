@@ -31,7 +31,7 @@ export function addNewFilter(settings, newFilter, setFilters, setProcessedUsers)
             .filter(p => p !== undefined);
         u.earliestPost = u.posts.length > 0
             ? u.posts[0].date
-            : new Date(0)
+            : 0
         if (settings.addAllFiltersPossible) {
             u.filteredPosts = (u.filteredPosts ?? []).map(pCombo => {
                 let applicable = addFiltersAsRequested(settings, [newFilter], pCombo.post, true);
