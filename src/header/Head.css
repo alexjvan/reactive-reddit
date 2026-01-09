@@ -8,7 +8,7 @@
         align-items: center;
         display: flex;
         font-size: 24px;
-        justify-content: space-between;
+        justify-content: space-around;
         padding: 0px 5%;
         width: 90%;
     }
@@ -20,7 +20,7 @@
                 text-decoration: underline;
             }
                 #titletext a:hover {
-                    color: white;
+                    color: var(--light-tetriary);
                 }
         #headerreducer {
             transform: rotate(-90deg);

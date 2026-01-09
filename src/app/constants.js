@@ -126,6 +126,23 @@ export const SettingWaitBeforeReGrabbingInMinutes = {
     default: 15
 };
 
+// ---------- Deleted User ----------
+export const DeletedUserNoAction = {
+    settingValue: 'noAction',
+    displayValue: 'No Action'
+};
+export const DeletedUserHighlight = {
+    settingValue: 'highlight',
+    displayValue: 'Highlight User'
+};
+export const DeletedUserRemove = {
+    settingValue: 'remove',
+    displayValue: 'Remove User'
+};
+const _allDeletedUserOptions = [DeletedUserNoAction, DeletedUserHighlight, DeletedUserRemove];
+export const AllDeletedUserOptions = _allDeletedUserOptions.map(du => du.settingValue);
+export const DisplayableDeletedUserOptions = _allDeletedUserOptions;
+
 // ---------- Settings Pages ----------
 export const SettingsPageSettings = 'Settings';
 export const SettingsPageContent = 'Page Content';
@@ -172,6 +189,13 @@ export const SettingSort = {
     options: DisplayableSortOptions,
     default: SortOptionNew.settingValue
 };
+export const SettingDeletedUserAction = {
+    fieldName: 'deletedUserAction',
+    title: 'Deleted User Action',
+    description: 'What action to take when a user account can no longer be found.',
+    options: DisplayableDeletedUserOptions,
+    default: DeletedUserNoAction.settingValue
+};
 
 // ---------- Default Settings ----------
 export const DefaultSettings = {
@@ -184,5 +208,6 @@ export const DefaultSettings = {
     [SettingRemoveSubOn404.fieldName]: SettingRemoveSubOn404.default,
     [SettingRetrieveOnSubAddition.fieldName]: SettingRetrieveOnSubAddition.default,
     [SettingSort.fieldName]: SettingSort.default,
-    [SettingWaitBeforeReGrabbingInMinutes.fieldName]: SettingWaitBeforeReGrabbingInMinutes.default
+    [SettingWaitBeforeReGrabbingInMinutes.fieldName]: SettingWaitBeforeReGrabbingInMinutes.default,
+    [SettingDeletedUserAction.fieldName]: SettingDeletedUserAction.default
 };

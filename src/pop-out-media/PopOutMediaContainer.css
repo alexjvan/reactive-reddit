@@ -1,6 +1,6 @@
 #popoutmedia {
     background-color: rgba(0, 0, 0, 0.9);
-    color: white;
+    color: var(--light-tetriary);
     left: 0;
     height: calc(100dvh - 20px);
     padding: 10px 2.5%;
@@ -21,7 +21,7 @@
         #popoutclose {
             background-color: transparent;
             border: 0px;
-            color: white;
+            color: var(--light-tetriary);
             float: right;
             font-family: 'Montserrat', verdana, arial, sans-serif;
             font-size: 16px;

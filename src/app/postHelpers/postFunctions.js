@@ -2,7 +2,13 @@ import { stringSimilarity } from "string-similarity-js";
 import { alterLink } from './imageHelpers';
 import { processPostText } from './textHelpers.js';
 import { randSixHash } from "../colors.js";
-import { PostTypeAll, PostTypeWithMedia, PostTypeMediaOnly, PostTypeTextOnly } from '../constants';
+import { 
+    PostTypeAll, 
+    PostTypeWithMedia, 
+    PostTypeMediaOnly, 
+    PostTypeTextOnly,
+    SettingPostTypes
+} from '../constants';
 import { addFiltersAsRequested } from '../filters.js';
 import { getSub } from "../subHelpers.js";
 
@@ -358,7 +364,7 @@ export function postDisplayFilter(settings, post, processedPost) {
     if (!processedPost && post.filteredFor.length > 0) return false;
 
     if (processedPost) {
-        switch (settings.postTypes) {
+        switch (settings[SettingPostTypes.fieldName]) {
             case PostTypeAll.settingValue:
                 return true;
             case PostTypeWithMedia.settingValue:
@@ -368,11 +374,11 @@ export function postDisplayFilter(settings, post, processedPost) {
             case PostTypeTextOnly.settingValue:
                 return post.text.length > 0 && post.media.length === 0;
             default:
-                console.log('Unknown post type filter, defaulting to All; ' + settings.postTypes);
+                console.log('Unknown post type filter, defaulting to All; ' + settings[SettingPostTypes.fieldName]);
                 return true;
         }
     } else {
-        switch (settings.postTypes) {
+        switch (settings[SettingPostTypes.fieldName]) {
             case PostTypeAll.settingValue:
                 return true;
             case PostTypeWithMedia.settingValue:
@@ -382,7 +388,7 @@ export function postDisplayFilter(settings, post, processedPost) {
             case PostTypeTextOnly.settingValue:
                 return post.hasText && !post.hasMedia;
             default:
-                console.log('Unknown post type filter, defaulting to All; ' + settings.postTypes);
+                console.log('Unknown post type filter, defaulting to All; ' + settings[SettingPostTypes.fieldName]);
                 return true;
         }
     }

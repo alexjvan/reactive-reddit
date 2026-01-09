@@ -1,5 +1,5 @@
 .user {
-    background-color: #343434;
+    background-color: var(--dark-primary);
     display: block;
     margin: 10px 15px 10px 15px;
     padding: 0px 10px 5px 10px;
@@ -11,6 +11,9 @@
             width: calc(100% - 30px);
         }
     }
+    .user.highlighted {
+        background-color: var(--bad-dark);
+    }
     .user-header {
         display: flex;
         justify-content: space-between;
@@ -20,9 +23,9 @@
                 padding-left: 10px;
             }
             .user-actions button {
-                background-color: #343434;
+                background-color: transparent;
                 border: 0px;
-                color: white;
+                color: var(--light-tetriary);
                 display: inline-block;
                 font-family: 'Montserrat', verdana, arial, sans-serif;
                 font-size: 16px;

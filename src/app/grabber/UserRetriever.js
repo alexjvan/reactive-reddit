@@ -1,14 +1,23 @@
-import { GrabberTypeBackfill, GrabberTypeContinual } from "../constants";
+import {
+    DeletedUserHighlight,
+    DeletedUserRemove,
+    DeletedUserNoAction,
+    GrabberTypeBackfill,
+    GrabberTypeContinual,
+    SettingDeletedUserAction
+} from "../constants";
 
 export default class UserRetriever {
     constructor(
         settings,
         processedUsers,
+        setProcessedUsers,
         usersSubs,
         setUsersSubs
     ) {
         this.settings = settings;
         this.processedUsers = processedUsers;
+        this.setProcessedUsers = setProcessedUsers;
         this.usersSubs = usersSubs;
         this.setUsersSubs = setUsersSubs;
     }
@@ -42,7 +51,9 @@ export default class UserRetriever {
     }
 
     selectUser() {
-        let users = this.processedUsers.filter(u => !u.disabled).map(u => u.username);
+        let users = this.processedUsers
+            .filter(u => !u.disabled && !u.highlighted && u.posts.length > 0)
+            .map(u => u.username);
 
         let unRetrieved = users.filter(u => !this.usersSubs.map(us => us.username).includes(u));
 
@@ -79,11 +90,11 @@ export default class UserRetriever {
             .then(resp => {
                 if (!resp.ok) {
                     if (resp.status === 403) {
-                        // This is a really weird case - not sure why these pop up?
-                        // Forbidden???
+                        // A 403 user is a banned/deleted user - this feels more like 404 but oh well 
+                        this.removedUserAction(user);
                         this.finishRetrieval(user, "403 error, assuming private.", false, true);
                     } else if (resp.status === 404) {
-                        // TODO: Remove user info on 404? If they no longer exist?
+                        this.removedUserAction(user);
                         this.finishRetrieval(user, `404 error.`, false, true);
                     } else if (resp.status === 429) {
                         console.log("429 error, rate limited, waiting until next interval.");
@@ -110,6 +121,41 @@ export default class UserRetriever {
                 // For some reason 403 + 429 errors are getting caught here instead of above?
                 this.finishRetrieval(user, `Transit Error.`, false, false);
             })
+    }
+
+    removedUserAction(user) {
+        switch (this.settings[SettingDeletedUserAction.fieldName]) {
+            case DeletedUserHighlight.settingValue:
+                this.setProcessedUsers(prev => prev.map(u => {
+                    if (u.username === user) {
+                        return {
+                            ...u,
+                            highlighted: true
+                        };
+                    } else {
+                        return u;
+                    }
+                }));
+                break;
+            case DeletedUserRemove.settingValue:
+                this.setProcessedUsers(prev => prev.filter(u => {
+                    if (u.username === user) {
+                        return {
+                            ...u,
+                            disabled: true
+                        };
+                    } else {
+                        return u;
+                    }
+                }));
+                break;
+            case DeletedUserNoAction.settingValue:
+                // DO NOTHING
+                break;
+            default:
+                console.log("Unknown Deleted User Action setting. Defaulting to No Action");
+                break;
+        }
     }
 
     processFetch(

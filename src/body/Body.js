@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef } from 'react';
 import './Body.css';
 import User from './User/User';
-import { SortOptionNew, SortOptionPostCount } from '../app/constants';
+import { SettingSort, SortOptionNew, SortOptionPostCount } from '../app/constants';
 import { isUserOutdatedFromPosts } from '../app/userHelpers';
 import { postDisplayFilter } from '../app/postHelpers/postFunctions';
 
@@ -56,7 +56,7 @@ export default function Body({
                 };
             })
             .filter(u => u !== undefined);
-        switch (settings.sort) {
+        switch (settings[SettingSort.fieldName]) {
             case SortOptionNew.settingValue:
                 return [...filtered].sort(
                     (a, b) => (b.posts.length === 0 ? new Date(0) : b.posts[0].date)

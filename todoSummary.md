@@ -12,21 +12,21 @@ Looking at the TODOs in this repo, summarizing to narrow down items to work on:
         - !! Need to create some sort of dependent-setting system if I want to make this work. For now, just going to do inactive users
     * Fixed Picture Size
         - !! Also requires some sort of dependent-setting system (need a numerical input if this is selected)
-    * Remove users' posts when deleted (from UserRetriever)
     * Highlight required filters
+    * Only Show Most-Recent Post
 
 ## One-off Items:
 - On initial load, snapshot storage. Create way to restore initial session
 - Stop grabber button
 - Find better spot for image movers (prev/next) so they don't shift with each image-change
 - More Media links
-- UsersSubs: Remove user on 404?
 - Try and make Grabber + UserRetriever generic
 - "Storage Managed Items"
 - Image comparison for duplicates
 - Text compare on processed multilines
 - Image tags
 - I HATE the header layout on mobile/reduced screens
+- Bring StartIndex back from PopOut -> Media Container
 
 ## Performance-Based Items:
 - Save scroll position (I believe the main issue with current implementation is post-shifting. But not 100% sure how to fix yet)

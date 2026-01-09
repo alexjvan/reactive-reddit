@@ -65,7 +65,7 @@
                     .groups-remove {
                         background-color: transparent;
                         border: 0px;
-                        color: white;
+                        color: var(--light-tetriary);
                         float: right;
                         font-family: 'Montserrat', verdana, arial, sans-serif;
                         font-size: 16px;
@@ -115,7 +115,7 @@
                 .settingsection-itemremove {
                     background-color: transparent;
                     border: 0px;
-                    color: white;
+                    color: var(--light-tetriary);
                     float: right;
                     font-family: 'Montserrat', verdana, arial, sans-serif;
                     font-size: 16px;

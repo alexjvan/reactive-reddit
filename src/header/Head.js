@@ -10,7 +10,8 @@ import {
     FilterTagOpener,
     FilterTagsCloser,
     FilterTagsOpener,
-    SettingPostTypes
+    SettingPostTypes,
+    SettingRetrieveOnSubAddition
 } from '../app/constants.js';
 import { addNewFilter } from '../app/filters.js';
 import { newSubWithName } from '../app/subHelpers.js';
@@ -110,7 +111,7 @@ export default function Head({
 
                 if (!postQueueHasData) {
                     setPostQueueHasData(true);
-                } else if (settings.retrieveOnSubAddition) {
+                } else if (settings[SettingRetrieveOnSubAddition.fieldName]) {
                     // Toggle the post queue to re-trigger retrieval
                     setPostQueueHasData(false);
                     setPostQueueHasData(true);

@@ -59,7 +59,7 @@ export default function User({
     );
 
     return (!disabled &&
-        <div className="user">
+        <div className={"user" + (processedUser.highlighted ? " highlighted" : "")}>
             <div className="user-header">
                 <div className="user-info">
                     <div className="username">{processedUser.username}</div>

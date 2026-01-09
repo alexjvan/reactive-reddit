@@ -51,7 +51,7 @@ ul {
 
 .clickable:hover {
     background-color: var(--light-secondary);
-    color: black;
+    color: var(--dark-tetiary);
     cursor: pointer;
 }
 
@@ -64,5 +64,6 @@ ul {
     --light-secondary: #b4b4b4;
     --light-tetriary: white;
     --bad: #FF5656;
+    --bad-dark: #571D1D;
     --good: #73ff73;
 }

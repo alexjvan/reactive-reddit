@@ -25,7 +25,7 @@
                 width: 100%;
             }
                 .post-title {
-                    color: white;
+                    color: var(--light-tetriary);
                     float: left;
                     padding: 0px!important;
                 }
@@ -36,7 +36,7 @@
                     .post-actions button {
                         background-color: var(--dark-secondary);
                         border: 0px;
-                        color: white;
+                        color: var(--light-tetriary);
                         font-family: 'Montserrat', verdana, arial, sans-serif;
                         font-size: 16px;
                         padding: 0px 5px;
@@ -54,17 +54,17 @@
                 margin: 5px 0px;
             }
                 .postTag {
-                    border: 1px solid white;
+                    border: 1px solid var(--light-tetriary);
                     border-radius: 10px;
                     font-size: 12px;
                     margin: 0px 5px;
                     padding: 5px;
                 }
                     .postTag.light {
-                        color: white;
+                        color: var(--light-tetriary);
                     }
                     .postTag.dark {
-                        color: black;
+                        color: var(--dark-tetiary);
                     }
         .post-contents {
             width: 100%;

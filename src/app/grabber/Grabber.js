@@ -1,4 +1,4 @@
-import { GrabberTypeBackfill, GrabberTypeContinual, GrabberTypeSavior } from "../constants";
+import { GrabberTypeBackfill, GrabberTypeContinual, GrabberTypeSavior, SettingRemoveSubOn404 } from "../constants";
 import { cleanPost } from "../postHelpers/postFunctions";
 import { getSub } from "../subHelpers";
 
@@ -71,11 +71,11 @@ export default class Grabber {
                         // This is a really weird case - not sure why these pop up?
                         this.finishRetrieval(sub, "403 error, assuming private.", false, true);
                     } else if (resp.status === 404) {
-                        if (this.settings.removeSubOn404) {
+                        if (this.settings[SettingRemoveSubOn404.fieldName]) {
                             console.log(`Removing ${sub} due to 404 error.`);
                             this.setSubs(prev => prev.filter(csub => csub.name !== sub));
                         }
-                        this.finishRetrieval(sub, `404 error${this.settings.removeSubOn404 ? ', removing sub' : ''}.`, false);
+                        this.finishRetrieval(sub, `404 error${this.settings[SettingRemoveSubOn404.fieldName] ? ', removing sub' : ''}.`, false);
                     } else if (resp.status === 429) {
                         console.log("429 error, rate limited, waiting until next interval.");
                         this.finishRetrieval(sub, `Error code ${resp.status}.`, false, false);

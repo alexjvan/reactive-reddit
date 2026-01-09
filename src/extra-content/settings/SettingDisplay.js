@@ -6,6 +6,7 @@ import {
     DefaultSettings,
     SettingAddAllFiltersPossible,
     SettingCommonKeywordsIgnoreLength,
+    SettingDeletedUserAction,
     SettingGrabIntervalInMinutes,
     SettingIgnoreCommonSubsCount,
     SettingPostTypes,
@@ -97,6 +98,11 @@ export default function SettingDisplay({
                 settings={settings}
                 setSettings={setSettings}
                 settingInfo={SettingSort}
+            />
+            <DropdownContainer
+                settings={settings}
+                setSettings={setSettings}
+                settingInfo={SettingDeletedUserAction}
             />
         </div>
     </div>;

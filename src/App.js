@@ -12,7 +12,8 @@ import {
   GrabberCategorySaveData,
   GrabberCategorySettings,
   GrabberCategorySubs,
-  GrabberCategoryUsersSubs
+  GrabberCategoryUsersSubs,
+  SettingGrabIntervalInMinutes
 } from './app/constants.js';
 import PriorityQueue from './app/grabber/PriorityQueue.js';
 import { enqueueSubs } from './app/subHelpers.js';
@@ -165,6 +166,7 @@ export default function App() {
       userRetriever.current = new UserRetriever(
         settings,
         processedUsers,
+        setProcessedUsers,
         usersSubs,
         setUsersSubs
       );
@@ -205,10 +207,10 @@ export default function App() {
       } else {
         grabber.current.grabLoop();
       }
-    }, settings.grabIntervalInMinutes * 60 * 1000);
+    }, settings[SettingGrabIntervalInMinutes.fieldName] * 60 * 1000);
 
     setPostInterval(newInterval);
-  }, [settings.grabIntervalInMinutes, subs]);
+  }, [settings[SettingGrabIntervalInMinutes.fieldName], subs]);
 
   // Run user retrieval after posts have all been grabbed
   useEffect(() => {

@@ -12,13 +12,13 @@
             background-color: var(--dark-secondary);
             border: 0px;
             border-radius: 25px;
-            color: white;
+            color: var(--light-tetriary);
             font-size: 24px;
             height: 40px;
             width: 40px;
         }
             .post-imagescontainer button:hover {
-                background-color: #343434;
+                background-color: var(--dark-primary);
             }
         .post-mediawrapper {
             cursor: pointer;
@@ -48,7 +48,7 @@
         width: 100%;
     }
         .post-imageselector-chooser {
-            background-color: white;
+            background-color: var(--light-tetriary);
             height: 5px;
             margin: 5px;
         }

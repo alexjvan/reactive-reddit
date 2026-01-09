@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import './Stats.css';
-import { FilterCategoryTag, FilterCategoryTitle } from '../../app/constants.js';
+import { FilterCategoryTag, FilterCategoryTitle, SettingCommonKeywordsIgnoreLength, SettingIgnoreCommonSubsCount } from '../../app/constants.js';
 import { addNewFilter } from '../../app/filters';
 import { newSubWithName } from '../../app/subHelpers.js';
 
@@ -35,12 +35,13 @@ export default function Stats({
             .map(([tag, count]) =>
                 <div className='stats-row' key={"ppt" + tag}>
                     <div className='stats-left'>{tag}</div>
-                    <div className='stats-right'>
-                        <button className='stats-addFilter' onClick={() => addTagFilter(tag)}>
-                            +Filter
-                        </button>
-                        {count}
-                    </div>
+                    {tag !== 'None' &&
+                        <div className='stats-right'>
+                            <button className='stats-addFilter' onClick={() => addTagFilter(tag)}>
+                                +Filter
+                            </button>
+                            {count}
+                        </div>}
                 </div>
             ),
         [processedUsers]
@@ -65,7 +66,7 @@ export default function Stats({
 
     const _commonSubs = useMemo(() =>
         Object.entries(commonSubs())
-            .filter(([sub, count]) => count >= settings.ignoreCommonSubsCount)
+            .filter(([sub, count]) => count >= settings[SettingIgnoreCommonSubsCount.fieldName])
             .sort((a, b) => b[1] - a[1])
             .map(([sub, count]) =>
                 <div className='stats-row' key={"recommend" + sub}>
@@ -81,7 +82,7 @@ export default function Stats({
                     </div>
                 </div>
             ),
-        [dontRecommendSubs, settings.ignoreCommonSubsCount, subs, usersSubs]
+        [dontRecommendSubs, settings[SettingIgnoreCommonSubsCount.fieldName], subs, usersSubs]
     );
 
     const postTimes = useMemo(
@@ -170,7 +171,7 @@ export default function Stats({
                     .split(/\s+/);                  // Split by whitespace
 
                 words.forEach(word => {
-                    if (word.length <= settings.commonKeywordsIgnoreLength) return;
+                    if (word.length <= settings[SettingCommonKeywordsIgnoreLength.fieldName]) return;
 
                     // Capitalize first letter only
                     const normalizedWord = word.charAt(0).toUpperCase() + word.slice(1);
