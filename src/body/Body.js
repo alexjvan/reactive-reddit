@@ -46,7 +46,7 @@ export default function Body({
     function filterAndSort(passedUsers) {
         let filtered = passedUsers
             .map(u => {
-                let filteredPosts = u.posts.filter(p => postDisplayFilter(settings, p, true));
+                let filteredPosts = u.posts.filter(p => postDisplayFilter(settings, {...p, highlighted: u.highlighted }));
 
                 if (isUserOutdatedFromPosts(filteredPosts, settings)) return undefined;
 
@@ -78,6 +78,7 @@ export default function Body({
             <User
                 key={user.username}
                 processedUser={user}
+                settings={settings}
                 setProcessedUsers={setProcessedUsers}
                 setFilters={setFilters}
                 setPopOutMedia={setPopOutMedia}

@@ -2,11 +2,12 @@ import { stringSimilarity } from "string-similarity-js";
 import { alterLink } from './imageHelpers';
 import { processPostText } from './textHelpers.js';
 import { randSixHash } from "../colors.js";
-import { 
-    PostTypeAll, 
-    PostTypeWithMedia, 
-    PostTypeMediaOnly, 
+import {
+    PostTypeAll,
+    PostTypeHighlighted,
+    PostTypeMediaOnly,
     PostTypeTextOnly,
+    PostTypeWithMedia,
     SettingPostTypes
 } from '../constants';
 import { addFiltersAsRequested } from '../filters.js';
@@ -359,37 +360,20 @@ export function isPostDuplicateOfProcessed(checking, against) {
     return false;
 }
 
-export function postDisplayFilter(settings, post, processedPost) {
-    if (!processedPost && post.disabled) return false;
-    if (!processedPost && post.filteredFor.length > 0) return false;
-
-    if (processedPost) {
-        switch (settings[SettingPostTypes.fieldName]) {
-            case PostTypeAll.settingValue:
-                return true;
-            case PostTypeWithMedia.settingValue:
-                return post.media.length > 0;
-            case PostTypeMediaOnly.settingValue:
-                return post.media.length > 0 && post.text.length === 0;
-            case PostTypeTextOnly.settingValue:
-                return post.text.length > 0 && post.media.length === 0;
-            default:
-                console.log('Unknown post type filter, defaulting to All; ' + settings[SettingPostTypes.fieldName]);
-                return true;
-        }
-    } else {
-        switch (settings[SettingPostTypes.fieldName]) {
-            case PostTypeAll.settingValue:
-                return true;
-            case PostTypeWithMedia.settingValue:
-                return post.hasMedia;
-            case PostTypeMediaOnly.settingValue:
-                return post.hasMedia && !post.hasText;
-            case PostTypeTextOnly.settingValue:
-                return post.hasText && !post.hasMedia;
-            default:
-                console.log('Unknown post type filter, defaulting to All; ' + settings[SettingPostTypes.fieldName]);
-                return true;
-        }
+export function postDisplayFilter(settings, post) {
+    switch (settings[SettingPostTypes.fieldName]) {
+        case PostTypeAll.settingValue:
+            return true;
+        case PostTypeWithMedia.settingValue:
+            return post.media.length > 0;
+        case PostTypeMediaOnly.settingValue:
+            return post.media.length > 0 && post.text.length === 0;
+        case PostTypeTextOnly.settingValue:
+            return post.text.length > 0 && post.media.length === 0;
+        case PostTypeHighlighted.settingValue:
+            return post.highlighted === true;
+        default:
+            console.log('Unknown post type filter, defaulting to All; ' + settings[SettingPostTypes.fieldName]);
+            return true;
     }
 }

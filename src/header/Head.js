@@ -55,9 +55,11 @@ export default function Head({
         (processedUsers ?? [])
             .filter(u => !u.disabled)
             .filter(u => !isUserOutdated(u, settings))
-            .flatMap(u => u.posts)
-            .filter(p => !p.disabled)
-            .filter(post => postDisplayFilter(settings, post, true))
+            .flatMap(u =>
+                u.posts
+                    .filter(p => !p.disabled)
+                    .filter(p => postDisplayFilter(settings, { ...p, highlighted: u.highlighted }))
+            )
             .length,
         [processedUsers, settings]
     );

@@ -8,6 +8,7 @@ import {
     SettingCommonKeywordsIgnoreLength,
     SettingDeletedUserAction,
     SettingGrabIntervalInMinutes,
+    SettingsHideLessRecentPosts,
     SettingIgnoreCommonSubsCount,
     SettingPostTypes,
     SettingRemoveInactiveUserTime,
@@ -57,6 +58,11 @@ export default function SettingDisplay({
                 settings={settings}
                 setSettings={setSettings}
                 settingInfo={SettingRetrieveOnSubAddition}
+            />
+            <CheckboxContainer
+                settings={settings}
+                setSettings={setSettings}
+                settingInfo={SettingsHideLessRecentPosts}
             />
         </div>
         <div className='settings-flexcontainer'>

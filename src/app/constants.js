@@ -61,7 +61,11 @@ export const PostTypeTextOnly = {
     settingValue: 'textOnly',
     displayValue: 'Text Only'
 };
-const _allPostTypes = [PostTypeAll, PostTypeWithMedia, PostTypeMediaOnly, PostTypeTextOnly];
+export const PostTypeHighlighted = {
+    settingValue: 'highlighted',
+    displayValue: 'Highlighted Users'
+};
+const _allPostTypes = [PostTypeAll, PostTypeWithMedia, PostTypeMediaOnly, PostTypeTextOnly, PostTypeHighlighted];
 export const AllPostTypes = _allPostTypes.map(pt => pt.settingValue);
 export const DisplayablePostTypes = _allPostTypes;
 
@@ -94,6 +98,12 @@ export const SettingGrabIntervalInMinutes = {
     title: 'Grab Interval In Minutes',
     description: 'How often (in minutes) to grab new posts from Reddit. Lower times may cause rate-limiting from Reddit.',
     default: 15
+};
+export const SettingsHideLessRecentPosts = {
+    fieldName: 'hideLessRecentPosts',
+    title: 'Hide Less Recent Posts',
+    description: 'By default, minimize posts that are not the most recent within the particular user.',
+    default: false
 };
 export const SettingIgnoreCommonSubsCount = {
     fieldName: 'ignoreCommonSubsCount',
@@ -201,6 +211,8 @@ export const SettingDeletedUserAction = {
 export const DefaultSettings = {
     [SettingAddAllFiltersPossible.fieldName]: SettingAddAllFiltersPossible.default,
     [SettingCommonKeywordsIgnoreLength.fieldName]: SettingCommonKeywordsIgnoreLength.default,
+    [SettingDeletedUserAction.fieldName]: SettingDeletedUserAction.default,
+    [SettingsHideLessRecentPosts.fieldName]: SettingsHideLessRecentPosts.default,
     [SettingIgnoreCommonSubsCount.fieldName]: SettingIgnoreCommonSubsCount.default,
     [SettingGrabIntervalInMinutes.fieldName]: SettingGrabIntervalInMinutes.default,
     [SettingPostTypes.fieldName]: SettingPostTypes.default,
@@ -208,6 +220,5 @@ export const DefaultSettings = {
     [SettingRemoveSubOn404.fieldName]: SettingRemoveSubOn404.default,
     [SettingRetrieveOnSubAddition.fieldName]: SettingRetrieveOnSubAddition.default,
     [SettingSort.fieldName]: SettingSort.default,
-    [SettingWaitBeforeReGrabbingInMinutes.fieldName]: SettingWaitBeforeReGrabbingInMinutes.default,
-    [SettingDeletedUserAction.fieldName]: SettingDeletedUserAction.default
+    [SettingWaitBeforeReGrabbingInMinutes.fieldName]: SettingWaitBeforeReGrabbingInMinutes.default
 };

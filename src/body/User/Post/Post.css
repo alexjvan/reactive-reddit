@@ -34,7 +34,7 @@
                     width: 50px;
                 }
                     .post-actions button {
-                        background-color: var(--dark-secondary);
+                        background-color: transparent;
                         border: 0px;
                         color: var(--light-tetriary);
                         font-family: 'Montserrat', verdana, arial, sans-serif;

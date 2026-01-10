@@ -1,10 +1,11 @@
 import { useMemo } from 'react';
 import './User.css';
 import Post from './Post/Post.js';
-import { FilterCategoryAuthor } from '../../app/constants.js';
+import { FilterCategoryAuthor, SettingsHideLessRecentPosts } from '../../app/constants.js';
 
 export default function User({
     processedUser,
+    settings,
     setProcessedUsers,
     setFilters,
     setPopOutMedia
@@ -46,16 +47,17 @@ export default function User({
 
     let postsDisplay = useMemo(() =>
         <>
-            {(processedUser.posts || []).map(post =>
+            {(processedUser.posts || []).map((post, postIndex) =>
                 <Post
                     key={post.t3}
                     processedPost={post}
+                    startMinimized={settings[SettingsHideLessRecentPosts.fieldName] && postIndex !== 0}
                     setProcessedUsers={setProcessedUsers}
                     setPopOutMedia={setPopOutMedia}
                 />
             )}
         </>,
-        [processedUser.posts]
+        [processedUser.posts, settings]
     );
 
     return (!disabled &&

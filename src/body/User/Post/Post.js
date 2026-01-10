@@ -5,10 +5,11 @@ import TextDisplay from './TextDisplay';
 
 export default function Post({
     processedPost,
+    startMinimized,
     setProcessedUsers,
     setPopOutMedia
 }) {
-    const [minimized, setMinimized] = useState(false);
+    const [minimized, setMinimized] = useState(startMinimized);
 
     let disabled = processedPost.disabled ?? false;
 

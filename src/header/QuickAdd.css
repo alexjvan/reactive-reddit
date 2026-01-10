@@ -3,7 +3,7 @@
     text-align: center;
 }
     .qa-cat {
-        background-color: var(--background-primary);
+        background-color: transparent;
         border: 0px;
         color: var(--light-primary);
         font-family: 'Montserrat', verdana, arial, sans-serif;
@@ -23,7 +23,7 @@
         text-align: center;
     }
         .qa-want {
-            background-color: var(--dark-primary);
+            background-color: transparent;
             border: 0px;
             color: var(--light-primary);
             font-family: 'Montserrat', verdana, arial, sans-serif;
@@ -46,7 +46,7 @@
             margin: 0px 5px;
         }
             .qa-input {
-                background-color: var(--dark-primary);
+                background-color: transparent;
                 border: 0px;
                 border-bottom: 1px solid var(--light-primary);
                 color: var(--light-primary);
@@ -55,7 +55,7 @@
                 width: 150px;
             }
         .qa-submit {
-            background-color: var(--dark-primary);
+            background-color: transparent;
             border: 0px;
             color: var(--light-primary);
             font-family: 'Montserrat', verdana, arial, sans-serif;
