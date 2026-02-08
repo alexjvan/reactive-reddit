@@ -13,16 +13,16 @@ export function addNewFilter(settings, newFilter, setFilters, setProcessedUsers)
     setProcessedUsers(prev => prev.map(u => {
         let newlyFilteredPosts = [];
 
-        u.posts = u.posts
+        let newPosts = u.posts
             .map(p => {
                 let applicable = addFiltersAsRequested(settings, [newFilter], p, true);
 
                 if (applicable.length > 0) {
                     count++;
-                    p.processed = true;
+
                     newlyFilteredPosts.push({
                         filteredFor: [newFilter],
-                        post: p
+                        post: { ...p, processed: true }
                     });
                     return undefined;
                 } else {
@@ -30,29 +30,39 @@ export function addNewFilter(settings, newFilter, setFilters, setProcessedUsers)
                 }
             })
             .filter(p => p !== undefined);
-        u.earliestPost = u.posts.length > 0
+        let newEarliest = u.posts.length > 0
             ? u.posts[0].date
             : 0;
+
+        let updatedFiltered = u.filteredPosts ?? [];
         if (settings[SettingAddAllFiltersPossible.fieldName]) {
-            u.filteredPosts = (u.filteredPosts ?? []).map(pCombo => {
+            updatedFiltered = updatedFiltered.map(pCombo => {
                 let applicable = addFiltersAsRequested(settings, [newFilter], pCombo.post, true);
 
-                if (applicable) {
-                    pCombo.filteredFor = [...pCombo.filteredFor, newFilter];
+                if (applicable.length > 0) {
+                    return {
+                        ...pCombo,
+                        filteredFor: [...pCombo.filteredFor, newFilter]
+                    }
                 }
 
                 return pCombo;
             });
         }
-        u.filteredPosts = [...(u.filteredPosts ?? []), ...newlyFilteredPosts];
 
-        return u;
+        // Direct object references apparently cause react to not see state changes. This fixews that
+        //    This was causing the lack of updates in the post count
+        return {
+            ...u,
+            posts: newPosts,
+            earliestPost: newEarliest,
+            filteredPosts: [...updatedFiltered, ...newlyFilteredPosts]
+        };
     }));
 
-    newFilter.count = count;
     setFilters(prev => [
         ...prev,
-        newFilter
+        { ...newFilter, count }
     ]);
 }
 

@@ -43,7 +43,7 @@ export default class UserRetriever {
             }
 
             this.fetchUser(
-                next,
+                next.username,
                 postInfo,
                 grabType
             );
@@ -197,7 +197,7 @@ export default class UserRetriever {
         let addable = Object.entries(grouped).map(([name, posts]) => {
             return {
                 subname: name,
-                t3s: posts.map(p => p.t3)
+                t3s: [...posts].map(p => p.t3)
             };
         });
 

@@ -13,7 +13,6 @@ Looking at the TODOs in this repo, summarizing to narrow down items to work on:
     * Fixed Picture Size
         - !! Also requires some sort of dependent-setting system (need a numerical input if this is selected)
     * Highlight required filters
-    * Only Show Most-Recent Post
 
 ## One-off Items:
 - On initial load, snapshot storage. Create way to restore initial session
@@ -43,3 +42,4 @@ Looking at the TODOs in this repo, summarizing to narrow down items to work on:
     * No "page content" (subs, filters) - but grabbing new posts?
     * !! After a while, filters applied - but still no page content being shown? Not sure what changed here?
         * Then more showed up that aren't being filtered? NO CLUE whats happening with importss here
+- Go through code and remove direct object references

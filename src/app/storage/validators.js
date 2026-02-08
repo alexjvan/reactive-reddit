@@ -91,7 +91,7 @@ function sortPrioirty(category) {
 export function processedUsersValidation(processedUsers, fallback, settings, filters) {
     return processedUsers.map(u => {
         let missedFilteredPosts = [];
-        u.posts = u.posts
+        let newPosts = u.posts
             .map(p => {
                 let nowApplicable = addFiltersAsRequested(settings, filters, p, true);
 
@@ -107,10 +107,14 @@ export function processedUsersValidation(processedUsers, fallback, settings, fil
             })
             .filter(p => p !== undefined)
             .sort((a, b) => b.date - a.date);
-        u.filteredPosts = missedFilteredPosts;
-        u.earliestPost = u.posts.length > 0 ? u.posts[0].date : 0;
+        let newEarliestPost = newPosts.length > 0 ? newPosts[0].date : 0;
 
-        return u;
+        return {
+            ...u,
+            posts: newPosts,
+            filteredPosts: missedFilteredPosts,
+            earliestPost: newEarliestPost
+        };
     });
 }
 
@@ -160,16 +164,17 @@ export function settingsValidation(data, fallback) {
 const dontGrabMinutes = 15;
 
 export function resumeRetrieval(data, fallback, postQueue, setPostQueueHasData) {
-    let included = [];
+    let included = []; // Array to no have duplicate subs
     let returning = data.map(sub => {
         if (included.includes(sub.name)) {
             return undefined;
         }
-        if (sub.color === undefined) sub.color = randSixHash();
+        let color = sub.color;
+        if (color === undefined) color = randSixHash();
 
         included.push(sub.name);
 
-        return sub;
+        return { ...sub, color };
     });
 
     let sorted = returning
@@ -221,7 +226,7 @@ export function removeInactiveUsers(usersSubs, processedUsers) {
         processedUsers
             .filter(u => !u.disabled)
             .map(u => u.name)
-    )
+    );
 
     return usersSubs.filter(us => activeUsers.has(us.username));
 }

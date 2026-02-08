@@ -3,5 +3,6 @@ export function daysFrom(date) {
 }
 
 function daysBetween(left, right) {
-    return right.getDate() - left.getDate();
+    const MS_PER_DAY = 1000 * 60 * 60 * 24;
+    return Math.floor((right - left) / MS_PER_DAY);
 }

@@ -39,15 +39,18 @@ export default function Post({
 
     function disable() {
         setProcessedUsers(prev => prev.map(u => {
-            if (u.username == processedPost.user)
-                u.posts = u.posts.map(p => {
-                    if (p.t3 == processedPost.t3)
-                        p.disabled = true;
+            if (u.username !== processedPost.user) return u;
 
-                    return p;
-                });
+            let posts = u.posts.map(p => {
+                if(p.t3 !== processedPost.t3) return p;
 
-            return u;
+                return { 
+                    ...p, 
+                    disabled: true 
+                };
+            });
+
+            return { ...u, posts };
         }));
     };
 

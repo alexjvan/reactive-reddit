@@ -142,10 +142,12 @@ export default class Grabber {
         let processed = retrievedPosts.map(post => {
             let returning = post.data;
             cleanPost(returning);
-            returning.disabled = false;
-            returning.duplicates = 0;
 
-            return returning;
+            return { 
+                ...returning,
+                disabled: false,
+                duplicates: 0
+             };
         });
 
         if (postType === GrabberTypeBackfill) {
