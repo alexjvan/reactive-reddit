@@ -176,7 +176,12 @@ export function postIntake(post, settings, filters, subs) {
                         : [
                             ...targetPost.subs,
                             { name: processing.subreddit, color: processing.color }
-                        ]
+                        ],
+                    url: (targetPost.date > processing.created_utc) 
+                        ? targetPost.url 
+                        : (processing.permalink 
+                            ? `https://www.reddit.com${processing.permalink}` 
+                            : processing.url)
                 };
 
                 return prev.map(u =>

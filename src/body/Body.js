@@ -18,53 +18,53 @@ export default function Body({
     const scrollPosition = useRef(0);
 
     // ----- Image Duplication ----- 
-    const workerRef = useRef(null);
-    useEffect(() => {
-        workerRef.current = new Worker(
-            new URL('../app/workers/imageDuplicateWorker.js', import.meta.url),
-            { type: "module" }
-        );
+    // const workerRef = useRef(null);
+    // useEffect(() => {
+    //     workerRef.current = new Worker(
+    //         new URL('../app/workers/imageDuplicateWorker.js', import.meta.url),
+    //         { type: "module" }
+    //     );
 
 
-        workerRef.current.onmessage = (e) => {
-            const { username, t3, media } = e.data;
+    //     workerRef.current.onmessage = (e) => {
+    //         const { username, t3, media } = e.data;
 
-            setProcessedUsers(prev =>
-                prev.map(user => {
-                    if (user.username !== username) return user;
+    //         setProcessedUsers(prev =>
+    //             prev.map(user => {
+    //                 if (user.username !== username) return user;
 
-                    return {
-                        ...user,
-                        posts: user.posts.map(post => {
-                            if (post.t3 !== t3) return post;
+    //                 return {
+    //                     ...user,
+    //                     posts: user.posts.map(post => {
+    //                         if (post.t3 !== t3) return post;
 
-                            return {
-                                ...post,
-                                filteredMedia: post.media.filter(m => !media.includes(m)),
-                                media
-                            };
-                        })
-                    };
-                })
-            );
-        };
+    //                         return {
+    //                             ...post,
+    //                             filteredMedia: post.media.filter(m => !media.includes(m)),
+    //                             media
+    //                         };
+    //                     })
+    //                 };
+    //             })
+    //         );
+    //     };
 
-        return () => workerRef.current.terminate();
-    }, []);
+    //     return () => workerRef.current.terminate();
+    // }, []);
 
-    function checkImageDuplication(preProcessedUsers) {
-        preProcessedUsers.forEach(user => {
-            user.posts.forEach(post => {
-                if (post.media.length > 1) { // Only run duplicate check if at least 2 media items
-                    workerRef.current.postMessage({
-                        username: user.username,
-                        t3: post.t3,
-                        media: post.media
-                    });
-                }
-            });
-        });
-    }
+    // function checkImageDuplication(preProcessedUsers) {
+    //     preProcessedUsers.forEach(user => {
+    //         user.posts.forEach(post => {
+    //             if (post.media.length > 1) { // Only run duplicate check if at least 2 media items
+    //                 workerRef.current.postMessage({
+    //                     username: user.username,
+    //                     t3: post.t3,
+    //                     media: post.media
+    //                 });
+    //             }
+    //         });
+    //     });
+    // }
     // ----- END Image Duplication ----- 
 
     // Save scroll position before unmounting or re-rendering
