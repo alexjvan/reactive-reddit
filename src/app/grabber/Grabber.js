@@ -64,7 +64,7 @@ export default class Grabber {
             url = baseUrl;
         }
 
-        fetch(url)
+        fetch("/api/corscall?url=" + encodeURIComponent(url))
             .then(resp => {
                 if (!resp.ok) {
                     if (resp.status === 403) {

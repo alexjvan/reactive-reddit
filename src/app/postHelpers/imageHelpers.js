@@ -1,3 +1,5 @@
+import SHA256 from "crypto-js/sha256";
+import WordArray from "crypto-js/lib-typedarrays";
 import { ImageSuffixes, VideoSuffixes } from "../../app/constants";
 
 // TODO
@@ -34,7 +36,15 @@ export function alterLink(url, author) {
         return url;
     } else {
         console.log('Non-recognized URL in media metadata for user ' + author + ': ', url);
-        return null; // The hope here is to not try and force a website link into an image or video tag
+        // The hope here is to not try and force a website link into an image or video tag
+        // However, now that I am not processing on every load - this means these are lost. This was a mistake in hindsight.
+        //   To fix, I probably need to tuple-ize this response and store un-parsable links
+        // This would be a pro-active fix, I don't know if I have a way to retroactively fix this
+        //   I have considered a button to "re-process" posts
+        //     Thought process behind this is to move EVERYTHING from processed back to retrieved
+        //     Not sure how much data I purged from the original post that would be lost + unparsable again
+        //   The other option would be to try and re-retrieve from text, but once again - media might already have been deleted (need to check code)
+        return null; 
     }
 }
 
@@ -52,4 +62,38 @@ function urlSuffixIn(url, array) {
         if (url.endsWith(array[i])) return true;
     }
     return false;
+}
+
+export async function removeDuplicates(mediaArray) {
+    const unique = [];
+    const seenHashes = new Map();
+    for(var i = 0; i < mediaArray.length; i++) {
+        var item = mediaArray[i];
+        if(isImageLink(item)) {
+            try {
+                var hash = await hashImage(item);
+                if(seenHashes.has(hash)) {
+                    console.log("Duplicate found, removing: " + item + " as duplicate of " + seenHashes.get(hash));
+                } else {
+                    seenHashes.set(hash, item);
+                    unique.push(item);
+                }
+            } catch (error) {
+                console.error("Error hashing image: " + item, error);
+                unique.push(item); // If there's an error hashing, just keep the image to be safe
+            }
+        } else {
+            // TODO: What to do here? Video Duplicate Check?
+            unique.push(item);
+        }
+    }
+    return unique;
+}
+
+async function hashImage(url) {
+    const res = await fetch("/api/corscall?url=" + encodeURIComponent(url));
+    const buffer = await res.arrayBuffer();
+    const uint8Array = new Uint8Array(buffer);
+
+    return SHA256(WordArray.create(uint8Array)).toString();
 }

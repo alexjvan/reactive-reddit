@@ -15,17 +15,21 @@ Looking at the TODOs in this repo, summarizing to narrow down items to work on:
     * Highlight required filters
 
 ## One-off Items:
+- !! STOP REMOVING IMAGES WITH UNKNOWN LINKS
+    * Tuple-ize the response for media links + save unknown links
+- Create way to "re-process" posts (how possible is this?)
+- Remove duplicate images on all post button
 - On initial load, snapshot storage. Create way to restore initial session
 - Stop grabber button
 - Find better spot for image movers (prev/next) so they don't shift with each image-change
 - More Media links
 - Try and make Grabber + UserRetriever generic
 - "Storage Managed Items"
-- Image comparison for duplicates
 - Text compare on processed multilines
 - Image tags
 - I HATE the header layout on mobile/reduced screens
 - Bring StartIndex back from PopOut -> Media Container
+- Video Duplicate Check
 
 ## Performance-Based Items:
 - Save scroll position (I believe the main issue with current implementation is post-shifting. But not 100% sure how to fix yet)

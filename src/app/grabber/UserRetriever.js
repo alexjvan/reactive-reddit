@@ -86,7 +86,7 @@ export default class UserRetriever {
             url = baseUrl;
         }
 
-        fetch(url)
+        fetch("/api/corscall?url=" + encodeURIComponent(url))
             .then(resp => {
                 if (!resp.ok) {
                     if (resp.status === 403) {
@@ -95,7 +95,7 @@ export default class UserRetriever {
                         this.finishRetrieval(user, "403 error, assuming private.", false, true);
                     } else if (resp.status === 404) {
                         this.removedUserAction(user);
-                        this.finishRetrieval(user, `404 error.`, false, true);
+                        this.finishRetrieval(user, `404 error - ${user}.`, false, true);
                     } else if (resp.status === 429) {
                         console.log("429 error, rate limited, waiting until next interval.");
                         this.finishRetrieval(user, `Error code ${resp.status}.`, false, false);

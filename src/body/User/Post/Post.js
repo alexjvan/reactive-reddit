@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import './Post.css';
+import { ImageDuplicateState } from './ImageDuplicateState';
 import MediaContainer from './MediaContainer';
 import TextDisplay from './TextDisplay';
 
@@ -10,6 +11,7 @@ export default function Post({
     setPopOutMedia
 }) {
     const [minimized, setMinimized] = useState(startMinimized);
+    const [imageDuplicateState, setImageDuplicateState] = useState(ImageDuplicateState.NOT_AVAILABLE);
 
     let disabled = processedPost.disabled ?? false;
 
@@ -29,8 +31,10 @@ export default function Post({
             startIndex={0}
             setProcessedUsers={setProcessedUsers}
             setPopOutMedia={setPopOutMedia}
+            imageDuplicateState={imageDuplicateState}
+            setImageDuplicateState={setImageDuplicateState}
         />,
-        [processedPost]
+        [processedPost, imageDuplicateState]
     );
 
     function toggleMinimized() {
@@ -96,6 +100,12 @@ export default function Post({
                             }
                         </a>
                         <div className="post-actions">
+                            {
+                                imageDuplicateState !== ImageDuplicateState.NOT_AVAILABLE &&
+                                <button className={`post-duplicate${(imageDuplicateState === ImageDuplicateState.CHECKING || imageDuplicateState === ImageDuplicateState.PERFORM_CHECK) ? " performing" : ""}`} onClick={() => imageDuplicateState === ImageDuplicateState.AVAILABLE ? setImageDuplicateState(ImageDuplicateState.PERFORM_CHECK) : null}>
+                                    Duplicate Images?
+                                </button>
+                            }
                             <button className="post-min" onClick={toggleMinimized}>
                                 {minimized ? '+' : '-'}
                             </button>
@@ -113,7 +123,7 @@ export default function Post({
                         <div className='tags-container'>
                             {processedPost.tags.map(t =>
                                 <div
-                                    key={`tag-${t}`}
+                                    key={`tag-${t.item}`}
                                     className={`postTag ${t.tag}`}
                                     style={{ backgroundColor: t.background }}
                                 >
