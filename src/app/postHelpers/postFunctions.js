@@ -249,6 +249,8 @@ export function postIntake(post, settings, filters, subs) {
 export function processPost(post, subs) {
     let processedText = processPostText(post.selftext);
 
+    let unprocessableMedia = [];
+
     let grabbedMedia = [
         ...processedText.media,
         ...(post.media_metadata
@@ -281,7 +283,15 @@ export function processPost(post, subs) {
             : [])
     ]
         .filter(i => i !== undefined)
-        .map(url => alterLink(url, post.author))
+        .map(url => {
+            var newLink = alterLink(url, post.author);
+
+            if(newLink === null) {
+                unprocessableMedia.push(url);
+            }
+
+            return newLink;
+        })
         .filter(i => i !== null);
 
     let sub = getSub(subs, post.subreddit);
@@ -298,6 +308,7 @@ export function processPost(post, subs) {
         title: post.title,
         text: processedText.lines,
         media: [...new Set(grabbedMedia)],
+        unprocessableMedia: [...new Set(unprocessableMedia)],
         date: post.created_utc,
         duplicates: 0,
         tags: (post.link_flair_richtext.length > 0)

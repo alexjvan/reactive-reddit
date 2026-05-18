@@ -9,6 +9,7 @@ import {
     SettingDeletedUserAction,
     SettingGrabIntervalInMinutes,
     SettingsHideLessRecentPosts,
+    SettingsHighlightDesiredFilters,
     SettingIgnoreCommonSubsCount,
     SettingPostTypes,
     SettingRemoveInactiveUserTime,
@@ -41,75 +42,47 @@ export default function SettingDisplay({
         <div className='settings-flexcontainer'>
             {/* Checkboxes */}
             {
-                // Could generalize this more, but I want to control order settings appear in
-                //     This should be fine for now
+                [SettingAddAllFiltersPossible, SettingRemoveSubOn404, SettingRetrieveOnSubAddition, SettingsHideLessRecentPosts].map(settingInfo => (
+                    <CheckboxContainer
+                        key={settingInfo.fieldName}
+                        settings={settings}
+                        setSettings={setSettings}
+                        settingInfo={settingInfo}
+                    />
+                ))
             }
             <CheckboxContainer
                 settings={settings}
                 setSettings={setSettings}
-                settingInfo={SettingAddAllFiltersPossible}
-            />
-            <CheckboxContainer
-                settings={settings}
-                setSettings={setSettings}
-                settingInfo={SettingRemoveSubOn404}
-            />
-            <CheckboxContainer
-                settings={settings}
-                setSettings={setSettings}
-                settingInfo={SettingRetrieveOnSubAddition}
-            />
-            <CheckboxContainer
-                settings={settings}
-                setSettings={setSettings}
-                settingInfo={SettingsHideLessRecentPosts}
+                settingInfo={SettingsHighlightDesiredFilters}
+                enable={false} // TODO: implement this setting
             />
         </div>
         <div className='settings-flexcontainer'>
             {/* Numerical Inputs */}
-            <NumericalInputContainer
-                settings={settings}
-                setSettings={setSettings}
-                settingInfo={SettingCommonKeywordsIgnoreLength}
-            />
-            <NumericalInputContainer
-                settings={settings}
-                setSettings={setSettings}
-                settingInfo={SettingGrabIntervalInMinutes}
-            />
-            <NumericalInputContainer
-                settings={settings}
-                setSettings={setSettings}
-                settingInfo={SettingIgnoreCommonSubsCount}
-            />
-            <NumericalInputContainer
-                settings={settings}
-                setSettings={setSettings}
-                settingInfo={SettingRemoveInactiveUserTime}
-            />
-            <NumericalInputContainer
-                settings={settings}
-                setSettings={setSettings}
-                settingInfo={SettingWaitBeforeReGrabbingInMinutes}
-            />
+            {
+                [SettingCommonKeywordsIgnoreLength, SettingGrabIntervalInMinutes, SettingIgnoreCommonSubsCount, SettingRemoveInactiveUserTime, SettingWaitBeforeReGrabbingInMinutes].map(settingInfo => (
+                    <NumericalInputContainer
+                        key={settingInfo.fieldName}
+                        settings={settings}
+                        setSettings={setSettings}
+                        settingInfo={settingInfo}
+                    />
+                ))
+            }
         </div>
         <div className='settings-flexcontainer'>
             {/* Dropdowns */}
-            <DropdownContainer
-                settings={settings}
-                setSettings={setSettings}
-                settingInfo={SettingPostTypes}
-            />
-            <DropdownContainer
-                settings={settings}
-                setSettings={setSettings}
-                settingInfo={SettingSort}
-            />
-            <DropdownContainer
-                settings={settings}
-                setSettings={setSettings}
-                settingInfo={SettingDeletedUserAction}
-            />
+            {
+                [SettingPostTypes, SettingSort, SettingDeletedUserAction].map(settingInfo => (
+                    <DropdownContainer
+                        key={settingInfo.fieldName}
+                        settings={settings}
+                        setSettings={setSettings}
+                        settingInfo={settingInfo}
+                    />
+                ))
+            }
         </div>
     </div>;
 }

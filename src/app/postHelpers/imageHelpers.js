@@ -37,13 +37,6 @@ export function alterLink(url, author) {
     } else {
         console.log('Non-recognized URL in media metadata for user ' + author + ': ', url);
         // The hope here is to not try and force a website link into an image or video tag
-        // However, now that I am not processing on every load - this means these are lost. This was a mistake in hindsight.
-        //   To fix, I probably need to tuple-ize this response and store un-parsable links
-        // This would be a pro-active fix, I don't know if I have a way to retroactively fix this
-        //   I have considered a button to "re-process" posts
-        //     Thought process behind this is to move EVERYTHING from processed back to retrieved
-        //     Not sure how much data I purged from the original post that would be lost + unparsable again
-        //   The other option would be to try and re-retrieve from text, but once again - media might already have been deleted (need to check code)
         return null; 
     }
 }

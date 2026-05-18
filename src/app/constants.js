@@ -105,6 +105,12 @@ export const SettingsHideLessRecentPosts = {
     description: 'By default, minimize posts that are not the most recent within the particular user.',
     default: false
 };
+export const SettingsHighlightDesiredFilters = {
+    fieldName: 'highlightDesiredFilters',
+    title: 'Highlight Desired Filters',
+    description: 'Highlight filters that are desired. This can help show where posts are being selected to be shown.',
+    default: false
+};
 export const SettingIgnoreCommonSubsCount = {
     fieldName: 'ignoreCommonSubsCount',
     title: 'Ignore Common Subs Count',
@@ -208,17 +214,23 @@ export const SettingDeletedUserAction = {
 };
 
 // ---------- Default Settings ----------
-export const DefaultSettings = {
-    [SettingAddAllFiltersPossible.fieldName]: SettingAddAllFiltersPossible.default,
-    [SettingCommonKeywordsIgnoreLength.fieldName]: SettingCommonKeywordsIgnoreLength.default,
-    [SettingDeletedUserAction.fieldName]: SettingDeletedUserAction.default,
-    [SettingsHideLessRecentPosts.fieldName]: SettingsHideLessRecentPosts.default,
-    [SettingIgnoreCommonSubsCount.fieldName]: SettingIgnoreCommonSubsCount.default,
-    [SettingGrabIntervalInMinutes.fieldName]: SettingGrabIntervalInMinutes.default,
-    [SettingPostTypes.fieldName]: SettingPostTypes.default,
-    [SettingRemoveInactiveUserTime.fieldName]: SettingRemoveInactiveUserTime.default,
-    [SettingRemoveSubOn404.fieldName]: SettingRemoveSubOn404.default,
-    [SettingRetrieveOnSubAddition.fieldName]: SettingRetrieveOnSubAddition.default,
-    [SettingSort.fieldName]: SettingSort.default,
-    [SettingWaitBeforeReGrabbingInMinutes.fieldName]: SettingWaitBeforeReGrabbingInMinutes.default
-};
+const AllSettings = [
+    SettingAddAllFiltersPossible,
+    SettingCommonKeywordsIgnoreLength,
+    SettingDeletedUserAction,
+    SettingsHideLessRecentPosts,
+    SettingsHighlightDesiredFilters,
+    SettingIgnoreCommonSubsCount,
+    SettingGrabIntervalInMinutes,
+    SettingPostTypes,
+    SettingRemoveInactiveUserTime,
+    SettingRemoveSubOn404,
+    SettingRetrieveOnSubAddition,
+    SettingSort,
+    SettingWaitBeforeReGrabbingInMinutes
+];
+
+export const DefaultSettings = AllSettings.reduce((cur, setting) => {
+    cur[setting.fieldName] = setting.default;
+    return cur;
+}, {});
